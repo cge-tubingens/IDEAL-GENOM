@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "luxgiant-dstream"
+version = "0.1.0"
+description = ""
+authors = ["luisggon <luisggon@flyde.io>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pandas = "^2.2.2"
+matplotlib = "^3.9.2"
+seaborn = "^0.13.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
