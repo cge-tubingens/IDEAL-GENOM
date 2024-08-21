@@ -10,7 +10,14 @@ python = "^3.11"
 pandas = "^2.2.2"
 matplotlib = "^3.9.2"
 seaborn = "^0.13.2"
+adjusttext = "^1.2.0"
+jupyter = "^1.0.0"
+scipy = "^1.14.0"
+statsmodels = "^0.14.2"
 
+
+[tool.poetry.group.dev.dependencies]
+ipykernel = "^6.29.5"
 
 [build-system]
 requires = ["poetry-core"]
