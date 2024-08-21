@@ -150,6 +150,44 @@ class GWAS:
 
         return out_dict
 
+    def association_analysis(self):
+
+        output_name = self.output_name
+        results_dir = self.results_dir
+
+        maf = self.config_dict['maf']
+        mind = self.config_dict['mind']
+        hwe = self.config_dict['hwe']
+        ci = self.config_dict['ci']
+
+        step = "association_analysis"
+
+        if os.cpu_count() is not None:
+            max_threads = os.cpu_count()-2  # use all available cores
+        else:
+            max_threads = 10
+
+        # Run plink2 to perform association analysis
+
+        plink2_cmd = f"plink2 --bfile {os.path.join(results_dir, output_name)} --adjust --ci {ci} --maf {maf} --mind {mind} --hwe {hwe} --covar {os.path.join(results_dir, output_name+'_pca.eigenvec')} --glm hide-covar omit-ref sex cols=+a1freq,+beta --out {os.path.join(results_dir, output_name+'_glm')} --threads {max_threads}"
+
+        shell_do(plink2_cmd, log=True)
+
+        # report
+        process_complete = True
+
+        outfiles_dict = {
+            'plink_out': results_dir
+        }
+
+        out_dict = {
+            'pass': process_complete,
+            'step': step,
+            'output': outfiles_dict
+        }
+
+        return out_dict
+
     def manhattan_plot(self):
 
         results_dir = self.results_dir
@@ -175,7 +213,6 @@ class GWAS:
         # Subset dataframe to highlight specific SNPs
         snps = df_gene['SNP'].to_list()
         genes = df_gene['GENE'].to_list()
-
 
         highlighted_snps = df[df['SNP'].isin(snps)]  # Filter for the SNPs of interest
 
