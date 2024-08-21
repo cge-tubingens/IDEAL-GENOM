@@ -115,6 +115,40 @@ class GWAS:
         }
 
         return out_dict
+    
+    def pca_decomposition(self):
+
+        results_dir = self.results_dir
+        output_name = self.output_name
+
+        pca = self.config_dict['pca']
+
+        step = "pca_decomposition"
+
+        if os.cpu_count() is not None:
+            max_threads = os.cpu_count()-2
+        else:
+            max_threads = 10
+
+        # Run plink to perform PCA decomposition
+        plink_cmd = f"plink --bfile {os.path.join(results_dir, output_name+'_LDpruned')} --pca {pca} --threads {max_threads} --out {os.path.join(results_dir, output_name+'_pca')}"
+
+        shell_do(plink_cmd, log=True)
+
+        # report
+        process_complete = True
+
+        outfiles_dict = {
+            'plink_out': results_dir
+        }
+
+        out_dict = {
+            'pass': process_complete,
+            'step': step,
+            'output': outfiles_dict
+        }
+
+        return out_dict
 
     def manhattan_plot(self):
 
