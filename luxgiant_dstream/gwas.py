@@ -118,8 +118,8 @@ class GWAS:
 
     def manhattan_plot(self):
 
-        results_dir      = self.results_dir
-        plots_dir        = self.plots_dir
+        results_dir = self.results_dir
+        plots_dir   = self.plots_dir
 
         step = "manhattan_plot"
 
