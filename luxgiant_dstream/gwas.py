@@ -35,7 +35,7 @@ class GWAS:
 
         pass
 
-    def exclude_high_ld_hla(self):
+    def exclude_high_ld_hla(self)->dict:
 
         results_dir = self.results_dir
         output_name = self.output_name
@@ -116,7 +116,7 @@ class GWAS:
 
         return out_dict
     
-    def pca_decomposition(self):
+    def pca_decomposition(self)->dict:
 
         results_dir = self.results_dir
         output_name = self.output_name
@@ -150,7 +150,7 @@ class GWAS:
 
         return out_dict
 
-    def association_analysis(self):
+    def association_analysis(self)->dict:
 
         output_name = self.output_name
         results_dir = self.results_dir
@@ -290,7 +290,7 @@ class GWAS:
 
         return out_dict
 
-    def qq_plot(self):
+    def qq_plot(self)->dict:
     
         import gc
 
