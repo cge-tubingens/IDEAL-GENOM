@@ -153,6 +153,8 @@ class GWAS:
     def association_analysis(self)->dict:
 
         output_name = self.output_name
+        input_path = self.input_path
+        input_name = self.input_name
         results_dir = self.results_dir
 
         maf = self.config_dict['maf']
@@ -169,7 +171,7 @@ class GWAS:
 
         # Run plink2 to perform association analysis
 
-        plink2_cmd = f"plink2 --bfile {os.path.join(results_dir, output_name)} --adjust --ci {ci} --maf {maf} --mind {mind} --hwe {hwe} --covar {os.path.join(results_dir, output_name+'_pca.eigenvec')} --glm hide-covar omit-ref sex cols=+a1freq,+beta --out {os.path.join(results_dir, output_name+'_glm')} --threads {max_threads}"
+        plink2_cmd = f"plink2 --bfile {os.path.join(input_path, input_name)} --adjust --ci {ci} --maf {maf} --mind {mind} --hwe {hwe} --covar {os.path.join(results_dir, output_name+'_pca.eigenvec')} --glm hide-covar omit-ref sex cols=+a1freq,+beta --out {os.path.join(results_dir, output_name+'_glm')} --threads {max_threads}"
 
         shell_do(plink2_cmd, log=True)
 
