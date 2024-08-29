@@ -99,6 +99,7 @@ class GWAS:
 
         cmds = [plink_cmd1, plink_cmd2]
         for cmd in cmds:
+            print(cmd)
             shell_do(cmd, log=True)
 
         # report
@@ -150,7 +151,7 @@ class GWAS:
 
         return out_dict
 
-    def association_analysis(self)->dict:
+    def fixed_model_association_analysis(self)->dict:
 
         output_name = self.output_name
         input_path = self.input_path
@@ -189,6 +190,10 @@ class GWAS:
         }
 
         return out_dict
+    
+    def random_model_association_analysis(self)->dict:
+
+        pass
      
     def get_top_hits(self)->dict:
 
@@ -245,6 +250,59 @@ class GWAS:
         }
 
         return out_dict
+    
+    def annotate_hits(self)->dict:
+
+        import requests
+        import time
+        import sys
+        import json
+
+        results_dir = self.results_dir
+        output_name = self.output_name
+
+        step = "annotate_hits"
+
+        # load the data
+        df_hits = pd.read_csv(os.path.join(results_dir, 'cojo_file.jma'), sep="\t")
+
+        # get the snp names
+        snps = df_hits['SNP'].to_list()
+        genes = []
+
+        # fetch data from Ensembl API
+        server = "https://rest.ensembl.org"
+        ext = "/vep/human/id"
+        headers={ "Content-Type" : "application/json", "Accept" : "application/json"}
+
+        # create batches of 15 snps
+        for k in range (0, len(snps), 10):
+            if k+15 > len(snps):
+                snps_dict = {"ids": snps[k:]}
+            else:
+                snps_dict = {"ids": snps[k:k+10]}
+            
+            data_snps = json.dumps(snps_dict)
+
+            r = requests.post(server+ext, headers=headers, data=data_snps)
+
+            if not r.ok:
+                r.raise_for_status()
+                sys.exit()
+
+            decoded = r.json()
+            for k in range(0, len(decoded)):
+                print(genes)
+                for dictionary in decoded[k]['transcript_consequences']:
+                    if 'gene_symbol' in dictionary.keys():
+                        gen_symbol = dictionary['gene_symbol']
+                        genes.append(gen_symbol)
+                        break
+                
+            
+            time.sleep(1.5)
+
+        return snps, genes
 
     def manhattan_plot(self)->dict:
 
