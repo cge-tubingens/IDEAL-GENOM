@@ -197,7 +197,7 @@ class GWAS:
 
         # load the data
         df_gwas = pd.read_csv(os.path.join(results_dir, "gwas_metafile.txt"), sep="\t")
-        df_gene = pd.read_csv(os.path.join(results_dir, "snps_top_hits.txt"), sep="\t")
+        df_gene = pd.read_csv(os.path.join(results_dir, "cojo_file.jma"), sep="\t")
 
         # keep columns of interest
         df = df_gwas[['SNP', 'CHR', 'P']].copy()
