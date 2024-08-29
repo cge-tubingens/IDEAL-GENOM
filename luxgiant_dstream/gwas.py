@@ -189,8 +189,64 @@ class GWAS:
         }
 
         return out_dict
+     
+    def get_top_hits(self)->dict:
 
-    def manhattan_plot(self):
+        results_dir = self.results_dir
+        input_name  = self.input_name
+        input_path  = self.input_path
+        outout_name = self.output_name
+
+        maf = self.config_dict['maf']
+
+        step = "get_top_hits"
+
+        if os.cpu_count() is not None:
+            max_threads = os.cpu_count()-2
+        else:
+            max_threads = 10
+
+        # load results of association analysis
+        df = pd.read_csv(os.path.join(results_dir, outout_name+'_glm.PHENO1.glm.logistic.hybrid'), sep="\t")
+
+        # prepare .ma file
+        df = df[['ID', 'A1', 'REF', 'A1_FREQ', 'BETA', 'SE', 'P', 'OBS_CT']].copy()
+
+        rename = {
+            'ID'     : 'SNP',
+            'A1'     : 'A1',
+            'REF'    : 'A2',
+            'A1_FREQ': 'freq',
+            'BETA'   : 'b',
+            'SE'     : 'se',
+            'P'      : 'p',
+            'OBS_CT' : 'N'
+        }
+
+        df = df.rename(columns=rename)
+        df.to_csv(os.path.join(results_dir, 'cojo_file.ma'), sep="\t", index=False)
+
+        # gcta command
+        gcta_cmd = f"gcta64 --bfile {os.path.join(input_path, input_name)} --maf {maf} --cojo-slct --cojo-file {os.path.join(results_dir, 'cojo_file.ma')}   --out {os.path.join(results_dir, 'cojo_file')} --thread-num {max_threads}"
+
+        shell_do(gcta_cmd, log=True)
+
+        # report
+        process_complete = True
+
+        outfiles_dict = {
+            'plink_out': results_dir
+        }
+
+        out_dict = {
+            'pass': process_complete,
+            'step': step,
+            'output': outfiles_dict
+        }
+
+        return out_dict
+
+    def manhattan_plot(self)->dict:
 
         results_dir = self.results_dir
         plots_dir   = self.plots_dir
