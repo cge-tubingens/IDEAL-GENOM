@@ -6,7 +6,7 @@ import seaborn as sns
 import scipy.stats as stats
 
 from adjustText import adjust_text
-from Helpers import shell_do
+from luxgiant_dstream.Helpers import shell_do
 
 class GWAS:
 
