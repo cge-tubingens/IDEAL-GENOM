@@ -7,6 +7,7 @@ import scipy.stats as stats
 
 from adjustText import adjust_text
 from luxgiant_dstream.Helpers import shell_do
+from luxgiant_dstream.annotate_tools import get_variant_context
 
 class GWAS:
 
@@ -266,43 +267,22 @@ class GWAS:
         # load the data
         df_hits = pd.read_csv(os.path.join(results_dir, 'cojo_file.jma'), sep="\t")
 
-        # get the snp names
-        snps = df_hits['SNP'].to_list()
-        genes = []
+        df_hits = df_hits[['Chr', 'SNP', 'bp']].copy()
 
-        # fetch data from Ensembl API
-        server = "https://rest.ensembl.org"
-        ext = "/vep/human/id"
-        headers={ "Content-Type" : "application/json", "Accept" : "application/json"}
+        for k in range(df_hits.shape[0]):
+            # get variant context
+            chr = df_hits.loc[k, 'Chr']
+            pos = df_hits.loc[k, 'bp']
 
-        # create batches of 15 snps
-        for k in range (0, len(snps), 10):
-            if k+15 > len(snps):
-                snps_dict = {"ids": snps[k:]}
-            else:
-                snps_dict = {"ids": snps[k:k+10]}
-            
-            data_snps = json.dumps(snps_dict)
+            context = get_variant_context(chr, pos)
 
-            r = requests.post(server+ext, headers=headers, data=data_snps)
+            if context is None:
+                context = 'NA'
+            df_hits.loc[k, 'context'] = context[0]
 
-            if not r.ok:
-                r.raise_for_status()
-                sys.exit()
-
-            decoded = r.json()
-            for k in range(0, len(decoded)):
-                print(genes)
-                for dictionary in decoded[k]['transcript_consequences']:
-                    if 'gene_symbol' in dictionary.keys():
-                        gen_symbol = dictionary['gene_symbol']
-                        genes.append(gen_symbol)
-                        break
-                
-            
             time.sleep(1.5)
-
-        return snps, genes
+        
+        return df_hits
 
     def manhattan_plot(self)->dict:
 
