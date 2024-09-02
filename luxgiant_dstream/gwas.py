@@ -154,15 +154,15 @@ class GWAS:
 
     def fixed_model_association_analysis(self)->dict:
 
-        output_name = self.output_name
+        output_name= self.output_name
         input_path = self.input_path
         input_name = self.input_name
-        results_dir = self.results_dir
+        results_dir= self.results_dir
 
         maf = self.config_dict['maf']
-        mind = self.config_dict['mind']
+        mind= self.config_dict['mind']
         hwe = self.config_dict['hwe']
-        ci = self.config_dict['ci']
+        ci  = self.config_dict['ci']
 
         step = "association_analysis"
 
@@ -173,9 +173,34 @@ class GWAS:
 
         # Run plink2 to perform association analysis
 
-        plink2_cmd = f"plink2 --bfile {os.path.join(input_path, input_name)} --adjust --ci {ci} --maf {maf} --mind {mind} --hwe {hwe} --covar {os.path.join(results_dir, output_name+'_pca.eigenvec')} --glm hide-covar omit-ref sex cols=+a1freq,+beta --out {os.path.join(results_dir, output_name+'_glm')} --threads {max_threads}"
+        plink2_cmd = f"plink2 --bfile {os.path.join(input_path, input_name)} --adjust --ci {ci} --maf {maf} --mind {mind} --hwe {hwe} --covar {os.path.join(results_dir, output_name+'_pca.eigenvec')} --glm hide-covar omit-ref sex cols=+a1freq,+beta --out {os.path.join(results_dir, output_name+'_glm1')} --threads {max_threads}"
 
         shell_do(plink2_cmd, log=True)
+
+        df = pd.read_csv(os.path.join(results_dir, output_name+'_glm.PHENO1.glm.logistic.hybrid'), sep="\t")
+        rename = {
+            '#CHROM'          : 'CHR',	
+            'POS'             : 'POS',	
+            'ID'              : 'SNP',
+            'REF'             : 'A2',	
+            'ALT'             : 'ALT',	
+            'PROVISIONAL_REF?': 'PROVISIONAL_REF',	
+            'A1'              : 'A1',	
+            'OMITTED'         : 'OMITTED',	
+            'A1_FREQ'         : 'freq',	
+            'FIRTH?'          : 'FIRTH',	
+            'TEST'            : 'TEST',	
+            'OBS_CT'          : 'N',	
+            'BETA'            : 'b',	
+            'SE'              : 'se',	
+            'L95'             : 'L95',	
+            'U95'             : 'U95',	
+            'Z_STAT'          : 'Z_STAT',	
+            'P'               : 'p',	
+            'ERRCODE'         : 'ERRCODE'
+        }
+        df = df.rename(columns=rename)
+        df.to_csv(os.path.join(results_dir, output_name+'_glm1.PHENO1.glm.logistic.hybrid'), sep="\t", index=False)
 
         # report
         process_complete = True
@@ -201,7 +226,7 @@ class GWAS:
         results_dir = self.results_dir
         input_name  = self.input_name
         input_path  = self.input_path
-        outout_name = self.output_name
+        output_name = self.output_name
 
         maf = self.config_dict['maf']
 
@@ -213,23 +238,11 @@ class GWAS:
             max_threads = 10
 
         # load results of association analysis
-        df = pd.read_csv(os.path.join(results_dir, outout_name+'_glm.PHENO1.glm.logistic.hybrid'), sep="\t")
+        df = pd.read_csv(os.path.join(results_dir, output_name+'_glm.PHENO1.glm.logistic.hybrid'), sep="\t")
 
         # prepare .ma file
-        df = df[['ID', 'A1', 'REF', 'A1_FREQ', 'BETA', 'SE', 'P', 'OBS_CT']].copy()
+        df = df[['SNP', 'A1', 'A2', 'freq', 'b', 'se', 'p', 'N']].copy()
 
-        rename = {
-            'ID'     : 'SNP',
-            'A1'     : 'A1',
-            'REF'    : 'A2',
-            'A1_FREQ': 'freq',
-            'BETA'   : 'b',
-            'SE'     : 'se',
-            'P'      : 'p',
-            'OBS_CT' : 'N'
-        }
-
-        df = df.rename(columns=rename)
         df.to_csv(os.path.join(results_dir, 'cojo_file.ma'), sep="\t", index=False)
 
         # gcta command
@@ -254,13 +267,9 @@ class GWAS:
     
     def annotate_hits(self)->dict:
 
-        import requests
         import time
-        import sys
-        import json
 
         results_dir = self.results_dir
-        output_name = self.output_name
 
         step = "annotate_hits"
 
@@ -278,26 +287,45 @@ class GWAS:
 
             if context is None:
                 context = 'NA'
-            df_hits.loc[k, 'context'] = context[0]
+            df_hits.loc[k, 'GENE'] = context[0]
 
             time.sleep(1.5)
+
+        df_hits = df_hits[['SNP', 'GENE']].copy()
+
+        df_hits.to_csv(os.path.join(results_dir, 'snps_annotated.csv'), sep="\t", index=False)
+
+        # report
+        process_complete = True
+
+        outfiles_dict = {
+            'plink_out': results_dir
+        }
+
+        out_dict = {
+            'pass': process_complete,
+            'step': step,
+            'output': outfiles_dict
+        }
         
-        return df_hits
+        return out_dict
 
     def manhattan_plot(self)->dict:
 
         results_dir = self.results_dir
+        output_name = self.output_name
         plots_dir   = self.plots_dir
+        annotate    = self.config_dict['annotate']
 
         step = "manhattan_plot"
 
         # load the data
-        df_gwas = pd.read_csv(os.path.join(results_dir, "gwas_metafile.txt"), sep="\t")
-        df_gene = pd.read_csv(os.path.join(results_dir, "cojo_file.jma"), sep="\t")
+        df_gwas = pd.read_csv(os.path.join(results_dir, output_name+'_glm.PHENO1.glm.logistic.hybrid'), sep="\t")
+        df_gene = pd.read_csv(os.path.join(results_dir, "snps_annotated.csv"), sep="\t")
 
         # keep columns of interest
-        df = df_gwas[['SNP', 'CHR', 'P']].copy()
-        df['log10P'] = -np.log10(df['P'])
+        df = df_gwas[['SNP', 'CHR', 'p']].copy()
+        df['log10P'] = -np.log10(df['p'])
 
         # sort values by chromosome
         df = df.sort_values('CHR')
@@ -340,17 +368,18 @@ class GWAS:
             # Plot highlighted SNPs with a different color (red) and larger point size
             ax.scatter(highlighted_snps['ind'], highlighted_snps['log10P'], color='red', s=50, label='Highlighted SNPs')
 
+        if annotate:
             # Add gene names to highlighted SNPs
             texts = []  # A list to store text annotations for adjustment
-        for i, row in highlighted_snps.iterrows():
-            gene = genes[snps.index(row['SNP'])]  # Get corresponding gene name
-            # Add text label to the SNP
-            text = ax.text(row['ind'], row['log10P'], gene, fontsize=12, ha='right', va='bottom', color='black',
+            for i, row in highlighted_snps.iterrows():
+                gene = genes[snps.index(row['SNP'])]  # Get corresponding gene name
+                # Add text label to the SNP
+                text = ax.text(row['ind'], row['log10P'], gene, fontsize=12, ha='right', va='bottom', color='black',
                            bbox=dict(boxstyle='round,pad=0.3', edgecolor='black', facecolor='white'))
-            texts.append(text)
+                texts.append(text)
 
-        # Adjust the text to prevent overlaps using adjustText
-        adjust_text(texts, arrowprops=dict(arrowstyle='-', color='black'))
+            # Adjust the text to prevent overlaps using adjustText
+            adjust_text(texts, arrowprops=dict(arrowstyle='-', color='black'))
 
         # Set axis limits
         ax.set_xlim([0, len(df)])
