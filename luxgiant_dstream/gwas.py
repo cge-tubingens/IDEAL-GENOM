@@ -11,7 +11,7 @@ from luxgiant_dstream.annotate_tools import get_variant_context
 
 class GWASfixed:
 
-    def __init__(self, input_path:str, input_name:str, output_path:str, output_name:str, config_dict:str, dependables_path:str) -> None:
+    def __init__(self, input_path:str, input_name:str, output_path:str, output_name:str, config_dict:str, dependables_path:str, preds_path:str) -> None:
 
         # check if paths are set
         if input_path is None or output_path is None or dependables_path is None:
@@ -23,9 +23,10 @@ class GWASfixed:
         self.output_name = output_name
         self.dependables = dependables_path
         self.config_dict = config_dict
+        self.preds_path  = preds_path
 
         # create results folder
-        self.results_dir = os.path.join(output_path, 'gwas_analysis')
+        self.results_dir = os.path.join(output_path, 'gwas_fixed')
         if not os.path.exists(self.results_dir):
             os.mkdir(self.results_dir)
 
@@ -57,7 +58,7 @@ class GWASfixed:
 
         # Run plink2 to perform association analysis
 
-        plink2_cmd = f"plink2 --bfile {os.path.join(input_path, input_name)} --adjust --ci {ci} --maf {maf} --mind {mind} --hwe {hwe} --covar {os.path.join(results_dir, output_name+'_pca.eigenvec')} --glm hide-covar omit-ref sex cols=+a1freq,+beta --out {os.path.join(results_dir, output_name+'_glm1')} --threads {max_threads}"
+        plink2_cmd = f"plink2 --bfile {os.path.join(input_path, input_name)} --adjust --ci {ci} --maf {maf} --mind {mind} --hwe {hwe} --covar {os.path.join(results_dir, output_name+'_pca.eigenvec')} --glm hide-covar omit-ref sex cols=+a1freq,+beta --out {os.path.join(results_dir, output_name+'_glm')} --threads {max_threads}"
 
         shell_do(plink2_cmd, log=True)
 
@@ -84,7 +85,7 @@ class GWASfixed:
             'ERRCODE'         : 'ERRCODE'
         }
         df = df.rename(columns=rename)
-        df.to_csv(os.path.join(results_dir, output_name+'_glm1.PHENO1.glm.logistic.hybrid'), sep="\t", index=False)
+        df.to_csv(os.path.join(results_dir, output_name+'_glm.PHENO1.glm.logistic.hybrid'), sep="\t", index=False)
 
         # report
         process_complete = True
@@ -100,11 +101,7 @@ class GWASfixed:
         }
 
         return out_dict
-    
-    def random_model_association_analysis(self)->dict:
 
-        pass
-     
     def get_top_hits(self)->dict:
 
         results_dir = self.results_dir
