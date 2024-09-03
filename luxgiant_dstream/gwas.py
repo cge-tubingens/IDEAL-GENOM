@@ -36,122 +36,6 @@ class GWAS:
 
         pass
 
-    def exclude_high_ld_hla(self)->dict:
-
-        results_dir = self.results_dir
-        output_name = self.output_name
-        dependables_path = self.dependables
-
-        maf      = self.config_dict['maf']
-        geno     = self.config_dict['geno']
-        mind     = self.config_dict['mind']
-        hwe      = self.config_dict['hwe']
-        ind_pair = self.config_dict['indep-pairwise']
-
-        # Check type of maf
-        if not isinstance(maf, float):
-             raise TypeError("maf should be of type float.")
-
-        # Check type of geno
-        if not isinstance(geno, float):
-            raise TypeError("geno should be of type float.")
-
-        # Check type of mind
-        if not isinstance(mind, float):
-            raise TypeError("mind should be of type float.")
-        
-        # Check type of hwe
-        if not isinstance(hwe, float):
-            raise TypeError("hwe should be of type float.")
-        
-        # Check if maf is in range
-        if maf < 0.05 or maf > 0.1:
-            raise ValueError("maf should be between 0.05 and 0.1")
-        
-        # Check if geno is in range
-        if geno < 0.05 or geno > 0.1:
-            raise ValueError("geno should be between 0.05 and 0.1")
-        
-        # Check if mind is in range
-        if mind < 0.1 or mind > 0.15:
-            raise ValueError("mind should be between 0.1 and 0.15")
-        
-        # Check if hwe is in range
-        if hwe < 0.00000001 or hwe > 0.001:
-            raise ValueError("hwe should be between 0.00000001 and 0.001")
-        
-        # check existence of high LD regions file
-        high_ld_regions_file = os.path.join(dependables_path, 'high-LD-regions.txt')
-        if not os.path.exists(high_ld_regions_file):
-            raise FileNotFoundError(f"File with high LD region was not found: {high_ld_regions_file}")
-
-        step = "ld_prune"
-
-        if os.cpu_count() is not None:
-            max_threads = os.cpu_count()-2
-        else:
-            max_threads = 10
-
-        # Run plink to exclude high LD regions
-        plink_cmd1 = f"plink --bfile {os.path.join(results_dir, output_name)} --chr 1-22 --maf {maf} --geno {geno}  --hwe {hwe} --exclude {high_ld_regions_file} --range --indep-pairwise {ind_pair[0]} {ind_pair[1]} {ind_pair[2]} --threads {max_threads} --make-bed --out {os.path.join(results_dir, output_name+'_prunning')}"
-
-        # LD pruning
-        plink_cmd2 = f"plink2 --bfile {os.path.join(results_dir, output_name+'_prunning')} --extract {os.path.join(results_dir, output_name+'_prunning.prune.in')} --make-bed --out {os.path.join(results_dir, output_name+'_LDpruned')} --threads {max_threads}"
-
-        cmds = [plink_cmd1, plink_cmd2]
-        for cmd in cmds:
-            print(cmd)
-            shell_do(cmd, log=True)
-
-        # report
-        process_complete = True
-
-        outfiles_dict = {
-            'plink_out': results_dir
-        }
-
-        out_dict = {
-            'pass': process_complete,
-            'step': step,
-            'output': outfiles_dict
-        }
-
-        return out_dict
-    
-    def pca_decomposition(self)->dict:
-
-        results_dir = self.results_dir
-        output_name = self.output_name
-
-        pca = self.config_dict['pca']
-
-        step = "pca_decomposition"
-
-        if os.cpu_count() is not None:
-            max_threads = os.cpu_count()-2
-        else:
-            max_threads = 10
-
-        # Run plink to perform PCA decomposition
-        plink_cmd = f"plink --bfile {os.path.join(results_dir, output_name+'_LDpruned')} --pca {pca} --threads {max_threads} --out {os.path.join(results_dir, output_name+'_pca')}"
-
-        shell_do(plink_cmd, log=True)
-
-        # report
-        process_complete = True
-
-        outfiles_dict = {
-            'plink_out': results_dir
-        }
-
-        out_dict = {
-            'pass': process_complete,
-            'step': step,
-            'output': outfiles_dict
-        }
-
-        return out_dict
-
     def fixed_model_association_analysis(self)->dict:
 
         output_name= self.output_name
@@ -417,17 +301,16 @@ class GWAS:
 
     def qq_plot(self)->dict:
     
-        import gc
-
-        results_dir      = self.results_dir
-        plots_dir        = self.plots_dir
+        results_dir = self.results_dir
+        output_name = self.output_name
+        plots_dir   = self.plots_dir
 
         step = "qq_plot"
 
         # load the data
-        df_gwas = pd.read_csv(os.path.join(results_dir, "gwas_metafile.txt"), sep="\t")
+        df_gwas = pd.read_csv(os.path.join(results_dir, output_name+'_glm.PHENO1.glm.logistic.hybrid'), sep="\t")
 
-        pvalues = df_gwas['P'].values
+        pvalues = df_gwas['p'].values
 
         grp = None
         n = len(pvalues)
@@ -453,8 +336,6 @@ class GWAS:
         # Update pvalues and exp_x after thinning
         log_p = thin['pvalues'].values
         exp_x = thin['exp_x'].values
-
-        gc.collect()
 
         axis_range =  [float(min(log_p.min(), exp_x.min()))-0.5, float(max(log_p.max(), exp_x.max()))+1]
 
