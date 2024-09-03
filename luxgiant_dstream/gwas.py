@@ -9,7 +9,7 @@ from adjustText import adjust_text
 from luxgiant_dstream.Helpers import shell_do
 from luxgiant_dstream.annotate_tools import get_variant_context
 
-class GWAS:
+class GWASfixed:
 
     def __init__(self, input_path:str, input_name:str, output_path:str, output_name:str, config_dict:str, dependables_path:str) -> None:
 
