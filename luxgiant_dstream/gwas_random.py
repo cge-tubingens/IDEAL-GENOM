@@ -44,7 +44,7 @@ class GWASrandom:
         
         input_path  = self.input_path
         input_name  = self.input_name
-        results_dir  = self.results_dir
+        results_dir = self.results_dir
         output_name = self.output_name
 
         step = "prepare_aux_files"
@@ -66,7 +66,7 @@ class GWASrandom:
         process_complete = True
 
         outfiles_dict = {
-            'plink_out': results_dir
+            'python_out': results_dir
         }
 
         out_dict = {
@@ -79,4 +79,38 @@ class GWASrandom:
     
     def compute_grm(self)->dict:
 
-        return dict()
+        results_dir= self.results_dir
+        prep_path  = self.preps_path
+        output_name= self.output_name
+
+        step = "compute_grm"
+
+        if os.cpu_count() is not None:
+            max_threads = os.cpu_count()-2
+        else:
+            max_threads = 10
+
+        # gcta commands
+        gcta_cmd1 = f"gcta64 --bfile {os.path.join(prep_path, output_name+'_LDpruned')}d --make-grm --thread-num {max_threads} --out {os.path.join(results_dir, output_name+'_grm')}"
+
+        gcta_cmd2 = f"gcta64 --grm {os.path.join(results_dir, output_name+'_grm')} --make-bK-sparse 0.05 --out {os.path.join(results_dir, output_name+'_sparse')}"
+
+        # run gctag4 commands
+        cmds = [gcta_cmd1, gcta_cmd2]
+        for cmd in cmds:
+            shell_do(cmd, log=True)
+
+        # report
+        process_complete = True
+
+        outfiles_dict = {
+            'gcta_out': results_dir
+        }
+
+        out_dict = {
+            'pass': process_complete,
+            'step': step,
+            'output': outfiles_dict
+        }
+
+        return out_dict
