@@ -114,3 +114,42 @@ class GWASrandom:
         }
 
         return out_dict
+    
+    def run_gwas_random(self)->dict:
+
+        results_dir = self.results_dir
+        input_name  = self.input_name
+        input_path  = self.input_path
+        output_name = self.output_name
+        config_dict = self.config_dict
+        preps_path  = self.preps_path
+
+        maf = config_dict['maf']
+
+        step = "run_gwas_random"
+
+        if os.cpu_count() is not None:
+            max_threads = os.cpu_count()-2
+        else:
+            max_threads = 10
+
+        # gcta commands
+        gcta_cmd = f"gcta64 --bfile {os.path.join(input_path, input_name)} --fastGWA-mlm-binary --maf {maf}  --grm-sparse {os.path.join(results_dir, output_name+'_sparse')} --qcovar {os.path.join(preps_path, output_name+'_pca')} --covar {os.path.join(results_dir, output_name+'_sex.covar')} --pheno {os.path.join(results_dir, output_name+'_pheno.phen')} --out {os.path.join(results_dir,output_name+'_assocSparseCovar_pca_sex-mlm-binary')}--thread-num {max_threads}"
+
+        # run gcta command
+        shell_do(gcta_cmd, log=True)
+
+        # report
+        process_complete = True
+
+        outfiles_dict = {
+            'gcta_out': results_dir
+        }
+
+        out_dict = {
+            'pass': process_complete,
+            'step': step,
+            'output': outfiles_dict
+        }
+
+        return out_dict
