@@ -6,7 +6,7 @@ import seaborn as sns
 import scipy.stats as stats
 
 from adjustText import adjust_text
-from Helpers import shell_do
+from luxgiant_dstream.Helpers import shell_do
 
 class GWAS:
 
@@ -38,6 +38,8 @@ class GWAS:
     def exclude_high_ld_hla(self):
 
         results_dir = self.results_dir
+        input_name  = self.input_name
+        input_path  = self.input_path
         output_name = self.output_name
         dependables_path = self.dependables
 
@@ -49,7 +51,7 @@ class GWAS:
 
         # Check type of maf
         if not isinstance(maf, float):
-             raise TypeError("maf should be of type float.")
+            raise TypeError("maf should be of type float.")
 
         # Check type of geno
         if not isinstance(geno, float):
@@ -92,13 +94,14 @@ class GWAS:
             max_threads = 10
 
         # Run plink to exclude high LD regions
-        plink_cmd1 = f"plink --bfile {os.path.join(results_dir, output_name)} --chr 1-22 --maf {maf} --geno {geno}  --hwe {hwe} --exclude {high_ld_regions_file} --range --indep-pairwise {ind_pair[0]} {ind_pair[1]} {ind_pair[2]} --threads {max_threads} --make-bed --out {os.path.join(results_dir, output_name+'_prunning')}"
+        plink_cmd1 = f"plink --bfile {os.path.join(input_path, input_name)} --chr 1-22 --maf {maf} --geno {geno}  --hwe {hwe} --exclude {high_ld_regions_file} --range --indep-pairwise {ind_pair[0]} {ind_pair[1]} {ind_pair[2]} --threads {max_threads} --make-bed --out {os.path.join(results_dir, output_name+'_prunning')}"
 
         # LD pruning
-        plink_cmd2 = f"--bfile {os.path.join(results_dir, output_name+'_prunning')} --extract {os.path.join(results_dir, output_name+'_prunning.prune.in')} --make-bed --out {os.path.join(results_dir, output_name+'_LDpruned')} --threads {max_threads}"
+        plink_cmd2 = f"plink --bfile {os.path.join(results_dir, output_name+'_prunning')} --extract {os.path.join(results_dir, output_name+'_prunning.prune.in')} --make-bed --out {os.path.join(results_dir, output_name+'_LDpruned')} --threads {max_threads}"
 
         cmds = [plink_cmd1, plink_cmd2]
         for cmd in cmds:
+            print(cmd)
             shell_do(cmd, log=True)
 
         # report
@@ -152,13 +155,15 @@ class GWAS:
 
     def association_analysis(self):
 
+        input_path  = self.input_path
+        input_name  = self.input_name
         output_name = self.output_name
         results_dir = self.results_dir
 
         maf = self.config_dict['maf']
-        mind = self.config_dict['mind']
+        mind= self.config_dict['mind']
         hwe = self.config_dict['hwe']
-        ci = self.config_dict['ci']
+        ci  = self.config_dict['ci']
 
         step = "association_analysis"
 
@@ -169,9 +174,67 @@ class GWAS:
 
         # Run plink2 to perform association analysis
 
-        plink2_cmd = f"plink2 --bfile {os.path.join(results_dir, output_name)} --adjust --ci {ci} --maf {maf} --mind {mind} --hwe {hwe} --covar {os.path.join(results_dir, output_name+'_pca.eigenvec')} --glm hide-covar omit-ref sex cols=+a1freq,+beta --out {os.path.join(results_dir, output_name+'_glm')} --threads {max_threads}"
+        plink2_cmd = f"plink2 --bfile {os.path.join(input_path, input_name)} --adjust --ci {ci} --maf {maf} --mind {mind} --hwe {hwe} --covar {os.path.join(results_dir, output_name+'_pca.eigenvec')} --glm hide-covar omit-ref sex cols=+a1freq,+beta --out {os.path.join(results_dir, output_name+'_glm')} --threads {max_threads}"
 
         shell_do(plink2_cmd, log=True)
+
+        # report
+        process_complete = True
+
+        outfiles_dict = {
+            'plink_out': results_dir
+        }
+
+        out_dict = {
+            'pass': process_complete,
+            'step': step,
+            'output': outfiles_dict
+        }
+
+        return out_dict
+    
+    def get_top_hits(self):
+
+        results_dir = self.results_dir
+        input_path  = self.input_path
+        input_name  = self.input_name
+        output_name = self.output_name
+
+        maf = self.config_dict['maf']
+
+        step = "get_top_hits"
+
+        if os.cpu_count() is not None:
+            max_threads = os.cpu_count()-2  # use all available cores
+        else:
+            max_threads = 10
+
+        # Load the results of the association analysis
+        df = pd.read_csv(
+            os.path.join(results_dir, output_name+'_glm.PHENO1.glm.logistic.hybrid'),
+            sep='\t'
+        )
+
+        # prepare .ma file
+        df = df[['ID', 'A1', 'REF', 'A1_FREQ', 'BETA', 'SE', 'P', 'OBS_CT']].copy()
+
+        rename = {
+            'ID'     : 'SNP',
+            'A1'     : 'A1',
+            'REF'    : 'A2',
+            'A1_FREQ': 'freq',
+            'BETA'   : 'b',
+            'SE'     : 'se',
+            'P'      : 'p',
+            'OBS_CT' : 'N'
+        }
+        df = df.rename(columns=rename)
+        df.to_csv(os.path.join(results_dir, 'cojo_file.ma'), sep='\t', index=False)
+
+        # gcta command
+        gcta_cmd = f"gcta64 --bfile {os.path.join(input_path, input_name)} --maf {maf} --cojo-slct --cojo-file {os.path.join(results_dir, 'cojo_file.ma')} --out {os.path.join(results_dir, output_name+'-glm-logistic-cojo')} --thread-num {6}"
+
+        shell_do(gcta_cmd, log=True)
 
         # report
         process_complete = True
