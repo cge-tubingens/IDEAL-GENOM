@@ -10,6 +10,8 @@ import seaborn as sns
 import scipy.stats as stats
 
 from luxgiant_dstream.Helpers import shell_do, delete_temp_files
+from luxgiant_dstream.plots import manhattan_plot, qq_plot
+from luxgiant_dstream.annotate_tools import get_variant_context
 
 class GWASrandom:
 
@@ -174,4 +176,162 @@ class GWASrandom:
             'output': outfiles_dict
         }
 
+        return out_dict
+    
+    def get_top_hits(self)->dict:
+
+        results_dir = self.results_dir
+        input_name  = self.input_name
+        input_path  = self.input_path
+        output_name = self.output_name
+
+        maf = self.config_dict['maf']
+
+        step = "get_top_hits"
+
+        if os.cpu_count() is not None:
+            max_threads = os.cpu_count()-2
+        else:
+            max_threads = 10
+
+        # CHANGE FOR FINAL VERSION
+        # load results of association analysis
+        df = pd.read_csv(os.path.join(results_dir, output_name+'_assocSparseCovar_pca_sex-mlm-binary--thread-num1.fastGWA'), sep="\t")
+
+        # delete for final version
+        self.files_to_keep.append(output_name+'_assocSparseCovar_pca_sex-mlm-binary--thread-num1.fastGWA')
+
+        # prepare .ma file
+        df = df[['SNP', 'A1', 'A2', 'freq', 'b', 'se', 'p', 'N']].copy()
+
+        df.to_csv(os.path.join(results_dir, 'cojo_file.ma'), sep="\t", index=False)
+
+        del df
+
+        # gcta command
+        gcta_cmd = f"gcta64 --bfile {os.path.join(input_path, input_name)} --maf {maf} --cojo-slct --cojo-file {os.path.join(results_dir, 'cojo_file.ma')}   --out {os.path.join(results_dir, output_name+'_assocSparseCovar_pca_sex-mlm-binary-cojo')} --thread-num {max_threads}"
+
+        shell_do(gcta_cmd, log=True)
+
+        self.files_to_keep.append(output_name+'_assocSparseCovar_pca_sex-mlm-binary-cojo.jma.cojo')
+        self.files_to_keep.append(output_name+'_assocSparseCovar_pca_sex-mlm-binary-cojo.ldr.cojo')
+
+        # report
+        process_complete = True
+
+        outfiles_dict = {
+            'plink_out': results_dir
+        }
+
+        out_dict = {
+            'pass': process_complete,
+            'step': step,
+            'output': outfiles_dict
+        }
+
+        return out_dict
+
+    def annotate_top_hits(self)->dict:
+
+        import time
+
+        results_dir = self.results_dir
+        output_name = self.output_name
+
+        step = "annotate_hits"
+
+        # load the data
+        cojo_file_path = os.path.join(results_dir, output_name+'_assocSparseCovar_pca_sex-mlm-binary-cojo.jma.cojo')
+
+        if os.path.exists(cojo_file_path):
+            df_hits = pd.read_csv(cojo_file_path, sep="\t")
+        else:
+            FileExistsError("File cojo_file.jma not found in the results directory.")
+
+        df_hits = df_hits[['Chr', 'SNP', 'bp']].copy()
+
+        for k in range(df_hits.shape[0]):
+            # get variant context
+            chr = df_hits.loc[k, 'Chr']
+            pos = df_hits.loc[k, 'bp']
+
+            context = get_variant_context(chr, pos)
+
+            if context is None:
+                context = 'NA'
+            df_hits.loc[k, 'GENE'] = context[0]
+
+            time.sleep(1.5)
+
+        df_hits = df_hits[['SNP', 'GENE']].copy()
+
+        df_hits.to_csv(os.path.join(results_dir, 'snps_annotated.csv'), sep="\t", index=False)
+
+        self.files_to_keep.append('snps_annotated.csv')
+
+        # report
+        process_complete = True
+
+        outfiles_dict = {
+            'plink_out': results_dir
+        }
+
+        out_dict = {
+            'pass': process_complete,
+            'step': step,
+            'output': outfiles_dict
+        }
+        
+        return out_dict
+    
+    def plot_drawings(self)->dict:
+
+        plots_dir  = self.plots_dir
+        results_dir= self.results_dir
+        output_name= self.output_name
+
+        annotate = self.config_dict['annotate']
+
+        step = "draw_plots"
+
+        df_gwas = pd.read_csv(
+            os.path.join(results_dir, output_name+'_assocSparseCovar_pca_sex-mlm-binary--thread-num1.fastGWA'), 
+            sep="\t",
+            usecols=['SNP', 'CHR', 'p']
+        )
+
+        if annotate:
+            df_annot = pd.read_csv(os.path.join(results_dir, "snps_annotated.csv"), sep="\t")
+
+            mann_plot = manhattan_plot(
+                df_gwas    =df_gwas,
+                df_annot   =df_annot,
+                plots_dir  =plots_dir,
+                annotate   =True
+            )
+        else:
+            mann_plot = manhattan_plot(
+                df_gwas    =df_gwas,
+                df_annot   =df_annot,
+                plots_dir  =plots_dir,
+                annotate   =False
+            )
+
+        QQ_plot = qq_plot(df_gwas, plots_dir)
+
+        delete_temp_files(self.files_to_keep, results_dir)
+
+        # report
+        process_complete = (mann_plot & QQ_plot)
+
+        outfiles_dict = {
+            'plink_out': plots_dir
+        }
+
+        out_dict = {
+            'pass': process_complete,
+            'step': step,
+            'output': outfiles_dict
+        }
+        
         return out_dict
