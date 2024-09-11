@@ -139,6 +139,28 @@ class GWASrandom:
         # run gcta command
         shell_do(gcta_cmd, log=True)
 
+        df = pd.read_csv(os.path.join(results_dir, output_name+'_assocSparseCovar_pca_sex-mlm-binary--thread-num.fastGWA'), sep="\t")
+        rename = {
+            'CHR'     :'CHR',	
+            'SNP'     :'SNP',
+            'POS'     :'POS',	
+            'A1'      :'A1', 
+            'A2'      :'A2', 
+            'N'       :'N', 
+            'AF1'     :'freq', 
+            'T'       :'T', 
+            'SE_T'    :'SE_T', 
+            'P_noSPA' :'P_noSPA',
+            'BETA'    :'b', 
+            'SE'      :'se', 
+            'P'       :'p', 
+            'CONVERGE':'CONVERGE'
+        }
+        df = df.rename(columns=rename)
+        df.to_csv(os.path.join(results_dir, output_name+'_assocSparseCovar_pca_sex-mlm-binary--thread-num.fastGWA'), sep="\t", index=False)
+
+        self.files_to_keep.append(output_name+'_assocSparseCovar_pca_sex-mlm-binary--thread-num.fastGWA')
+
         # report
         process_complete = True
 
