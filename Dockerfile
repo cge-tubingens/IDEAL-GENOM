@@ -30,3 +30,6 @@ RUN wget -O /tmp/plink19.zip https://s3.amazonaws.com/plink1-assets/plink_linux_
     && unzip /tmp/plink2.zip -d /usr/local/bin/ \
     && wget -O /tmp/gcta64.zip https://yanglab.westlake.edu.cn/software/gcta/bin/gcta-1.94.1-linux-kernel-3-x86_64.zip \
     && unzip /tmp/gcta64.zip -d /usr/local/bin/
+
+    # Set the entrypoint to run the Python CLI tool
+ENTRYPOINT ["python", "-m", "luxgiant-dstream"]
