@@ -4,10 +4,6 @@ Module to perform a GWAS analysis using a fixed model.
 
 import os
 import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-import scipy.stats as stats
 
 from luxgiant_dstream.Helpers import shell_do, delete_temp_files
 from luxgiant_dstream.plots import manhattan_plot, qq_plot
