@@ -7,8 +7,35 @@ from luxgiant_dstream.Helpers import shell_do, delete_temp_files
 
 class PrepDS:
 
+    """
+    Class designed to perform data preparation for downstream analysis.
+    """
+
     def __init__(self, input_path:str, input_name:str, output_path:str, output_name:str, config_dict:str, dependables_path:str) -> None:
 
+        """
+        Initialize the PrepDS class.
+
+        Parameters:
+        -----------
+        input_path : str
+            Path to the input data.
+        input_name : str
+            Name of the input data.
+        output_path : str
+            Path to the output data.
+        output_name : str
+            Name of the output data.
+        config_dict : dict
+            Dictionary containing the configuration parameters.
+        dependables_path : str
+            Path to the dependables data.
+
+        Returns:
+        --------
+        None
+        """
+        
         # check if paths are set
         if input_path is None or output_path is None or dependables_path is None:
             raise ValueError("Values for input_path, output_path and dependables_path must be set upon initialization.")
@@ -30,6 +57,15 @@ class PrepDS:
         pass
 
     def exclude_high_ld_hla(self)->dict:
+
+        """
+        Method to exclude high LD regions and perform LD pruning.
+        
+        Returns:
+        --------
+        out_dict : dict
+            Dictionary containing a report of the process.
+        """
 
         input_path       = self.input_path
         input_name       = self.input_name
@@ -87,12 +123,13 @@ class PrepDS:
         else:
             max_threads = 10
 
-        # Run plink to exclude high LD regions
+        # plink command to exclude high LD regions
         plink_cmd1 = f"plink --bfile {os.path.join(input_path, input_name)} --chr 1-22 --maf {maf} --geno {geno}  --hwe {hwe} --exclude {high_ld_regions_file} --range --indep-pairwise {ind_pair[0]} {ind_pair[1]} {ind_pair[2]} --threads {max_threads} --make-bed --out {os.path.join(results_dir, output_name+'_prunning')}"
 
-        # LD pruning
+        # plink command to perform LD pruning
         plink_cmd2 = f"plink2 --bfile {os.path.join(results_dir, output_name+'_prunning')} --extract {os.path.join(results_dir, output_name+'_prunning.prune.in')} --make-bed --out {os.path.join(results_dir, output_name+'_LDpruned')} --threads {max_threads}"
 
+        # execute plink commands
         cmds = [plink_cmd1, plink_cmd2]
         for cmd in cmds:
             shell_do(cmd, log=True)
@@ -118,6 +155,15 @@ class PrepDS:
     
     def pca_decomposition(self)->dict:
 
+        """
+        Method to perform PCA decomposition.
+
+        Returns:
+        --------
+        out_dict : dict
+            Dictionary containing a report of the process
+        """
+
         results_dir = self.results_dir
         output_name = self.output_name
 
@@ -125,18 +171,21 @@ class PrepDS:
 
         step = "pca_decomposition"
 
+        # compute number of threads
         if os.cpu_count() is not None:
             max_threads = os.cpu_count()-2
         else:
             max_threads = 10
 
-        # Run plink to perform PCA decomposition
+        # plink command to perform PCA decomposition
         plink_cmd = f"plink --bfile {os.path.join(results_dir, output_name+'_LDpruned')} --pca {pca} --threads {max_threads} --out {os.path.join(results_dir, output_name+'_pca')}"
 
+        # execute plink command
         shell_do(plink_cmd, log=True)
 
         self.files_to_keep.append(output_name+'_pca.eigenvec')
 
+        # delete temporary files
         delete_temp_files(self.files_to_keep, results_dir)
 
         # report
