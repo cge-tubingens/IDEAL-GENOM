@@ -1,5 +1,12 @@
 """
 Module to prepare data for the downstream analysis
+
+The module provides a class to perform data preparation for downstream analysis.
+
+Classes:
+--------
+PrepDS
+    Class to perform data preparation for downstream analysis.
 """
 import os
 
