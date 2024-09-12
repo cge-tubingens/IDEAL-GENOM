@@ -151,6 +151,7 @@ class GWASfixed:
 
         step = "get_top_hits"
 
+        # compute the number of threads to use
         if os.cpu_count() is not None:
             max_threads = os.cpu_count()-2
         else:

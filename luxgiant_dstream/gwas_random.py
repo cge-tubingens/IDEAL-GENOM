@@ -13,6 +13,29 @@ class GWASrandom:
 
     def __init__(self, input_path:str, input_name:str, output_path:str, output_name:str, config_dict:str, preps_path:str) -> None:
 
+        """
+        Initialize the GWASrandom class.
+
+        Parameters:
+        -----------
+        input_path : str
+            Path to the input data.
+        input_name : str
+            Name of the input data.
+        output_path : str
+            Path to the output data.
+        output_name : str
+            Name of the output data.
+        config_dict : dict
+            Dictionary containing the configuration parameters.
+        preps_path : str
+            Path to the preparatory data.
+
+        Returns:
+        --------
+        None
+        """
+        
         # check if paths are set
         if input_path is None or output_path is None:
             raise ValueError("Values for input_path, output_path and dependables_path must be set upon initialization.")
@@ -39,6 +62,10 @@ class GWASrandom:
         pass
 
     def prepare_aux_files(self)->dict:
+
+        """
+        Prepare auxiliary files for the GWAS analysis.
+        """
         
         input_path  = self.input_path
         input_name  = self.input_name
@@ -56,6 +83,7 @@ class GWASrandom:
 
         df_pheno.to_csv(os.path.join(results_dir, output_name+'_pheno.phen'), sep='\t', header=False, index=False)
 
+        # recode sex
         df_sex = df_fam[[0,1,4]].copy()
 
         df_sex.to_csv(os.path.join(results_dir, output_name+'_sex.covar'), sep='\t', header=False, index=False)
@@ -77,12 +105,17 @@ class GWASrandom:
     
     def compute_grm(self)->dict:
 
+        """
+        Compute the genetic relationship matrix (GRM) for the GWAS analysis using GCTA.
+        """
+
         results_dir= self.results_dir
         prep_path  = self.preps_path
         output_name= self.output_name
 
         step = "compute_grm"
 
+        # compute the number of threads to use
         if os.cpu_count() is not None:
             max_threads = os.cpu_count()-2
         else:
@@ -93,7 +126,7 @@ class GWASrandom:
 
         gcta_cmd2 = f"gcta64 --grm {os.path.join(results_dir, output_name+'_grm')} --make-bK-sparse 0.05 --out {os.path.join(results_dir, output_name+'_sparse')}"
 
-        # run gctag4 commands
+        # run gcta commands
         cmds = [gcta_cmd1, gcta_cmd2]
         for cmd in cmds:
             shell_do(cmd, log=True)
@@ -115,6 +148,10 @@ class GWASrandom:
     
     def run_gwas_random(self)->dict:
 
+        """
+        Method to run the GWAS analysis using a random effect model.
+        """
+
         results_dir = self.results_dir
         input_name  = self.input_name
         input_path  = self.input_path
@@ -126,17 +163,19 @@ class GWASrandom:
 
         step = "run_gwas_random"
 
+        # compute the number of threads to use
         if os.cpu_count() is not None:
             max_threads = os.cpu_count()-2
         else:
             max_threads = 10
 
-        # gcta commands
+        # gcta command
         gcta_cmd = f"gcta64 --bfile {os.path.join(input_path, input_name)} --fastGWA-mlm-binary --maf {maf}  --grm-sparse {os.path.join(results_dir, output_name+'_sparse')} --qcovar {os.path.join(preps_path, output_name+'_pca.eigenvec')} --covar {os.path.join(results_dir, output_name+'_sex.covar')} --pheno {os.path.join(results_dir, output_name+'_pheno.phen')} --out {os.path.join(results_dir,output_name+'_assocSparseCovar_pca_sex-mlm-binary')}--thread-num {max_threads}"
 
         # run gcta command
         shell_do(gcta_cmd, log=True)
 
+        # rename columns for later use with GCTA
         df = pd.read_csv(os.path.join(results_dir, output_name+'_assocSparseCovar_pca_sex-mlm-binary--thread-num.fastGWA'), sep="\t")
         rename = {
             'CHR'     :'CHR',	
@@ -176,6 +215,10 @@ class GWASrandom:
     
     def get_top_hits(self)->dict:
 
+        """
+        Method to extract the top hits from the GWAS analysis.
+        """
+
         results_dir = self.results_dir
         input_name  = self.input_name
         input_path  = self.input_path
@@ -185,6 +228,7 @@ class GWASrandom:
 
         step = "get_top_hits"
 
+        # compute the number of threads to use
         if os.cpu_count() is not None:
             max_threads = os.cpu_count()-2
         else:
@@ -207,6 +251,7 @@ class GWASrandom:
         # gcta command
         gcta_cmd = f"gcta64 --bfile {os.path.join(input_path, input_name)} --maf {maf} --cojo-slct --cojo-file {os.path.join(results_dir, 'cojo_file.ma')}   --out {os.path.join(results_dir, output_name+'_assocSparseCovar_pca_sex-mlm-binary-cojo')} --thread-num {max_threads}"
 
+        # execute gcta command
         shell_do(gcta_cmd, log=True)
 
         self.files_to_keep.append(output_name+'_assocSparseCovar_pca_sex-mlm-binary-cojo.jma.cojo')
@@ -229,6 +274,10 @@ class GWASrandom:
 
     def annotate_top_hits(self)->dict:
 
+        """
+        Annotate the top hits from the association analysis.
+        """
+
         import time
 
         results_dir = self.results_dir
@@ -239,6 +288,7 @@ class GWASrandom:
         # load the data
         cojo_file_path = os.path.join(results_dir, output_name+'_assocSparseCovar_pca_sex-mlm-binary-cojo.jma.cojo')
 
+        # check if .jma file exists
         if os.path.exists(cojo_file_path):
             df_hits = pd.read_csv(cojo_file_path, sep="\t")
         else:
@@ -261,6 +311,7 @@ class GWASrandom:
 
         df_hits = df_hits[['SNP', 'GENE']].copy()
 
+        # save the annotated data
         df_hits.to_csv(os.path.join(results_dir, 'snps_annotated.csv'), sep="\t", index=False)
 
         self.files_to_keep.append('snps_annotated.csv')
@@ -282,6 +333,10 @@ class GWASrandom:
     
     def plot_drawings(self)->dict:
 
+        """
+        Method to draw Manhattan plot and QQ plot for the GWAS analysis.
+        """
+
         plots_dir  = self.plots_dir
         results_dir= self.results_dir
         output_name= self.output_name
@@ -290,12 +345,14 @@ class GWASrandom:
 
         step = "draw_plots"
 
+        # load GWAS results
         df_gwas = pd.read_csv(
             os.path.join(results_dir, output_name+'_assocSparseCovar_pca_sex-mlm-binary--thread-num1.fastGWA'), 
             sep="\t",
             usecols=['SNP', 'CHR', 'p']
         )
 
+        # draw Manhattan plot
         if annotate:
             df_annot = pd.read_csv(os.path.join(results_dir, "snps_annotated.csv"), sep="\t")
 
@@ -313,6 +370,7 @@ class GWASrandom:
                 annotate   =False
             )
 
+        # draw QQ plot
         QQ_plot = qq_plot(df_gwas, plots_dir)
 
         delete_temp_files(self.files_to_keep, results_dir)
