@@ -1,6 +1,5 @@
 import os
 import json
-import pandas as pd
 
 from luxgiant_dstream.Helpers import arg_parser
 
@@ -8,7 +7,7 @@ from luxgiant_dstream.prep_ds import PrepDS
 from luxgiant_dstream.gwas_fixed import GWASfixed
 from luxgiant_dstream.gwas_random import GWASrandom
 
-def analysis_pipe(params_dict:dict, data_dict:dict, steps_dict)->None:
+def analysis_pipe(params_dict:dict, data_dict:dict, steps_dict:dict)->None:
 
     if steps_dict['prep_ds']:
         # instantiate the PrepDS class
