@@ -13,6 +13,29 @@ class GWASfixed:
 
     def __init__(self, input_path:str, input_name:str, output_path:str, output_name:str, config_dict:str, preps_path:str) -> None:
 
+        """
+        Initialize the GWASfixed class.
+
+        Parameters:
+        -----------
+        input_path : str
+            Path to the input data.
+        input_name : str
+            Name of the input data.
+        output_path : str
+            Path to the output data.
+        output_name : str
+            Name of the output data.
+        config_dict : dict
+            Dictionary containing the configuration parameters.
+        preps_path : str
+            Path to the preparatory data.
+
+        Returns:
+        --------
+        None
+        """
+        
         # check if paths are set
         if input_path is None or output_path is None:
             raise ValueError("Values for input_path, output_path and dependables_path must be set upon initialization.")
@@ -40,6 +63,10 @@ class GWASfixed:
 
     def fixed_model_association_analysis(self)->dict:
 
+        """
+        Perform association analysis using a fixed model with PLINK 2.0.
+        """
+
         output_name= self.output_name
         input_path = self.input_path
         input_name = self.input_name
@@ -53,16 +80,19 @@ class GWASfixed:
 
         step = "association_analysis"
 
+        # compute the number of threads to use
         if os.cpu_count() is not None:
             max_threads = os.cpu_count()-2  # use all available cores
         else:
             max_threads = 10
 
-        # Run plink2 to perform association analysis
+        # plink2 command to perform association analysis
         plink2_cmd = f"plink2 --bfile {os.path.join(input_path, input_name)} --adjust --ci {ci} --maf {maf} --mind {mind} --hwe {hwe} --covar {os.path.join(preps_dir, output_name+'_pca.eigenvec')} --glm hide-covar omit-ref sex cols=+a1freq,+beta --out {os.path.join(results_dir, output_name+'_glm')} --threads {max_threads}"
 
+        # execute plink command
         shell_do(plink2_cmd, log=True)
 
+        # rename columns for later use with GCTA
         df = pd.read_csv(os.path.join(results_dir, output_name+'_glm.PHENO1.glm.logistic.hybrid'), sep="\t")
         rename = {
             '#CHROM'          : 'CHR',	
@@ -108,6 +138,10 @@ class GWASfixed:
 
     def get_top_hits(self)->dict:
 
+        """
+        Get the top hits from the association analysis with GCTA.
+        """
+
         results_dir = self.results_dir
         input_name  = self.input_name
         input_path  = self.input_path
@@ -139,6 +173,7 @@ class GWASfixed:
         # gcta command
         gcta_cmd = f"gcta64 --bfile {os.path.join(input_path, input_name)} --maf {maf} --cojo-slct --cojo-file {os.path.join(results_dir, 'cojo_file.ma')}   --out {os.path.join(results_dir, 'cojo_file')} --thread-num {max_threads}"
 
+        # execute gcta command
         shell_do(gcta_cmd, log=True)
 
         self.files_to_keep.append('cojo_file.jma.cojo')
@@ -160,6 +195,10 @@ class GWASfixed:
         return out_dict
     
     def annotate_top_hits(self)->dict:
+
+        """
+        Annotate the top hits from the association analysis.
+        """
 
         import time
 
@@ -186,10 +225,12 @@ class GWASfixed:
                 context = 'NA'
             df_hits.loc[k, 'GENE'] = context[0]
 
+            # sleep for 1.5 seconds
             time.sleep(1.5)
 
         df_hits = df_hits[['SNP', 'GENE']].copy()
 
+        # save the annotated data
         df_hits.to_csv(os.path.join(results_dir, 'snps_annotated.csv'), sep="\t", index=False)
 
         self.files_to_keep.append('snps_annotated.csv')
@@ -211,6 +252,10 @@ class GWASfixed:
 
     def plot_drawings(self)->dict:
 
+        """
+        Draw Manhattan plot and QQ plot for the GWAS analysis.
+        """
+
         plots_dir  = self.plots_dir
         results_dir= self.results_dir
         output_name= self.output_name
@@ -219,12 +264,14 @@ class GWASfixed:
 
         step = "draw_plots"
 
+        # load GWAS results
         df_gwas = pd.read_csv(
             os.path.join(results_dir, output_name+'_glm.PHENO1.glm.logistic.hybrid'), 
             sep="\t",
             usecols=['SNP', 'CHR', 'p']
         )
 
+        # draw manhattan plot
         if annotate:
             df_annot = pd.read_csv(os.path.join(results_dir, "snps_annotated.csv"), sep="\t")
 
@@ -242,6 +289,7 @@ class GWASfixed:
                 annotate   =False
             )
 
+        # draw QQ plot
         QQ_plot = qq_plot(df_gwas, plots_dir)
 
         delete_temp_files(self.files_to_keep, results_dir)

@@ -118,6 +118,7 @@ class PrepDS:
 
         step = "ld_prune"
 
+        # compute the number of threads to use
         if os.cpu_count() is not None:
             max_threads = os.cpu_count()-2
         else:
@@ -171,7 +172,7 @@ class PrepDS:
 
         step = "pca_decomposition"
 
-        # compute number of threads
+        # compute the number of threads to use
         if os.cpu_count() is not None:
             max_threads = os.cpu_count()-2
         else:
