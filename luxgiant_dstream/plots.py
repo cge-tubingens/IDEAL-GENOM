@@ -9,6 +9,9 @@ manhattan_plot(df_gwas:pd.DataFrame, plots_dir:str, df_annot:pd.DataFrame=None, 
     Draw a manhattan plot for GWAS data.
 qq_plot(df_gwas:pd.DataFrame, plots_dir:str)->bool
     Draw a qq plot for GWAS data.
+
+The function qq_plot is a Python implementation of the R code provided in the following links: https://gist.github.com/MrFlick/10477946 or here https://github.com/hakyimlab/IntroStatGen/blob/master/gists/qqunif.r
+
 """
 
 import os
