@@ -1,5 +1,14 @@
 """
 Module with function for drawing plots
+
+The module provides functions to draw manhattan and qq plots for GWAS data.
+
+Functions:
+----------
+manhattan_plot(df_gwas:pd.DataFrame, plots_dir:str, df_annot:pd.DataFrame=None, annotate:bool=False)->bool
+    Draw a manhattan plot for GWAS data.
+qq_plot(df_gwas:pd.DataFrame, plots_dir:str)->bool
+    Draw a qq plot for GWAS data.
 """
 
 import os
@@ -13,6 +22,25 @@ from adjustText import adjust_text
 
 def manhattan_plot(df_gwas:pd.DataFrame, plots_dir:str, df_annot:pd.DataFrame=None, annotate:bool=False)->bool:
 
+    """
+    Function to draw a manhattan plot for GWAS data.
+    
+    Parameters:
+    -----------
+    df_gwas : pd.DataFrame
+        Dataframe with GWAS summary statistics.
+    plots_dir : str
+        Path to the directory to save the plot.
+    df_annot : pd.DataFrame (default=None)
+        Dataframe with annotation information for SNPs of interest.
+    annotate : bool (default=False)
+        Whether to annotate the plot with gene names.
+
+    Returns:
+    --------
+    bool
+    """
+    
     # keep columns of interest
     df = df_gwas.copy()
     df['log10P'] = -np.log10(df['p'])
@@ -92,6 +120,21 @@ def manhattan_plot(df_gwas:pd.DataFrame, plots_dir:str, df_annot:pd.DataFrame=No
     return True
 
 def qq_plot(df_gwas:pd.DataFrame, plots_dir:str)->bool:
+
+    """
+    Function to draw a qq plot for GWAS data.
+
+    Parameters:
+    -----------
+    df_gwas : pd.DataFrame
+        Dataframe with GWAS summary statistics.
+    plots_dir : str
+        Path to the directory to save the plot.
+
+    Returns:
+    --------
+    bool
+    """
     
     pvalues = df_gwas['p'].values
     grp = None
@@ -128,8 +171,27 @@ def qq_plot(df_gwas:pd.DataFrame, plots_dir:str)->bool:
     fig, ax = plt.subplots(figsize=(10,10))
 
     # Calculate the confidence intervals if draw_conf is True
-    def plot_confidence_interval(n, conf_points=1500, conf_col="lightgray", conf_alpha=0.05):
+    def plot_confidence_interval(n:int, conf_points:int=1500, conf_col:str="lightgray", conf_alpha:float=0.05)->None:
 
+        """
+        Function to plot the confidence interval for the QQ plot.
+
+        Parameters:
+        -----------
+        n : int
+            Number of p-values.
+        conf_points : int (default=1500)
+            Number of points to plot the confidence interval.
+        conf_col : str (default="lightgray")
+            Color of the confidence interval.
+        conf_alpha : float (default=0.05)
+            Alpha value for the confidence interval.
+
+        Returns:
+        --------
+        None
+        """
+        
         conf_points = min(conf_points, n - 1)
         mpts = np.zeros((conf_points * 2, 2))
 
