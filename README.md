@@ -73,7 +73,7 @@ The `steps.JSON` file has the following structure:
 
 ```
 {
-    "preps_ds"   : true,
+    "prep_ds"   : true,
     "gwas_fixed" : true,
     "gwas_random": true
 }
