@@ -32,4 +32,4 @@ RUN wget -O /tmp/plink19.zip https://s3.amazonaws.com/plink1-assets/plink_linux_
     && unzip /tmp/gcta64.zip -d /usr/local/bin/
 
     # Set the entrypoint to run the Python CLI tool
-ENTRYPOINT ["python", "-m", "luxgiant-dstream"]
+ENTRYPOINT ["python", "-m", "luxgiant_dstream"]
