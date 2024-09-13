@@ -38,12 +38,6 @@ def arg_parser()->dict:
     # path to steps of the pipeline to be executed
     parser.add_argument('--steps', type=str, nargs='?', default=None, const=None, help='Full path to the JSON file containing the pipeline steps to be executed.')
 
-    # order of the pipeline
-    parser.add_argument('--pca-first', type=str, nargs='?', default=None, const=None, help='boolean that determines if the pca analysis is done before or after the sample qc.')
-
-    # execute kingship analysis instead of ibd
-    parser.add_argument('--use-kingship', type=str, nargs='?', default=None, const=None, help='boolean that determines if the relatives and duplicates prune is run using kingship or IBD.')
-
     # parse args and turn into dict
     args = parser.parse_args()
 
