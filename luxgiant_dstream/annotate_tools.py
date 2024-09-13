@@ -15,14 +15,6 @@ get_variant_context(chr:int, pos:int, build:int=38)->list
     Get gene context information for a variant.
 
 The functions here are a rewrite of the original functions written in R, and which can be found in the 'manhattan.R' script in the following repository: https://github.com/hmgu-itg/man_qq_annotate.
-
-@misc{GillyPark2021,
-  author = {Gilly, Arthur and Park, Young-Chan},
-  title = {man_qq_annotate},
-  year = {2021},
-  howpublished = {\url{https://github.com/hmgu-itg/man_qq_annotate}},
-  note = {Accessed: 2024-08-20}
-}
 """
 
 import requests
@@ -176,7 +168,7 @@ def get_variant_context(chr:int, pos:int, build:int=38):
     list
     """
 
-    if build != 38 or build != 37:
+    if build != 38 and build != 37:
         raise ValueError("Invalid genome build version. Use 37 or 38.")
 
     print(f"Getting context for {chr}:{pos}")
