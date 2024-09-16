@@ -29,7 +29,7 @@ def analysis_pipe(params_dict:dict, data_dict:dict, steps_dict:dict)->None:
         for step in prep_steps.keys():
             prep_steps[step]()
 
-        print("Preprocessing steps completed.")
+        print("\033[1mPreprocessing steps completed.\033[0m")
 
     if steps_dict['gwas_fixed']:
         # instantiate the GWASfixed class
