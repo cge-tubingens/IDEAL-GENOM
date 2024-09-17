@@ -53,7 +53,7 @@ def analysis_pipe(params_dict:dict, data_dict:dict, steps_dict:dict)->None:
         for step in gwas_f_steps.keys():
             gwas_f_steps[step]()
 
-        print("Fixed model GWAS steps completed.")
+        print("\033[1mFixed model GWAS steps completed.\033[0m")
 
     if steps_dict['gwas_random']:
         # instantiate the GWASrandom class
@@ -78,7 +78,7 @@ def analysis_pipe(params_dict:dict, data_dict:dict, steps_dict:dict)->None:
         for step in gwas_r_steps.keys():
             gwas_r_steps[step]()
 
-        print("Random model GWAS steps completed.")
+        print("\033[1mRandom model GWAS steps completed.\033[0m")
 
     pass
 
