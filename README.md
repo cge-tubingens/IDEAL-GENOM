@@ -103,7 +103,7 @@ dependables
 
 ## Usage
 
-The pipeline is easy to use. Once installed in the system or in a virtual enviroment one needs to run the following command:
+The pipeline is easy to use. Once installed on the system or in a virtual enviroment one needs to run the following command:
 
 ```
 python3 luxgiant-dstream --path_params <path to parameters.JSON> 
