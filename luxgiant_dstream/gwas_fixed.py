@@ -59,6 +59,8 @@ class GWASfixed:
         if not os.path.exists(self.plots_dir):
             os.mkdir(self.plots_dir)
 
+        print("\033[1;32mAnalysis of GWAS data using a fixed model initialized.\033[0m")
+
         pass
 
     def fixed_model_association_analysis(self)->dict:
@@ -159,10 +161,10 @@ class GWASfixed:
 
         # CHANGE FOR FINAL VERSION
         # load results of association analysis
-        df = pd.read_csv(os.path.join(results_dir, output_name+'_glm1.PHENO1.glm.logistic.hybrid'), sep="\t")
+        df = pd.read_csv(os.path.join(results_dir, output_name+'_glm.PHENO1.glm.logistic.hybrid'), sep="\t")
 
         # delete for final version
-        self.files_to_keep.append(output_name+'_glm1.PHENO1.glm.logistic.hybrid')
+        # self.files_to_keep.append(output_name+'_glm1.PHENO1.glm.logistic.hybrid')
 
         # prepare .ma file
         df = df[['SNP', 'A1', 'A2', 'freq', 'b', 'se', 'p', 'N']].copy()
