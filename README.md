@@ -4,7 +4,7 @@ This Python package is designed to execute a GWAS pipeline, encapsulating severa
 
 # Basic Requirements
 
-The GWAS pipeline rest on three tools: `PLINK 1.9`, `PLINK 2.0` and `GCTA`. The `luxgiant-dstream` serves as a wrapper fopr the various pipeline steps. To tun it the above programs must be installed on the system.
+The GWAS pipeline rest on three tools: `PLINK 1.9`, `PLINK 2.0` and `GCTA`. The `luxgiant-dstream` serves as a wrapper fopr the various pipeline steps. To tun it the above programs must be installed on the system. it is important to remark that `GCTA` is memory intensive, so it is recommended to have a local or virtual machine with a large RAM available.
 
 The pipeline is desgined to seamlessly run with minimal input and produce plots and summary statistics as result. To accomplish this, the following folder structure is expected:
 
