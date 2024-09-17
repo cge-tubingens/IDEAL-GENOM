@@ -59,6 +59,8 @@ class GWASrandom:
         if not os.path.exists(self.plots_dir):
             os.mkdir(self.plots_dir)
 
+        print("\033[1;32mAnalysis of GWAS data using a random effect model initialized.\033[0m")
+
         pass
 
     def prepare_aux_files(self)->dict:
@@ -74,9 +76,9 @@ class GWASrandom:
 
         step = "prepare_aux_files"
 
-        df_fam = pd.read_csv(os.path.join(input_path, input_name+'.fam'), sep='\t', header=None)
+        df_fam = pd.read_csv(os.path.join(input_path, input_name+'.fam'), sep=' ', header=None)
 
-        df_pheno = df_fam[[0,1,5]].copy()
+        df_pheno = df_fam[[df_fam.columns[0], df_fam.columns[1], df_fam.columns[5]]].copy()
 
         # recode phenotype
         df_pheno[5] = df_pheno[5]-1
@@ -234,12 +236,8 @@ class GWASrandom:
         else:
             max_threads = 10
 
-        # CHANGE FOR FINAL VERSION
         # load results of association analysis
-        df = pd.read_csv(os.path.join(results_dir, output_name+'_assocSparseCovar_pca_sex-mlm-binary--thread-num1.fastGWA'), sep="\t")
-
-        # delete for final version
-        self.files_to_keep.append(output_name+'_assocSparseCovar_pca_sex-mlm-binary--thread-num1.fastGWA')
+        df = pd.read_csv(os.path.join(results_dir, output_name+'_assocSparseCovar_pca_sex-mlm-binary--thread-num.fastGWA'), sep="\t")
 
         # prepare .ma file
         df = df[['SNP', 'A1', 'A2', 'freq', 'b', 'se', 'p', 'N']].copy()
@@ -347,7 +345,7 @@ class GWASrandom:
 
         # load GWAS results
         df_gwas = pd.read_csv(
-            os.path.join(results_dir, output_name+'_assocSparseCovar_pca_sex-mlm-binary--thread-num1.fastGWA'), 
+            os.path.join(results_dir, output_name+'_assocSparseCovar_pca_sex-mlm-binary--thread-num.fastGWA'), 
             sep="\t",
             usecols=['SNP', 'CHR', 'p']
         )
@@ -373,7 +371,7 @@ class GWASrandom:
         # draw QQ plot
         QQ_plot = qq_plot(df_gwas, plots_dir)
 
-        delete_temp_files(self.files_to_keep, results_dir)
+        #delete_temp_files(self.files_to_keep, results_dir)
 
         # report
         process_complete = (mann_plot & QQ_plot)

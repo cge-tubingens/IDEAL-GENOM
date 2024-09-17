@@ -159,12 +159,8 @@ class GWASfixed:
         else:
             max_threads = 10
 
-        # CHANGE FOR FINAL VERSION
         # load results of association analysis
         df = pd.read_csv(os.path.join(results_dir, output_name+'_glm.PHENO1.glm.logistic.hybrid'), sep="\t")
-
-        # delete for final version
-        # self.files_to_keep.append(output_name+'_glm1.PHENO1.glm.logistic.hybrid')
 
         # prepare .ma file
         df = df[['SNP', 'A1', 'A2', 'freq', 'b', 'se', 'p', 'N']].copy()
