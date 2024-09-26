@@ -21,9 +21,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.stats as stats
 
+from matplotlib.axes import Axes
+
 from adjustText import adjust_text
 
-def manhattan_plot(df_gwas:pd.DataFrame, plots_dir:str, df_annot:pd.DataFrame=None, annotate:bool=False)->bool:
+def manhattan_plot(df_gwas:pd.DataFrame, plots_dir:str=None, df_annot:pd.DataFrame=None, annotate:bool=False)->bool:
 
     """
     Function to draw a manhattan plot for GWAS data.
@@ -56,38 +58,19 @@ def manhattan_plot(df_gwas:pd.DataFrame, plots_dir:str, df_annot:pd.DataFrame=No
     df_grouped = df.groupby(('CHR'))
 
     # Subset dataframe to highlight specific SNPs
-    snps = df_annot['SNP'].to_list()
-    genes = df_annot['GENE'].to_list()
-    highlighted_snps = df[df['SNP'].isin(snps)]  # Filter for the SNPs of interest
+    if df_annot is not None:
+        snps = df_annot['SNP'].to_list()
+        genes = df_annot['GENE'].to_list()
+        highlighted_snps = df[df['SNP'].isin(snps)]  # Filter for the SNPs of interest
 
     # Set the figure size
     fig = plt.figure(figsize=(50, 25))
     ax = fig.add_subplot(111)
 
-    # Colors for alternating chromosomes
-    colors = ['grey', 'skyblue']
-
-    # Variables to store labels and positions for the x-axis
-    x_labels = []
-    x_labels_pos = []
-
-    # Loop over each group by chromosome
-    for num, (name, group) in enumerate(df_grouped):
-
-        # Plot each chromosome with alternating colors
-        ax.scatter(group['ind'], group['log10P'], color=colors[num % len(colors)], s=10)
-
-        # Add chromosome label and its position
-        x_labels.append(name)
-        middle_pos = (group['ind'].iloc[-1] + group['ind'].iloc[0]) / 2
-        x_labels_pos.append(middle_pos)
-
-        # Set the x-axis labels and positions
-        ax.set_xticks(x_labels_pos)
-        ax.set_xticklabels(x_labels, fontsize=20)  # Adjust fontsize as needed
-
-        # Plot highlighted SNPs with a different color (red) and larger point size
-        ax.scatter(highlighted_snps['ind'], highlighted_snps['log10P'], color='red', s=50, label='Highlighted SNPs')
+    if df_annot is not None:
+        ax = draw_chrom_groups(ax, df_grouped, highlighted_snps)
+    else:
+        ax = draw_chrom_groups(ax, df_grouped, None)
 
     if annotate:
         # Add gene names to highlighted SNPs
@@ -116,11 +99,44 @@ def manhattan_plot(df_gwas:pd.DataFrame, plots_dir:str, df_annot:pd.DataFrame=No
     # Customize the grid
     ax.grid(True, which='both', linestyle='--', linewidth=0.5)
 
-    # Display the plot
-    plt.tight_layout()
-    plt.savefig(os.path.join(plots_dir, 'manhattan_plot.png'))
+    if plots_dir is None:
+        return ax
+    else:
+        # Display the plot
+        plt.tight_layout()
+        plt.savefig(os.path.join(plots_dir, 'manhattan_plot.png'))
 
-    return True
+        return True
+    
+def draw_chrom_groups(ax:Axes, df_chr_group, highlighted_snps)->Axes:
+
+    # Colors for alternating chromosomes
+    colors = ['grey', 'skyblue']
+
+    # Variables to store labels and positions for the x-axis
+    x_labels = []
+    x_labels_pos = []
+
+    # Loop over each group by chromosome
+    for num, (name, group) in enumerate(df_chr_group):
+
+        # Plot each chromosome with alternating colors
+        ax.scatter(group['ind'], group['log10P'], color=colors[num % len(colors)], s=10)
+
+        # Add chromosome label and its position
+        x_labels.append(name)
+        middle_pos = (group['ind'].iloc[-1] + group['ind'].iloc[0]) / 2
+        x_labels_pos.append(middle_pos)
+
+        # Set the x-axis labels and positions
+        ax.set_xticks(x_labels_pos)
+        ax.set_xticklabels(x_labels, fontsize=20)  # Adjust fontsize as needed
+
+        if highlighted_snps is not None:
+            # Plot highlighted SNPs with a different color (red) and larger point size
+            ax.scatter(highlighted_snps['ind'], highlighted_snps['log10P'], color='red', s=50, label='Highlighted SNPs')
+
+    return ax
 
 def qq_plot(df_gwas:pd.DataFrame, plots_dir:str)->bool:
 
