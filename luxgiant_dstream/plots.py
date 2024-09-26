@@ -255,3 +255,40 @@ def qq_plot(df_gwas:pd.DataFrame, plots_dir:str)->bool:
     plt.savefig(os.path.join(plots_dir, 'qq_plot.png'))
 
     return True
+
+def miami_plot(df_gwas_top:pd.DataFrame, df_gwas_bottom:pd.DataFrame, plots_dir:str, df_top_annot:pd.DataFrame=None, df_bottom_annot:pd.DataFrame=None)->bool:
+
+    """
+    Function to draw a Miami plot for GWAS data.
+
+    Parameters:
+    -----------
+    df_gwas_top : pd.DataFrame
+        Dataframe with GWAS results for top part of the plot.
+    df_gwas_all : pd.DataFrame
+        Dataframe with GWAS results for bottom part of the plot.
+    plots_dir : str
+        Path to the directory to save the plot.
+
+    Returns:
+    --------
+    bool
+    """
+    
+    # Set the figure size
+    fig, ax = plt.subplots(2, 1, figsize=(10, 6), sharex=True, gridspec_kw={'height_ratios': [1, 1]})
+
+    ax[0] = manhattan_plot(df_gwas_top, annotate=False)
+    ax[0].set_ylabel('-log10(p) (Your Results)')
+    ax[0].set_title('Miami Plot: Your Results vs Known Results')
+
+    ax[1] = manhattan_plot(df_gwas_bottom, annotate=False)
+    ax[1].invert_yaxis()  # Invert the y-axis for the Miami plot effect
+    ax[1].set_ylabel('-log10(p) (Known Results)')
+
+    plt.tight_layout()
+
+    plt.savefig(os.path.join(plots_dir, 'miami_plot.png'))
+    plt.show()
+
+    pass
