@@ -74,15 +74,7 @@ def manhattan_plot(df_gwas:pd.DataFrame, plots_dir:str=None, df_annot:pd.DataFra
 
     if annotate:
         # Add gene names to highlighted SNPs
-        texts = []  # A list to store text annotations for adjustment
-        for i, row in highlighted_snps.iterrows():
-            gene = genes[snps.index(row['SNP'])]  # Get corresponding gene name
-            # Add text label to the SNP
-            text = ax.text(row['ind'], row['log10P'], gene, fontsize=12, ha='right', va='bottom', color='black',
-                       bbox=dict(boxstyle='round,pad=0.3', edgecolor='black', facecolor='white'))
-            texts.append(text)
-        # Adjust the text to prevent overlaps using adjustText
-        adjust_text(texts, arrowprops=dict(arrowstyle='-', color='black'))
+        ax = annotate_plot(ax, highlighted_snps, genes)
 
     # Set axis limits
     ax.set_xlim([0, len(df)])
@@ -108,7 +100,7 @@ def manhattan_plot(df_gwas:pd.DataFrame, plots_dir:str=None, df_annot:pd.DataFra
 
         return True
     
-def draw_chrom_groups(ax:Axes, df_chr_group, highlighted_snps)->Axes:
+def draw_chrom_groups(ax:Axes, df_chr_group, highlighted_snps:pd.DataFrame)->Axes:
 
     # Colors for alternating chromosomes
     colors = ['grey', 'skyblue']
@@ -135,6 +127,20 @@ def draw_chrom_groups(ax:Axes, df_chr_group, highlighted_snps)->Axes:
         if highlighted_snps is not None:
             # Plot highlighted SNPs with a different color (red) and larger point size
             ax.scatter(highlighted_snps['ind'], highlighted_snps['log10P'], color='red', s=50, label='Highlighted SNPs')
+
+    return ax
+
+def annotate_plot(ax:Axes, highlighted_snps:pd.DataFrame, snps:list, genes:list)->Axes:
+
+    texts = []  # A list to store text annotations for adjustment
+    for i, row in highlighted_snps.iterrows():
+        gene = genes[snps.index(row['SNP'])]  # Get corresponding gene name
+        # Add text label to the SNP
+        text = ax.text(row['ind'], row['log10P'], gene, fontsize=12, ha='right', va='bottom', color='black',
+                       bbox=dict(boxstyle='round,pad=0.3', edgecolor='black', facecolor='white'))
+        texts.append(text)
+    # Adjust the text to prevent overlaps using adjustText
+    adjust_text(texts, arrowprops=dict(arrowstyle='-', color='black'))
 
     return ax
 
