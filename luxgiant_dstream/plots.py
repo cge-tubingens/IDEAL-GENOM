@@ -282,15 +282,39 @@ def miami_plot(df_gwas_top:pd.DataFrame, df_gwas_bottom:pd.DataFrame, plots_dir:
     """
     
     # Set the figure size
-    fig, ax = plt.subplots(2, 1, figsize=(10, 6), sharex=True, gridspec_kw={'height_ratios': [1, 1]})
+    fig, ax = plt.subplots(figsize=(50, 50), nrows=2, sharex=True)
 
-    ax[0] = manhattan_plot(df_gwas_top, annotate=False)
+    # keep columns of interest for top part
+    df_top = df_gwas_top.copy()
+    df_top['log10P'] = -np.log10(df_top['p'])
+
+    # sort values by chromosome for top part
+    df_top = df_top.sort_values('CHR')
+
+    # to get colors by chromosome for top part
+    df_top['ind'] = range(len(df_top))
+    df_top_grouped = df_top.groupby(('CHR'))
+
+    # keep columns of interest for bottom part
+    df_bottom = df_gwas_bottom.copy()
+    df_bottom['log10P'] = -np.log10(df_bottom['p'])
+
+    # sort values by chromosome for bottom part
+    df_bottom = df_bottom.sort_values('CHR')
+
+    # to get colors by chromosome for bottom part
+    df_bottom['ind'] = range(len(df_bottom))
+    df_bottom_grouped = df_bottom.groupby(('CHR'))
+
+    ax[0] = draw_chrom_groups(ax[0], df_top_grouped, None)
     ax[0].set_ylabel('-log10(p) (Your Results)')
     ax[0].set_title('Miami Plot: Your Results vs Known Results')
 
-    ax[1] = manhattan_plot(df_gwas_bottom, annotate=False)
+    ax[1] = draw_chrom_groups(ax[1], df_bottom_grouped, None)
     ax[1].invert_yaxis()  # Invert the y-axis for the Miami plot effect
     ax[1].set_ylabel('-log10(p) (Known Results)')
+
+    ax[1].set_xlabel('Genomic Position') 
 
     plt.tight_layout()
 
