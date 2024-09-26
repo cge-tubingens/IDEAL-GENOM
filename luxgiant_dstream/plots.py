@@ -314,7 +314,10 @@ def miami_plot(df_gwas_top:pd.DataFrame, df_gwas_bottom:pd.DataFrame, plots_dir:
     ax[1].invert_yaxis()  # Invert the y-axis for the Miami plot effect
     ax[1].set_ylabel('-log10(p) (Known Results)')
 
-    ax[1].set_xlabel('Genomic Position') 
+    ax[1].set_xlabel('Genomic Position')
+
+    ax[0].set_ylim([0, ax[0].get_ylim()[1]])  # Ensure y-axis starts from 0 for both
+    ax[1].set_ylim([ax[1].get_ylim()[1], 0]) 
 
     plt.tight_layout()
 
