@@ -307,3 +307,13 @@ class GWASfixed:
         }
         
         return out_dict
+
+    def compare_gwas_1(self)->None:
+
+        """
+        Compare the results of the GWAS analysis with other datasets.
+        """
+
+        
+
+        pass
