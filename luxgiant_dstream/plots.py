@@ -51,7 +51,7 @@ def manhattan_plot(df_gwas:pd.DataFrame, plots_dir:str=None, df_annot:pd.DataFra
     df['log10P'] = -np.log10(df['p'])
 
     # sort values by chromosome
-    df = df.sort_values('CHR')
+    df = df.sort_values(['CHR', 'bp'])
 
     # to get colors by chromosome
     df['ind'] = range(len(df))
