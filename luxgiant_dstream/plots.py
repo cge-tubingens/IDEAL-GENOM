@@ -19,6 +19,7 @@ import os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import seaborn as sns
 import scipy.stats as stats
 
 from matplotlib.axes import Axes
@@ -262,62 +263,80 @@ def qq_plot(df_gwas:pd.DataFrame, plots_dir:str)->bool:
 
     return True
 
-def miami_plot(df_gwas_top:pd.DataFrame, df_gwas_bottom:pd.DataFrame, plots_dir:str, df_top_annot:pd.DataFrame=None, df_bottom_annot:pd.DataFrame=None)->bool:
+def miami_plot(df_top:pd.DataFrame, df_bottom:pd.DataFrame, plots_dir:str)->bool:
 
-    """
-    Function to draw a Miami plot for GWAS data.
+    chr_colors           = ['grey', 'skyblue']
+    upper_ylab           = "-log10(p)" 
+    lower_ylab           = "-log10(p)" 
+    genome_line          = 5e-8
+    genome_line_color    = "red"
+    suggestive_line      = 1e-5 
+    suggestive_line_color= "blue"
 
-    Parameters:
-    -----------
-    df_gwas_top : pd.DataFrame
-        Dataframe with GWAS results for top part of the plot.
-    df_gwas_all : pd.DataFrame
-        Dataframe with GWAS results for bottom part of the plot.
-    plots_dir : str
-        Path to the directory to save the plot.
+    # format data to draw miami plot
+    plot_data = process_miami_data(df_top, df_bottom)
 
-    Returns:
-    --------
-    bool
-    """
+    # Set axis labels for upper and lower plot
+    def format_ylabel(label):
+        return f"{label}\n-log10(p)" if label != "-log10(p)" else r"-log10(p)"
     
-    # Set the figure size
-    fig, ax = plt.subplots(figsize=(50, 50), nrows=2, sharex=True)
+    upper_ylab = format_ylabel(upper_ylab)
+    lower_ylab = format_ylabel(lower_ylab)
 
-    # keep columns of interest for top part
-    df_top = df_gwas_top.copy()
-    df_top['log10P'] = -np.log10(df_top['p'])
+    # Create the figure
+    plt.figure(figsize=(20, 16))
 
-    # sort values by chromosome for top part
-    df_top = df_top.sort_values('CHR')
+    ax_upper = plt.subplot(211)
+    sns.scatterplot(x=plot_data['upper']['rel_pos'], y=plot_data['upper']['log10p'],
+                    hue=plot_data['upper']['CHR'], palette=chr_colors, ax=ax_upper, s=1)
+    ax_upper.set_ylabel(upper_ylab)
+    ax_upper.set_xlim(0, plot_data['axis']['center'].max())
 
-    # to get colors by chromosome for top part
-    df_top['ind'] = range(len(df_top))
-    df_top_grouped = df_top.groupby(('CHR'))
+    ax_upper.set_xlabel("")
 
-    # keep columns of interest for bottom part
-    df_bottom = df_gwas_bottom.copy()
-    df_bottom['log10P'] = -np.log10(df_bottom['p'])
+    x_ticks=plot_data['axis']['center'].tolist()
+    x_labels=plot_data['axis']['CHR'].astype(str).tolist()
 
-    # sort values by chromosome for bottom part
-    df_bottom = df_bottom.sort_values('CHR')
+    ax_upper.set_xticks(ticks=x_ticks)  # Set x-ticks
+    ax_upper.set_xticklabels(x_labels)
 
-    # to get colors by chromosome for bottom part
-    df_bottom['ind'] = range(len(df_bottom))
-    df_bottom_grouped = df_bottom.groupby(('CHR'))
+    # Customize x-axis labels
+    #ax_upper.set_xticks(ticks=plot_data['axis']['center'], labels=plot_data['axis']['CHR'])  # Set x-ticks
+    
+    # Add genome-wide and suggestive lines
+    if suggestive_line is not None:
+        ax_upper.axhline(-np.log10(suggestive_line), color=suggestive_line_color, linestyle='solid', lw=0.5)
+    
+    if genome_line is not None:
+        ax_upper.axhline(-np.log10(genome_line), color=genome_line_color, linestyle='dashed', lw=0.5)
+    
+    ax_upper.legend([], frameon=False)  # Remove legend
 
-    ax[0] = draw_chrom_groups(ax[0], df_top_grouped, None)
-    ax[0].set_ylabel('-log10(p) (Your Results)')
-    ax[0].set_title('Miami Plot: Your Results vs Known Results')
+    # Create the lower plot
+    ax_lower = plt.subplot(212)
+    sns.scatterplot(x=plot_data['lower']['rel_pos'], y=plot_data['lower']['log10p'],
+                    hue=plot_data['lower']['CHR'], palette=chr_colors, ax=ax_lower, s=1)
+    ax_lower.set_ylabel(lower_ylab)
+    ax_lower.set_ylim(plot_data['maxp'], 0)  # Reverse y-axis
+    ax_lower.set_xlim(0, plot_data['axis']['center'].max())
 
-    ax[1] = draw_chrom_groups(ax[1], df_bottom_grouped, None)
-    ax[1].invert_yaxis()  # Invert the y-axis for the Miami plot effect
-    ax[1].set_ylabel('-log10(p) (Known Results)')
+    ax_lower.set_xlabel("")
 
-    ax[1].set_xlabel('Genomic Position')
-
+    ax_lower.set_xticks(ticks=x_ticks) # Set x-ticks
+    ax_lower.set_xticklabels([])
+    ax_lower.xaxis.set_ticks_position('top')
+    
+    # Add genome-wide and suggestive lines
+    if suggestive_line is not None:
+        ax_lower.axhline(-np.log10(suggestive_line), color=suggestive_line_color, linestyle='solid', lw=0.5)
+    
+    if genome_line is not None:
+        ax_lower.axhline(-np.log10(genome_line), color=genome_line_color, linestyle='dashed', lw=0.5)
+    
+    ax_lower.legend([], frameon=False)  # Remove legend
+    
+    # Adjust layout and show the plot
     plt.tight_layout()
-
     plt.savefig(os.path.join(plots_dir, 'miami_plot.png'))
     plt.show()
 
