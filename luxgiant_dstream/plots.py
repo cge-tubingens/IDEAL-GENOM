@@ -340,4 +340,74 @@ def miami_plot(df_top:pd.DataFrame, df_bottom:pd.DataFrame, plots_dir:str)->bool
     plt.savefig(os.path.join(plots_dir, 'miami_plot.png'))
     plt.show()
 
-    pass
+    return True
+
+def prepare_data(data_top:pd.DataFrame, data_bottom:pd.DataFrame)->pd.DataFrame:
+
+    data_top['split_by'] = 'top'
+    data_bottom['split_by'] = 'bottom'
+
+    joint = pd.concat([data_top, data_bottom], axis=0)
+
+    return joint
+
+def compute_relative_pos(data:pd.DataFrame, chr_col:str='CHR', pos_col:str='bp', p_col:str='p')->pd.DataFrame:
+
+    # Group by chromosome and compute chromosome size
+    chr_grouped = data.groupby(chr_col).agg(chrlength=(pos_col, 'max')).reset_index()
+
+    # Calculate cumulative chromosome length
+    chr_grouped['cumulativechrlength'] = chr_grouped['chrlength'].cumsum() - chr_grouped['chrlength']
+
+    # Merge cumulative chromosome length back to the original data
+    data = pd.merge(data, chr_grouped[[chr_col, 'cumulativechrlength']], on=chr_col)
+
+    # Sort by chromosome and position
+    data = data.sort_values(by=[chr_col, pos_col])
+
+    # Add the relative position of the probe/snp
+    data['rel_pos'] = data[pos_col] + data['cumulativechrlength']
+
+    # Drop cumulative chromosome length column
+    data = data.drop(columns=['cumulativechrlength'])
+
+    data['log10p']= -np.log10(data[p_col])
+
+    return data
+
+def find_chromosomes_center(data:pd.DataFrame, chr_col:str='CHR', chr_pos_col:str='rel_pos')->pd.DataFrame:
+
+    chromosomes = data[chr_col].unique()
+
+    axis_center = pd.DataFrame(columns=['CHR', 'center'])
+
+    for i, chrom in enumerate(chromosomes):
+
+        temp = data[data[chr_col] == chrom].reset_index(drop=True)
+
+        axis_center.loc[i, 'CHR'] = chrom
+        axis_center.loc[i, 'center'] = np.round((temp[chr_pos_col].max()+temp[chr_pos_col].min())/2,0)
+
+    return axis_center
+
+def process_miami_data(data_top:pd.DataFrame, data_bottom:pd.DataFrame)->dict:
+
+    data = prepare_data(data_top, data_bottom)
+
+    data = compute_relative_pos(data, chr_col='CHR', pos_col='bp', p_col='p')
+
+    axis_center = find_chromosomes_center(data)
+
+    maxp = np.ceil(data['log10p'].max(skipna=True))
+
+    df_top = data[data['split_by'] == 'top']
+    df_bottom = data[data['split_by'] == 'bottom']
+
+    miami_data = {
+        'upper': df_top,
+        'lower': df_bottom,
+        'axis': axis_center,
+        'maxp': maxp
+    }
+
+    return miami_data
