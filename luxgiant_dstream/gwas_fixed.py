@@ -55,7 +55,7 @@ class GWASfixed:
             os.mkdir(self.results_dir)
 
         # create figures folder
-        self.plots_dir = os.path.join(output_path, 'plots')
+        self.plots_dir = os.path.join(output_path, 'plots_fixed')
         if not os.path.exists(self.plots_dir):
             os.mkdir(self.plots_dir)
 
