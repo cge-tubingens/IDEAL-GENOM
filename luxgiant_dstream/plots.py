@@ -23,6 +23,7 @@ import seaborn as sns
 import scipy.stats as stats
 
 from matplotlib.axes import Axes
+from pandas.core.groupby.generic import DataFrameGroupBy
 
 from adjustText import adjust_text
 
@@ -101,7 +102,29 @@ def manhattan_plot(df_gwas:pd.DataFrame, plots_dir:str=None, df_annot:pd.DataFra
 
         return True
     
-def draw_chrom_groups(ax:Axes, df_chr_group, highlighted_snps:pd.DataFrame)->Axes:
+def draw_chrom_groups(ax:Axes, df_chr_group:DataFrameGroupBy, highlighted_snps:pd.DataFrame)->Axes:
+
+    """
+    Plots chromosome groups on a given Axes object with alternating colors and highlights specific SNPs.
+    
+    Parameters:
+    -----------
+    ax (Axes): 
+        The matplotlib Axes object where the plot will be drawn.
+    df_chr_group (DataFrameGroupBy): 
+        Grouped DataFrame by chromosome containing 'ind' and 'log10P' columns.
+    highlighted_snps (pd.DataFrame): 
+        DataFrame containing SNPs to be highlighted with 'ind' and 'log10P' columns.
+    
+    Returns:
+    --------
+    Axes: The Axes object with the plotted chromosome groups and highlighted SNPs.
+    
+    Notes:
+    - Chromosome groups are plotted with alternating colors (grey and skyblue).
+    - Highlighted SNPs are plotted in red with a larger point size.
+    - X-axis labels are set to chromosome names with positions calculated as the middle of each chromosome group.
+    """
 
     # Colors for alternating chromosomes
     colors = ['grey', 'skyblue']
@@ -132,6 +155,27 @@ def draw_chrom_groups(ax:Axes, df_chr_group, highlighted_snps:pd.DataFrame)->Axe
     return ax
 
 def annotate_plot(ax:Axes, highlighted_snps:pd.DataFrame, snps:list, genes:list)->Axes:
+    
+    """
+    Annotates a plot with gene names corresponding to highlighted SNPs.
+
+    Parameters:
+    ----------
+    ax (Axes): 
+        The matplotlib Axes object to annotate.
+    highlighted_snps (pd.DataFrame): 
+        DataFrame containing SNPs to be highlighted with columns 'SNP', 'ind', and 'log10P'.
+    snps (list): 
+        List of SNP identifiers.
+    genes (list): 
+        List of gene names corresponding to the SNPs.
+    
+    Returns:
+    --------
+    Axes: The annotated matplotlib Axes object.
+    """
+
+
 
     texts = []  # A list to store text annotations for adjustment
     for i, row in highlighted_snps.iterrows():
