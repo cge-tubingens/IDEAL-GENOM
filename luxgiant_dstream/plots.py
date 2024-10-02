@@ -175,8 +175,6 @@ def annotate_plot(ax:Axes, highlighted_snps:pd.DataFrame, snps:list, genes:list)
     Axes: The annotated matplotlib Axes object.
     """
 
-
-
     texts = []  # A list to store text annotations for adjustment
     for i, row in highlighted_snps.iterrows():
         gene = genes[snps.index(row['SNP'])]  # Get corresponding gene name
@@ -308,6 +306,30 @@ def qq_plot(df_gwas:pd.DataFrame, plots_dir:str)->bool:
     return True
 
 def miami_plot(df_top:pd.DataFrame, df_bottom:pd.DataFrame, plots_dir:str)->bool:
+    
+    """
+    Generates a Miami plot from two dataframes and saves the plot to the specified directory.
+
+    Parameters:
+    ----------
+    df_top (pd.DataFrame): 
+       DataFrame containing the data for the upper plot.
+    df_bottom (pd.DataFrame): 
+       DataFrame containing the data for the lower plot.
+    plots_dir (str): 
+       Directory where the plot image will be saved.
+     
+    Returns:
+    -------
+    bool: 
+       True if the plot is successfully created and saved.
+     
+    The function creates a Miami plot, which is a type of scatter plot used in genomic studies to display 
+    p-values from two different datasets. The plot consists of two panels: the upper panel for the first 
+    dataset and the lower panel for the second dataset. The x-axis represents the genomic position, and 
+    the y-axis represents the -log10(p) values. The function also adds genome-wide and suggestive significance 
+    lines to the plot.
+    """
 
     chr_colors           = ['grey', 'skyblue']
     upper_ylab           = "-log10(p)" 
@@ -387,6 +409,20 @@ def miami_plot(df_top:pd.DataFrame, df_bottom:pd.DataFrame, plots_dir:str)->bool
     return True
 
 def prepare_data(data_top:pd.DataFrame, data_bottom:pd.DataFrame)->pd.DataFrame:
+    
+    """
+    Combines two DataFrames by adding a 'split_by' column to each and concatenating them.
+
+    Parameters:
+    ----------
+    data_top (pd.DataFrame): 
+        The top DataFrame to be labeled and concatenated.
+    data_bottom (pd.DataFrame): 
+        The bottom DataFrame to be labeled and concatenated.
+    Returns:
+    --------
+    pd.DataFrame: A new DataFrame resulting from the concatenation of `data_top` and `data_bottom`, with an additional 'split_by' column indicating the origin of each row.
+    """
 
     data_top['split_by'] = 'top'
     data_bottom['split_by'] = 'bottom'
@@ -396,6 +432,25 @@ def prepare_data(data_top:pd.DataFrame, data_bottom:pd.DataFrame)->pd.DataFrame:
     return joint
 
 def compute_relative_pos(data:pd.DataFrame, chr_col:str='CHR', pos_col:str='bp', p_col:str='p')->pd.DataFrame:
+    
+    """
+    Compute the relative position of probes/SNPs across chromosomes and add a -log10(p-value) column.
+
+    Parameters:
+    -----------
+    data (pd.DataFrame): 
+        Input DataFrame containing genomic data.
+    chr_col (str): 
+        Column name for chromosome identifiers. Default is 'CHR'.
+    pos_col (str): 
+        Column name for base pair positions. Default is 'bp'.
+    p_col (str): 
+        Column name for p-values. Default is 'p'.
+    
+    Returns:
+    --------
+    pd.DataFrame: DataFrame with additional columns for relative positions and -log10(p-values).
+    """
 
     # Group by chromosome and compute chromosome size
     chr_grouped = data.groupby(chr_col).agg(chrlength=(pos_col, 'max')).reset_index()
@@ -420,6 +475,24 @@ def compute_relative_pos(data:pd.DataFrame, chr_col:str='CHR', pos_col:str='bp',
     return data
 
 def find_chromosomes_center(data:pd.DataFrame, chr_col:str='CHR', chr_pos_col:str='rel_pos')->pd.DataFrame:
+    
+    """
+    Calculate the center positions of chromosomes in a given DataFrame. This function takes a DataFrame containing chromosome data and calculates the center position for each chromosome based on the specified chromosome column and chromosome position column.
+    
+    Parameters:
+    -----------
+    data : pd.DataFrame
+        The input DataFrame containing chromosome data.
+    chr_col : str, optional
+        The name of the column representing chromosome identifiers (default is 'CHR').
+    chr_pos_col : str, optional
+        The name of the column representing relative positions within chromosomes (default is 'rel_pos').
+    
+    Returns:
+    --------
+    pd.DataFrame
+        A DataFrame with columns 'CHR' and 'center', where 'CHR' contains chromosome identifiers and 'center' contains the calculated center positions for each chromosome.
+    """
 
     chromosomes = data[chr_col].unique()
 
@@ -435,6 +508,25 @@ def find_chromosomes_center(data:pd.DataFrame, chr_col:str='CHR', chr_pos_col:st
     return axis_center
 
 def process_miami_data(data_top:pd.DataFrame, data_bottom:pd.DataFrame)->dict:
+    
+    """
+    Processes Miami plot data by preparing, computing relative positions, and splitting the data.
+
+    Parameters:
+    -----------
+    data_top (pd.DataFrame): 
+        The top part of the data to be processed.
+    data_bottom (pd.DataFrame): 
+        The bottom part of the data to be processed.
+    
+    Returns:
+    --------
+    dict: A dictionary containing the processed data with the following keys:
+        - 'upper': DataFrame containing the top part of the processed data.
+        - 'lower': DataFrame containing the bottom part of the processed data.
+        - 'axis': The center positions of the chromosomes.
+        - 'maxp': The maximum -log10(p-value) in the data.
+    """
 
     data = prepare_data(data_top, data_bottom)
 
