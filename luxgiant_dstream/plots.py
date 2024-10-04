@@ -305,7 +305,7 @@ def qq_plot(df_gwas:pd.DataFrame, plots_dir:str)->bool:
 
     return True
 
-def miami_plot(df_top:pd.DataFrame, df_bottom:pd.DataFrame, plots_dir:str)->bool:
+def miami_plot(df_top:pd.DataFrame, top_higlights:pd.DataFrame, df_bottom:pd.DataFrame, plots_dir:str)->bool:
     
     """
     Generates a Miami plot from two dataframes and saves the plot to the specified directory.
@@ -349,14 +349,18 @@ def miami_plot(df_top:pd.DataFrame, df_bottom:pd.DataFrame, plots_dir:str)->bool
     upper_ylab = format_ylabel(upper_ylab)
     lower_ylab = format_ylabel(lower_ylab)
 
+    max_x_axis = max(plot_data['upper']['rel_pos'].max(), plot_data['lower']['rel_pos'].max())
+
     # Create the figure
     plt.figure(figsize=(20, 16))
 
+    # Create the upper plot
+
     ax_upper = plt.subplot(211)
     sns.scatterplot(x=plot_data['upper']['rel_pos'], y=plot_data['upper']['log10p'],
-                    hue=plot_data['upper']['CHR'], palette=chr_colors, ax=ax_upper, s=1)
+                    hue=plot_data['upper']['CHR'], palette=chr_colors, ax=ax_upper, s=1, legend=False)
     ax_upper.set_ylabel(upper_ylab)
-    ax_upper.set_xlim(0, plot_data['axis']['center'].max())
+    ax_upper.set_xlim(0, max_x_axis)
 
     ax_upper.set_xlabel("")
 
@@ -366,8 +370,23 @@ def miami_plot(df_top:pd.DataFrame, df_bottom:pd.DataFrame, plots_dir:str)->bool
     ax_upper.set_xticks(ticks=x_ticks)  # Set x-ticks
     ax_upper.set_xticklabels(x_labels)
 
-    # Customize x-axis labels
-    #ax_upper.set_xticks(ticks=plot_data['axis']['center'], labels=plot_data['axis']['CHR'])  # Set x-ticks
+    if top_higlights is not None:
+        snps = top_higlights['SNP'].to_list()
+        genes = top_higlights['GENE'].to_list()
+        highlighted_snps = plot_data['upper'][plot_data['upper']['SNP'].isin(snps)]  # Filter for the SNPs of interest
+
+        ax_upper.scatter(highlighted_snps['rel_pos'], highlighted_snps['log10p'], color='red', s=10, label='Highlighted SNPs')
+
+        texts = []  # A list to store text annotations for adjustment
+        for i, row in highlighted_snps.iterrows():
+            gene = genes[snps.index(row['SNP'])]  # Get corresponding gene name
+            # Add text label to the SNP
+            text = ax_upper.text(row['rel_pos'], row['log10p'], gene, fontsize=12, ha='right', va='bottom', color='black',
+                           bbox=dict(boxstyle='round,pad=0.3', edgecolor='black', facecolor='white'))
+            texts.append(text)
+        # Adjust the text to prevent overlaps using adjustText
+        adjust_text(texts, arrowprops=dict(arrowstyle='-', color='black'))
+
     
     # Add genome-wide and suggestive lines
     if suggestive_line is not None:
@@ -376,21 +395,38 @@ def miami_plot(df_top:pd.DataFrame, df_bottom:pd.DataFrame, plots_dir:str)->bool
     if genome_line is not None:
         ax_upper.axhline(-np.log10(genome_line), color=genome_line_color, linestyle='dashed', lw=0.5)
     
-    ax_upper.legend([], frameon=False)  # Remove legend
+    #ax_upper.legend([], frameon=False)  # Remove legend
 
     # Create the lower plot
     ax_lower = plt.subplot(212)
     sns.scatterplot(x=plot_data['lower']['rel_pos'], y=plot_data['lower']['log10p'],
-                    hue=plot_data['lower']['CHR'], palette=chr_colors, ax=ax_lower, s=1)
+                    hue=plot_data['lower']['CHR'], palette=chr_colors, ax=ax_lower, s=1, legend=False)
     ax_lower.set_ylabel(lower_ylab)
     ax_lower.set_ylim(plot_data['maxp'], 0)  # Reverse y-axis
-    ax_lower.set_xlim(0, plot_data['axis']['center'].max())
+    ax_lower.set_xlim(0, max_x_axis)
 
     ax_lower.set_xlabel("")
 
     ax_lower.set_xticks(ticks=x_ticks) # Set x-ticks
     ax_lower.set_xticklabels([])
     ax_lower.xaxis.set_ticks_position('top')
+
+    if top_higlights is not None:
+        snps = top_higlights['SNP'].to_list()
+        genes = top_higlights['GENE'].to_list()
+        highlighted_snps = plot_data['upper'][plot_data['upper']['SNP'].isin(snps)]  # Filter for the SNPs of interest
+
+        ax_lower.scatter(highlighted_snps['rel_pos'], highlighted_snps['log10p'], color='red', s=10, label='Highlighted SNPs')
+
+        texts = []  # A list to store text annotations for adjustment
+        for i, row in highlighted_snps.iterrows():
+            gene = genes[snps.index(row['SNP'])]  # Get corresponding gene name
+            # Add text label to the SNP
+            text = ax_lower.text(row['rel_pos'], row['log10p'], gene, fontsize=12, ha='right', va='bottom', color='black',
+                           bbox=dict(boxstyle='round,pad=0.3', edgecolor='black', facecolor='white'))
+            texts.append(text)
+        # Adjust the text to prevent overlaps using adjustText
+        adjust_text(texts, arrowprops=dict(arrowstyle='-', color='black'))    
     
     # Add genome-wide and suggestive lines
     if suggestive_line is not None:
@@ -399,7 +435,7 @@ def miami_plot(df_top:pd.DataFrame, df_bottom:pd.DataFrame, plots_dir:str)->bool
     if genome_line is not None:
         ax_lower.axhline(-np.log10(genome_line), color=genome_line_color, linestyle='dashed', lw=0.5)
     
-    ax_lower.legend([], frameon=False)  # Remove legend
+    #ax_lower.legend([], frameon=False)  # Remove legend
     
     # Adjust layout and show the plot
     plt.tight_layout()
@@ -431,7 +467,7 @@ def prepare_data(data_top:pd.DataFrame, data_bottom:pd.DataFrame)->pd.DataFrame:
 
     return joint
 
-def compute_relative_pos(data:pd.DataFrame, chr_col:str='CHR', pos_col:str='bp', p_col:str='p')->pd.DataFrame:
+def compute_relative_pos(data:pd.DataFrame, chr_col:str='CHR', pos_col:str='POS', p_col:str='p')->pd.DataFrame:
     
     """
     Compute the relative position of probes/SNPs across chromosomes and add a -log10(p-value) column.
@@ -530,18 +566,15 @@ def process_miami_data(data_top:pd.DataFrame, data_bottom:pd.DataFrame)->dict:
 
     data = prepare_data(data_top, data_bottom)
 
-    data = compute_relative_pos(data, chr_col='CHR', pos_col='bp', p_col='p')
+    data = compute_relative_pos(data, chr_col='CHR', pos_col='POS', p_col='p')
 
     axis_center = find_chromosomes_center(data)
 
     maxp = np.ceil(data['log10p'].max(skipna=True))
 
-    df_top = data[data['split_by'] == 'top']
-    df_bottom = data[data['split_by'] == 'bottom']
-
     miami_data = {
-        'upper': df_top,
-        'lower': df_bottom,
+        'upper': data[data['split_by'] == 'top'].reset_index(drop=True),
+        'lower': data[data['split_by'] == 'bottom'].reset_index(drop=True),
         'axis': axis_center,
         'maxp': maxp
     }
