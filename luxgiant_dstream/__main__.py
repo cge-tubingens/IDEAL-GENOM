@@ -42,12 +42,16 @@ def analysis_pipe(params_dict:dict, data_dict:dict, steps_dict:dict)->None:
             preps_path = os.path.join(data_dict['output_directory'], 'preparatory'),
         )
 
+        if data_dict['compare_gwas_fixed_file_name'] is not None or data_dict['compare_gwas_fixed_file_name'] != '':
+            gwas_f.compare_gwas_fixed_file_name = data_dict['compare_gwas_fixed_file_name']
+
         # pipeline steps
         gwas_f_steps = {
             'train_model': gwas_f.fixed_model_association_analysis,
             'top_hits'   : gwas_f.get_top_hits,
             'annotate'   : gwas_f.annotate_top_hits,
-            'plots'      : gwas_f.plot_drawings
+            'plots'      : gwas_f.plot_drawings,
+            'one_cohort' : gwas_f.one_cohort_comparison
         }
 
         for step in gwas_f_steps.keys():
