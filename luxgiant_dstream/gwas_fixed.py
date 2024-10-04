@@ -6,12 +6,12 @@ import os
 import pandas as pd
 
 from luxgiant_dstream.Helpers import shell_do, delete_temp_files
-from luxgiant_dstream.plots import manhattan_plot, qq_plot
+from luxgiant_dstream.plots import manhattan_plot, qq_plot, miami_plot
 from luxgiant_dstream.annotate_tools import get_variant_context
 
 class GWASfixed:
 
-    def __init__(self, input_path:str, input_name:str, output_path:str, output_name:str, config_dict:str, preps_path:str) -> None:
+    def __init__(self, input_path:str, input_name:str, output_path:str, output_name:str, config_dict:str, preps_path:str, dependables:str) -> None:
 
         """
         Initialize the GWASfixed class.
@@ -46,8 +46,10 @@ class GWASfixed:
         self.output_name = output_name
         self.config_dict = config_dict
         self.preps_path  = preps_path
+        self.dependables = dependables
 
         self.files_to_keep = []
+        self.compare_gwas_fixed_file_name = None
 
         # create results folder
         self.results_dir = os.path.join(output_path, 'gwas_fixed')
@@ -308,12 +310,45 @@ class GWASfixed:
         
         return out_dict
 
-    def compare_gwas_1(self)->None:
+    def one_cohort_comparison(self)->None:
 
         """
         Compare the results of the GWAS analysis with other datasets.
         """
 
-        
+        output_name  = self.output_name
+        plots_dir    = self.plots_dir
+        results_dir  = self.results_dir
+        dependables  = self.dependables
+        gwas_compare = self.compare_gwas_fixed_file_name
 
-        pass
+        if gwas_compare is None or gwas_compare == '':
+            print("\033[1;31mNo comparison file provided. Skipping comparison.\033[0m")
+            pass
+
+        # load the data
+        # it is expected that the data comes with columns 'SNP', 'CHR', 'bp', 'p'
+        df_gwas_bottom = pd.read_csv(
+            os.path.join(dependables, gwas_compare),
+            sep="\t",
+            usecols=['SNP', 'CHR', 'POS', 'p']
+        )
+
+        df_gwas_top = pd.read_csv(
+            os.path.join(results_dir, output_name+'_glm.PHENO1.glm.logistic.hybrid'),
+            sep="\t",
+            usecols=['SNP', 'CHR', 'POS', 'p']
+        )
+        if os.path.isfile(os.path.join(results_dir, 'snps_annotated.csv')):
+            df_top_annot = pd.read_csv(os.path.join(results_dir, 'snps_annotated.csv'), sep="\t")
+        else:
+            df_top_annot = None
+
+        miami = miami_plot(
+            df_top       =df_gwas_top,
+            top_higlights=df_top_annot,
+            df_bottom    =df_gwas_bottom,
+            plots_dir    =plots_dir
+        )
+
+        return miami
