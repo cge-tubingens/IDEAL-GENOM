@@ -42,8 +42,10 @@ def analysis_pipe(params_dict:dict, data_dict:dict, steps_dict:dict)->None:
             preps_path = os.path.join(data_dict['output_directory'], 'preparatory'),
         )
 
-        if data_dict['compare_gwas_fixed_file_name'] is not None or data_dict['compare_gwas_fixed_file_name'] != '':
+        if data_dict['miami_fixed_gwas'] is not None or data_dict['miami_fixed_gwas'] != '':
             gwas_f.compare_gwas_fixed_file_name = data_dict['compare_gwas_fixed_file_name']
+        if data_dict['miami_fixed_highlights'] is not None or data_dict['miami_fixed_highlights'] != '':
+            gwas_f.compare_gwas_fixed_highlights = data_dict['compare_gwas_fixed_highlights']
 
         # pipeline steps
         gwas_f_steps = {
