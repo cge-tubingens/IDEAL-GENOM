@@ -358,6 +358,7 @@ class GWASfixed:
             df_top       =df_gwas_top,
             top_higlights=df_top_annot,
             df_bottom    =df_gwas_bottom,
+            bottom_higlights=df_bottom_annot,
             plots_dir    =plots_dir
         )
 
