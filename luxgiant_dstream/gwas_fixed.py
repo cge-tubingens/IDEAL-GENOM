@@ -50,6 +50,7 @@ class GWASfixed:
 
         self.files_to_keep = []
         self.compare_gwas_fixed_file_name = None
+        self.compare_gwas_fixed_highlights= None
 
         # create results folder
         self.results_dir = os.path.join(output_path, 'gwas_fixed')
@@ -321,10 +322,19 @@ class GWASfixed:
         results_dir  = self.results_dir
         dependables  = self.dependables
         gwas_compare = self.compare_gwas_fixed_file_name
+        gwas_highlts = self.compare_gwas_fixed_highlights
 
         if gwas_compare is None or gwas_compare == '':
             print("\033[1;31mNo comparison file provided. Skipping comparison.\033[0m")
             pass
+        if gwas_highlts is None or gwas_highlts == '':
+            df_bottom_annot=None
+            print("\033[1;31mNo highlights file provided\033[0m")
+        else:
+            df_bottom_annot = pd.read_csv(
+            os.path.join(dependables, gwas_highlts),
+            sep="\t"
+        )
 
         # load the data
         # it is expected that the data comes with columns 'SNP', 'CHR', 'bp', 'p'
