@@ -305,7 +305,7 @@ def qq_plot(df_gwas:pd.DataFrame, plots_dir:str)->bool:
 
     return True
 
-def miami_plot(df_top:pd.DataFrame, top_higlights:pd.DataFrame, df_bottom:pd.DataFrame, plots_dir:str)->bool:
+def miami_plot(df_top:pd.DataFrame, top_higlights:pd.DataFrame, df_bottom:pd.DataFrame, bottom_higlights:pd.DataFrame, plots_dir:str)->bool:
     
     """
     Generates a Miami plot from two dataframes and saves the plot to the specified directory.
@@ -331,7 +331,7 @@ def miami_plot(df_top:pd.DataFrame, top_higlights:pd.DataFrame, df_bottom:pd.Dat
     lines to the plot.
     """
 
-    chr_colors           = ['grey', 'skyblue']
+    chr_colors           = ['#66c2a5', '#fc8d62']
     upper_ylab           = "-log10(p)" 
     lower_ylab           = "-log10(p)" 
     genome_line          = 5e-8
@@ -369,24 +369,6 @@ def miami_plot(df_top:pd.DataFrame, top_higlights:pd.DataFrame, df_bottom:pd.Dat
 
     ax_upper.set_xticks(ticks=x_ticks)  # Set x-ticks
     ax_upper.set_xticklabels(x_labels)
-
-    if top_higlights is not None:
-        snps = top_higlights['SNP'].to_list()
-        genes = top_higlights['GENE'].to_list()
-        highlighted_snps = plot_data['upper'][plot_data['upper']['SNP'].isin(snps)]  # Filter for the SNPs of interest
-
-        ax_upper.scatter(highlighted_snps['rel_pos'], highlighted_snps['log10p'], color='red', s=10, label='Highlighted SNPs')
-
-        texts = []  # A list to store text annotations for adjustment
-        for i, row in highlighted_snps.iterrows():
-            gene = genes[snps.index(row['SNP'])]  # Get corresponding gene name
-            # Add text label to the SNP
-            text = ax_upper.text(row['rel_pos'], row['log10p'], gene, fontsize=12, ha='right', va='bottom', color='black',
-                           bbox=dict(boxstyle='round,pad=0.3', edgecolor='black', facecolor='white'))
-            texts.append(text)
-        # Adjust the text to prevent overlaps using adjustText
-        adjust_text(texts, arrowprops=dict(arrowstyle='-', color='black'))
-
     
     # Add genome-wide and suggestive lines
     if suggestive_line is not None:
@@ -394,8 +376,6 @@ def miami_plot(df_top:pd.DataFrame, top_higlights:pd.DataFrame, df_bottom:pd.Dat
     
     if genome_line is not None:
         ax_upper.axhline(-np.log10(genome_line), color=genome_line_color, linestyle='dashed', lw=0.5)
-    
-    #ax_upper.legend([], frameon=False)  # Remove legend
 
     # Create the lower plot
     ax_lower = plt.subplot(212)
@@ -410,23 +390,6 @@ def miami_plot(df_top:pd.DataFrame, top_higlights:pd.DataFrame, df_bottom:pd.Dat
     ax_lower.set_xticks(ticks=x_ticks) # Set x-ticks
     ax_lower.set_xticklabels([])
     ax_lower.xaxis.set_ticks_position('top')
-
-    if top_higlights is not None:
-        snps = top_higlights['SNP'].to_list()
-        genes = top_higlights['GENE'].to_list()
-        highlighted_snps = plot_data['upper'][plot_data['upper']['SNP'].isin(snps)]  # Filter for the SNPs of interest
-
-        ax_lower.scatter(highlighted_snps['rel_pos'], highlighted_snps['log10p'], color='red', s=10, label='Highlighted SNPs')
-
-        texts = []  # A list to store text annotations for adjustment
-        for i, row in highlighted_snps.iterrows():
-            gene = genes[snps.index(row['SNP'])]  # Get corresponding gene name
-            # Add text label to the SNP
-            text = ax_lower.text(row['rel_pos'], row['log10p'], gene, fontsize=12, ha='right', va='bottom', color='black',
-                           bbox=dict(boxstyle='round,pad=0.3', edgecolor='black', facecolor='white'))
-            texts.append(text)
-        # Adjust the text to prevent overlaps using adjustText
-        adjust_text(texts, arrowprops=dict(arrowstyle='-', color='black'))    
     
     # Add genome-wide and suggestive lines
     if suggestive_line is not None:
@@ -435,7 +398,22 @@ def miami_plot(df_top:pd.DataFrame, top_higlights:pd.DataFrame, df_bottom:pd.Dat
     if genome_line is not None:
         ax_lower.axhline(-np.log10(genome_line), color=genome_line_color, linestyle='dashed', lw=0.5)
     
-    #ax_lower.legend([], frameon=False)  # Remove legend
+    if top_higlights is not None and bottom_higlights is None:
+
+        ax_upper = annotate_miami(ax_upper, plot_data['upper'], top_higlights, '#1f77b4')
+        ax_lower = annotate_miami(ax_lower, plot_data['lower'], top_higlights, '#1f77b4')
+
+    if bottom_higlights is not None and top_higlights is None:
+
+        ax_upper = annotate_miami(ax_upper, plot_data['upper'], bottom_higlights, '#9467bd')
+        ax_lower = annotate_miami(ax_lower, plot_data['lower'], bottom_higlights, '#9467bd')
+
+    if top_higlights is not None and bottom_higlights is not None:
+
+        split_annotations = classify_annotations(top_higlights, bottom_higlights)
+
+        ax_upper = annotate_miami(ax_upper, plot_data['upper'], split_annotations)
+        ax_lower = annotate_miami(ax_lower, plot_data['lower'], split_annotations)
     
     # Adjust layout and show the plot
     plt.tight_layout()
@@ -580,3 +558,67 @@ def process_miami_data(data_top:pd.DataFrame, data_bottom:pd.DataFrame)->dict:
     }
 
     return miami_data
+
+def classify_annotations(df_top_highlts:pd.DataFrame, df_bottom_highlts:pd.DataFrame)->dict:
+    
+    """
+    Splits the annotation data into two parts for the top and bottom plots.
+
+    Parameters:
+    -----------
+    df_top_highlts (pd.DataFrame): 
+        The annotation data for the top plot.
+    df_bottom_highlits (pd.DataFrame): 
+        The annotation data for the bottom plot.
+    
+    Returns:
+    --------
+    tuple: A tuple containing the split annotation data for the top and bottom plots.
+    """
+
+    df_both = pd.merge(df_top_highlts, df_bottom_highlts[['SNP']], on='SNP', how='inner')
+    df_both['type'] = 'on_both'
+
+    df_top_in_bottom = df_top_highlts[~df_top_highlts['SNP'].isin(df_bottom_highlts['SNP'])].reset_index(drop=True)
+    df_top_in_bottom['type'] = 'top_in_bottom'
+
+    df_bottom_in_top = df_bottom_highlts[~df_bottom_highlts['SNP'].isin(df_top_highlts['SNP'])].reset_index(drop=True)
+    df_bottom_in_top['type'] = 'bottom_in_top'
+
+
+    return pd.concat([df_both, df_top_in_bottom, df_bottom_in_top], axis=0).reset_index(drop=True)
+    
+
+def annotate_miami(axes:Axes, gwas_data:pd.DataFrame, annotations:pd.DataFrame)->Axes:
+
+    snps = annotations['SNP'].to_list()
+    genes= annotations['GENE'].to_list()
+    highlighted_snps = pd.merge(annotations, gwas_data[['SNP', 'rel_pos', 'log10p']], on='SNP', how='inner')
+
+    custom_hue_colors = {
+        "on_both"      : "#1f77b4",  
+        "top_in_bottom": "#2ca02c",
+        "bottom_in_top": "#9467bd",
+    }
+
+    axes = sns.scatterplot(
+        x=highlighted_snps['rel_pos'], 
+        y=highlighted_snps['log10p'], 
+        ax=axes,
+        hue=highlighted_snps['type'],
+        palette=custom_hue_colors,
+        size=10,
+        legend=False,
+    )
+
+    texts = []  # A list to store text annotations for adjustment
+    for i, row in highlighted_snps.iterrows():
+        gene = genes[snps.index(row['SNP'])]  # Get corresponding gene name
+        # Add text label to the SNP
+        text = axes.text(row['rel_pos'], row['log10p'], gene, fontsize=10, ha='right', va='top', color='black',
+                    bbox=dict(boxstyle='round,pad=0.3', edgecolor='black', facecolor='white'))
+        texts.append(text)
+    # Adjust the text to prevent overlaps using adjustText
+    adjust_text(texts, arrowprops=dict(arrowstyle='-', color='black'), ax=axes)
+
+    return axes
