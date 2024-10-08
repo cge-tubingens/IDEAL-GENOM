@@ -413,7 +413,7 @@ def miami_plot(df_top:pd.DataFrame, top_higlights:pd.DataFrame, df_bottom:pd.Dat
         split_annotations = classify_annotations(top_higlights, bottom_higlights)
 
         ax_upper = annotate_miami(ax_upper, plot_data['upper'], split_annotations, to_annotate=['on_both', 'top_in_bottom'])
-        ax_lower = annotate_miami(ax_lower, plot_data['lower'], split_annotations, to_annotate=['on_both', 'bottom_in_top'])
+        ax_lower = annotate_miami(ax_lower, plot_data['lower'], split_annotations, to_annotate=['on_both'])
 
     ax_lower.set_xlabel("Base pair position")
     ax_upper.set_xlabel("")
