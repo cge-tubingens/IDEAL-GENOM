@@ -8,12 +8,13 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = ">=3.10,<3.11"
 pandas = "^2.2.2"
-matplotlib = "^3.9.2"
+matplotlib = ">=3.5,<3.7.2 || >3.7.2,<3.9"
 seaborn = "^0.13.2"
-adjusttext = "^1.2.0"
+adjusttext = "0.8"
 jupyter = "^1.0.0"
 scipy = "^1.14.0"
 statsmodels = "^0.14.2"
+gwaslab = "^3.4.48"
 
 
 [tool.poetry.group.dev.dependencies]
