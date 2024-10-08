@@ -6,7 +6,7 @@ authors = ["luisggon <luisggon@flyde.io>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = ">=3.10,<3.11"
 pandas = "^2.2.2"
 matplotlib = "^3.9.2"
 seaborn = "^0.13.2"
