@@ -362,8 +362,6 @@ def miami_plot(df_top:pd.DataFrame, top_higlights:pd.DataFrame, df_bottom:pd.Dat
     ax_upper.set_ylabel(upper_ylab)
     ax_upper.set_xlim(0, max_x_axis)
 
-    ax_upper.set_xlabel("")
-
     x_ticks=plot_data['axis']['center'].tolist()
     x_labels=plot_data['axis']['CHR'].astype(str).tolist()
 
@@ -385,8 +383,6 @@ def miami_plot(df_top:pd.DataFrame, top_higlights:pd.DataFrame, df_bottom:pd.Dat
     ax_lower.set_ylim(plot_data['maxp'], 0)  # Reverse y-axis
     ax_lower.set_xlim(0, max_x_axis)
 
-    ax_lower.set_xlabel("")
-
     ax_lower.set_xticks(ticks=x_ticks) # Set x-ticks
     ax_lower.set_xticklabels([])
     ax_lower.xaxis.set_ticks_position('top')
@@ -400,20 +396,27 @@ def miami_plot(df_top:pd.DataFrame, top_higlights:pd.DataFrame, df_bottom:pd.Dat
     
     if top_higlights is not None and bottom_higlights is None:
 
-        ax_upper = annotate_miami(ax_upper, plot_data['upper'], top_higlights, '#1f77b4')
-        ax_lower = annotate_miami(ax_lower, plot_data['lower'], top_higlights, '#1f77b4')
+        top_higlights['type'] = 'top_in_bottom'
+
+        ax_upper = annotate_miami(ax_upper, plot_data['upper'], top_higlights, to_annotate=['top_in_bottom'])
+        ax_lower = annotate_miami(ax_lower, plot_data['lower'], top_higlights, to_annotate=['top_in_bottom'])
 
     if bottom_higlights is not None and top_higlights is None:
 
-        ax_upper = annotate_miami(ax_upper, plot_data['upper'], bottom_higlights, '#9467bd')
-        ax_lower = annotate_miami(ax_lower, plot_data['lower'], bottom_higlights, '#9467bd')
+        bottom_higlights['type'] = 'bottom_in_top'
+
+        ax_upper = annotate_miami(ax_upper, plot_data['upper'], bottom_higlights, to_annotate=['bottom_in_top'])
+        ax_lower = annotate_miami(ax_lower, plot_data['lower'], bottom_higlights, to_annotate=['bottom_in_top'])
 
     if top_higlights is not None and bottom_higlights is not None:
 
         split_annotations = classify_annotations(top_higlights, bottom_higlights)
 
-        ax_upper = annotate_miami(ax_upper, plot_data['upper'], split_annotations)
-        ax_lower = annotate_miami(ax_lower, plot_data['lower'], split_annotations)
+        ax_upper = annotate_miami(ax_upper, plot_data['upper'], split_annotations, to_annotate=['on_both', 'top_in_bottom'])
+        ax_lower = annotate_miami(ax_lower, plot_data['lower'], split_annotations, to_annotate=['on_both', 'bottom_in_top'])
+
+    ax_lower.set_xlabel("Base pair position")
+    ax_upper.set_xlabel("")
     
     # Adjust layout and show the plot
     plt.tight_layout()
@@ -589,7 +592,7 @@ def classify_annotations(df_top_highlts:pd.DataFrame, df_bottom_highlts:pd.DataF
     return pd.concat([df_both, df_top_in_bottom, df_bottom_in_top], axis=0).reset_index(drop=True)
     
 
-def annotate_miami(axes:Axes, gwas_data:pd.DataFrame, annotations:pd.DataFrame)->Axes:
+def annotate_miami(axes:Axes, gwas_data:pd.DataFrame, annotations:pd.DataFrame, to_annotate:list)->Axes:
 
     snps = annotations['SNP'].to_list()
     genes= annotations['GENE'].to_list()
@@ -602,17 +605,19 @@ def annotate_miami(axes:Axes, gwas_data:pd.DataFrame, annotations:pd.DataFrame)-
     }
 
     axes = sns.scatterplot(
-        x=highlighted_snps['rel_pos'], 
-        y=highlighted_snps['log10p'], 
-        ax=axes,
-        hue=highlighted_snps['type'],
-        palette=custom_hue_colors,
-        size=10,
-        legend=False,
+        x       =highlighted_snps['rel_pos'], 
+        y       =highlighted_snps['log10p'], 
+        ax      =axes,
+        hue     =highlighted_snps['type'],
+        palette =custom_hue_colors,
+        size    =10,
+        legend  =False,
     )
 
+    snps_to_annotate = highlighted_snps[highlighted_snps['type'].isin(to_annotate)].reset_index(drop=True)
+
     texts = []  # A list to store text annotations for adjustment
-    for i, row in highlighted_snps.iterrows():
+    for i, row in snps_to_annotate.iterrows():
         gene = genes[snps.index(row['SNP'])]  # Get corresponding gene name
         # Add text label to the SNP
         text = axes.text(row['rel_pos'], row['log10p'], gene, fontsize=10, ha='right', va='top', color='black',
