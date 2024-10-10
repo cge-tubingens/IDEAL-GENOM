@@ -4,6 +4,7 @@ Module to perform a GWAS analysis using a fixed model.
 
 import os
 import pandas as pd
+import numpy as np
 
 from luxgiant_dstream.Helpers import shell_do, delete_temp_files
 from luxgiant_dstream.plots import manhattan_plot, qq_plot, miami_plot
@@ -363,3 +364,56 @@ class GWASfixed:
         )
 
         return miami
+    
+    def create_trumpet_plot(self)->None:
+
+        """
+        Create a trumpet plot for the GWAS analysis.
+        """
+
+        output_name= self.output_name
+        plots_dir  = self.plots_dir
+        results_dir= self.results_dir
+        dependables= self.dependables
+        preps_path = self.preps_path
+
+        # plink command to compute MAF
+        plink_cmd = f"plink --bfile {os.path.join(preps_path, output_name+'_LDpruned')} --freq --maf --out {os.path.join(results_dir, output_name)}"
+
+        # execute plink command
+        shell_do(plink_cmd, log=True)
+
+        # load gwas data
+        df_gwas = pd.read_csv(
+            os.path.join(results_dir, output_name+'_glm.PHENO1.glm.logistic.hybrid'), 
+            sep="\t",
+            usecols=['SNP', 'CHR', 'p', 'b']
+        )
+
+        # load frequencies
+        df_freq = pd.read_csv(
+            os.path.join(results_dir, output_name+'.frq'),
+            sep="\s+",
+            usecols=['SNP', 'MAF']
+        )
+        
+        # merge the data
+        df = pd.merge(df_gwas, df_freq, on='SNP', how='inner')
+
+        del df_gwas, df_freq
+
+        # set the ranges of axis
+        maf_min_power = np.floor( -np.log10(df['MAF'].min())) + 1
+        maf_range=(min(np.power(10.0,-maf_min_power),np.power(10.0,-4)),0.5)
+
+        if df['b'].max()>3:
+            beta_range=(0.0001,df['b'].max())
+        else:
+            beta_range=(0.0001,3)
+
+        # power curves thresholds
+        ts=[0.3,0.5,0.8]
+
+        
+
+        pass
