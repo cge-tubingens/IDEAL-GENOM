@@ -7,7 +7,7 @@ import pandas as pd
 import numpy as np
 
 from luxgiant_dstream.Helpers import shell_do, delete_temp_files
-from luxgiant_dstream.plots import manhattan_plot, qq_plot, miami_plot
+from luxgiant_dstream.plots import manhattan_plot, qq_plot, miami_plot, draw_trumpet_plot
 from luxgiant_dstream.annotate_tools import get_variant_context
 
 class GWASfixed:
@@ -371,14 +371,19 @@ class GWASfixed:
         Create a trumpet plot for the GWAS analysis.
         """
 
+        input_path = self.input_path
+        input_name = self.input_name
         output_name= self.output_name
         plots_dir  = self.plots_dir
         results_dir= self.results_dir
         dependables= self.dependables
         preps_path = self.preps_path
 
+        prevalence = self.config_dict['prevalence']
+        maf = self.config_dict['maf']
+
         # plink command to compute MAF
-        plink_cmd = f"plink --bfile {os.path.join(preps_path, output_name+'_LDpruned')} --freq --maf --out {os.path.join(results_dir, output_name)}"
+        plink_cmd = f"plink --bfile {os.path.join(input_path, input_name)} --freq --maf {maf} --out {os.path.join(results_dir, output_name)}"
 
         # execute plink command
         shell_do(plink_cmd, log=True)
@@ -396,24 +401,42 @@ class GWASfixed:
             sep="\s+",
             usecols=['SNP', 'MAF']
         )
+
+        # load fam file
+        df_fam = pd.read_csv(
+            os.path.join(preps_path, output_name+'_LDpruned.fam'),
+            sep="\s+",
+            header=None
+        )
+
+        counts = df_fam[5].value_counts()
+
+        ncase = counts[2]
+        ncontrol = counts[1]
+        if prevalence is None:
+            prevalence = ncase / (ncase + ncontrol)
+
+        epi = {
+            'prevalence': prevalence,
+            'ncase'     : ncase,
+            'ncontrol'  : ncontrol
+        }
         
         # merge the data
         df = pd.merge(df_gwas, df_freq, on='SNP', how='inner')
 
-        del df_gwas, df_freq
-
-        # set the ranges of axis
-        maf_min_power = np.floor( -np.log10(df['MAF'].min())) + 1
-        maf_range=(min(np.power(10.0,-maf_min_power),np.power(10.0,-4)),0.5)
-
-        if df['b'].max()>3:
-            beta_range=(0.0001,df['b'].max())
-        else:
-            beta_range=(0.0001,3)
+        del df_gwas, df_freq, df_fam
 
         # power curves thresholds
         ts=[0.3,0.5,0.8]
 
-        
+        trumpet = draw_trumpet_plot(
+            df_gwas  =df[df['p']<5e-8].reset_index(drop=True),
+            epi      =epi,
+            power_thr=ts,
+            plots_dir=plots_dir
+        )
+
+
 
         pass
