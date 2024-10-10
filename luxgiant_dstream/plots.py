@@ -21,6 +21,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import scipy.stats as stats
+import textalloc as ta
 
 from matplotlib.axes import Axes
 from pandas.core.groupby.generic import DataFrameGroupBy
@@ -617,13 +618,25 @@ def annotate_miami(axes:Axes, gwas_data:pd.DataFrame, annotations:pd.DataFrame, 
     snps_to_annotate = highlighted_snps[highlighted_snps['type'].isin(to_annotate)].reset_index(drop=True)
 
     texts = []  # A list to store text annotations for adjustment
+    x = []
+    y = []
     for i, row in snps_to_annotate.iterrows():
         gene = genes[snps.index(row['SNP'])]  # Get corresponding gene name
-        # Add text label to the SNP
-        text = axes.text(row['rel_pos'], row['log10p'], gene, fontsize=10, ha='right', va='top', color='black',
-                    bbox=dict(boxstyle='round,pad=0.3', edgecolor='black', facecolor='white'))
-        texts.append(text)
-    # Adjust the text to prevent overlaps using adjustText
-    adjust_text(texts, arrowprops=dict(arrowstyle='-', color='black'), ax=axes)
+
+        x.append(row['rel_pos'])
+        y.append(row['log10p'])
+        texts.append(gene)
+
+    ta.allocate(
+        axes,
+        x        =x,
+        y        =y,
+        text_list=texts,
+        x_scatter=x,
+        y_scatter=y,
+        linecolor='black',
+        textsize =10,
+        bbox     =dict(boxstyle='round,pad=0.3', edgecolor='black', facecolor='#f0f0f0', alpha=0.8),
+    )
 
     return axes
