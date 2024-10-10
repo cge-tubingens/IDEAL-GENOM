@@ -640,3 +640,118 @@ def annotate_miami(axes:Axes, gwas_data:pd.DataFrame, annotations:pd.DataFrame, 
     )
 
     return axes
+
+def draw_trumpet_plot(df_gwas:pd.DataFrame, plots_dir:str, power_thr:list, epi:dict)->bool:
+
+    from gwaslab.util_in_calculate_power import get_beta_binary
+    from matplotlib.collections import LineCollection
+    import matplotlib.colors as mc
+
+    xscale="log",
+    yscale_factor=1
+    xticks=None
+    cmap="cool"
+    size= "ABS_BETA",
+    sizes=None
+
+ 
+    xticks = [0.001,0.01,0.05,0.1,0.2,0.5]
+    xticklabels = xticks
+
+    cmap_to_use = plt.cm.get_cmap(cmap)
+    if cmap_to_use.N >100:
+        rgba = cmap_to_use(power_thr)
+    else:
+        rgba = cmap_to_use(range(len(power_thr)))
+    
+    output_hex_colors=[]
+    for i in range(len(rgba)):
+        output_hex_colors.append(mc.to_hex(rgba[i]))
+    output_hex_colors
+
+    # set the ranges of axis
+    maf_min_power = np.floor( -np.log10(df_gwas['MAF'].min())) + 1
+    maf_range=(min(np.power(10.0,-maf_min_power),np.power(10.0,-4)),0.5)
+
+    if df_gwas['b'].max()>3:
+        beta_range=(0.0001,df_gwas['b'].max())
+    else:
+        beta_range=(0.0001,3)
+
+    fig, ax = plt.subplots(figsize=(10,8))
+
+    for i,t in enumerate(power_thr):
+        xpower = get_beta_binary(        
+                        eaf_range=maf_range,
+                        beta_range=beta_range, 
+                        prevalence=epi['prevalence'],
+                        or_to_rr = False,
+                        ncase=epi['ncase'], 
+                        ncontrol=epi['ncontrol'], 
+                        t=t,
+                        sig_level=5e-8,
+                        n_matrix=1000)
+        xpower2 = xpower.copy()
+        xpower2[1] = -xpower2[1] 
+        xpower2[1] = xpower2[1] * yscale_factor
+        xpower[1] = xpower[1] * yscale_factor
+        lines = LineCollection([xpower2,xpower], label=t, color=output_hex_colors[i])
+        ax.add_collection(lines)
+
+    # get abs  and convert using scaling factor
+    df_gwas['b'] = df_gwas['b']*yscale_factor
+    df_gwas["ABS_BETA"] = df_gwas['b'].abs()
+
+    size_norm = (df_gwas["ABS_BETA"].min(), df_gwas["ABS_BETA"].max())
+
+    print(df_gwas.shape)
+
+    ax = sns.scatterplot(data=df_gwas,
+                    x='MAF',
+                    y='b',
+                    #size=size, 
+                    ax=ax,
+                    #size_norm=size_norm,
+                    legend=True, 
+                    edgecolor="black",
+                    alpha=0.8,
+                    zorder=2
+    )
+
+    hue = None
+    h,l = ax.get_legend_handles_labels()
+    if len(power_thr)>0:
+        l1 = ax.legend(h[:int(len(power_thr))],l[:int(len(power_thr))], title="Power", loc="upper right",fontsize =10,title_fontsize=10)
+        for line in l1.get_lines():
+            line.set_linewidth(5.0)
+    if hue is None:
+        l2 = ax.legend(h[int(len(power_thr)):],l[int(len(power_thr)):], title=size, loc="lower right",fontsize =10,title_fontsize=10)
+    else:
+        l2 = ax.legend(h[int(len(power_thr)):],l[int(len(power_thr)):], title=None, loc="lower right",fontsize =10,title_fontsize=10)
+    if len(power_thr)>0:
+        ax.add_artist(l1)
+
+    ax.tick_params(axis='y', labelsize=10)
+
+    ax.axhline(y=0,color="grey",linestyle="dashed")
+    
+    if xscale== "log":
+        ax.set_xscale('log')
+        rotation=0
+        ax.set_xticks(xticks,xticklabels,fontsize=10,rotation=rotation)
+        ax.set_xlim(min(df_gwas['MAF'].min()/2,0.001/2),0.52)
+    else:
+        rotation=90    
+        ax.set_xticks(xticks,xticklabels,fontsize=10,rotation=rotation)
+        ax.set_xlim(-0.02,0.52)
+
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+    ax.spines["left"].set_visible(True)
+
+    # Adjust layout and show the plot
+    plt.tight_layout()
+    plt.savefig(os.path.join(plots_dir, 'trumpet_plot.png'))
+    plt.show()
+
+    return True
