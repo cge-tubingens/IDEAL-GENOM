@@ -592,7 +592,6 @@ def classify_annotations(df_top_highlts:pd.DataFrame, df_bottom_highlts:pd.DataF
 
     return pd.concat([df_both, df_top_in_bottom, df_bottom_in_top], axis=0).reset_index(drop=True)
     
-
 def annotate_miami(axes:Axes, gwas_data:pd.DataFrame, annotations:pd.DataFrame, to_annotate:list)->Axes:
 
     snps = annotations['SNP'].to_list()
@@ -641,22 +640,57 @@ def annotate_miami(axes:Axes, gwas_data:pd.DataFrame, annotations:pd.DataFrame, 
 
     return axes
 
-def draw_trumpet_plot(df_gwas:pd.DataFrame, plots_dir:str, power_thr:list, epi:dict)->bool:
+def annotate_trumpet(axes:Axes, gwas_data:pd.DataFrame, annotations:pd.DataFrame)->Axes:
+
+    snps = annotations['SNP'].to_list()
+    genes= annotations['GENE'].to_list()
+    highlighted_snps = pd.merge(annotations, gwas_data[['SNP', 'b', 'MAF']], on='SNP', how='inner')
+
+    axes = sns.scatterplot(
+        x       =highlighted_snps['MAF'], 
+        y       =highlighted_snps['b'], 
+        ax      =axes,
+        legend  =False,
+        color   = "red"
+    )
+
+    texts = []  # A list to store text annotations for adjustment
+    x = []
+    y = []
+    for i, row in highlighted_snps.iterrows():
+        gene = genes[snps.index(row['SNP'])]  # Get corresponding gene name
+
+        x.append(row['MAF'])
+        y.append(row['b'])
+        texts.append(gene)
+
+    ta.allocate(
+        axes,
+        x        =x,
+        y        =y,
+        text_list=texts,
+        x_scatter=x,
+        y_scatter=y,
+        linecolor='black',
+        textsize =10,
+        bbox     =dict(boxstyle='round,pad=0.3', edgecolor='black', facecolor='#f0f0f0', alpha=0.8),
+        max_distance=0.5,
+        avoid_label_lines_overlap=True
+    )
+
+    return axes
+
+def draw_trumpet_plot(df_gwas:pd.DataFrame, plots_dir:str, power_thr:list, epi:dict, annot:pd.DataFrame)->bool:
 
     from gwaslab.util_in_calculate_power import get_beta_binary
     from matplotlib.collections import LineCollection
     import matplotlib.colors as mc
 
-    xscale="log",
+    xscale="log"
     yscale_factor=1
-    xticks=None
     cmap="cool"
-    size= "ABS_BETA",
+    size= "ABS_BETA"
     sizes=None
-
- 
-    xticks = [0.001,0.01,0.05,0.1,0.2,0.5]
-    xticklabels = xticks
 
     cmap_to_use = plt.cm.get_cmap(cmap)
     if cmap_to_use.N >100:
@@ -678,7 +712,85 @@ def draw_trumpet_plot(df_gwas:pd.DataFrame, plots_dir:str, power_thr:list, epi:d
     else:
         beta_range=(0.0001,3)
 
-    fig, ax = plt.subplots(figsize=(10,8))
+
+    fig, ax = plt.subplots(figsize=(20,16))
+
+    # get abs and convert using scaling factor
+    df_gwas['b'] = df_gwas['b']*yscale_factor
+    df_gwas["ABS_BETA"] = df_gwas['b'].abs()
+
+    size_norm = (df_gwas["ABS_BETA"].min(), df_gwas["ABS_BETA"].max())
+
+    ax = sns.scatterplot(
+        data     =df_gwas,
+        x        ='MAF',
+        y        ='b',
+        #size=size, 
+        ax       =ax,
+        #size_norm=size_norm,
+        legend   =True, 
+        edgecolor="black",
+        alpha    =0.8,
+        zorder   =2,
+        color    = "lightgray"
+    )
+
+    # to highlight and annotate the top snps
+    snps = annot['SNP'].to_list()
+    genes= annot['GENE'].to_list()
+    highlighted_snps = pd.merge(annot, df_gwas[['SNP', 'b', 'MAF']], on='SNP', how='inner')
+
+    ax = sns.scatterplot(
+        x       =highlighted_snps['MAF'], 
+        y       =highlighted_snps['b'], 
+        ax      =ax,
+        legend  =False,
+        color   = "red",
+        size=20
+    )
+
+    split_annotations = {
+        'upper': highlighted_snps[highlighted_snps['b']>0].reset_index(drop=True),
+        'lower': highlighted_snps[highlighted_snps['b']<0].reset_index(drop=True)
+    }
+
+    for key in split_annotations:
+        texts = []
+        x = []
+        y = []
+
+        for i, row in split_annotations[key].iterrows():
+            gene = genes[snps.index(row['SNP'])]  # Get corresponding gene name
+            x.append(row['MAF'])
+            y.append(row['b'])
+            texts.append(gene)
+
+        if key == 'upper':
+            direction = 'north'
+        else:
+            direction = 'south'
+            
+                
+        ta.allocate(
+            ax       =ax,
+            x        =x,
+            y        =y,
+            text_list=texts,
+            x_scatter=df_gwas['MAF'].to_list(),
+            y_scatter=df_gwas['b'].to_list(),
+            linecolor='black',
+            direction=direction,
+            margin=0.1,
+            textsize =10,
+            bbox     =dict(boxstyle='round,pad=0.3', edgecolor='black', facecolor='#f0f0f0', alpha=0.8),
+            rotation='vertical',
+            rotation_mode='anchor',
+            avoid_crossing_label_lines=True,
+            avoid_label_lines_overlap=True,
+            nbr_candidates=400,
+            max_distance=1,
+            min_distance=0.1
+        )
 
     for i,t in enumerate(power_thr):
         xpower = get_beta_binary(        
@@ -690,7 +802,7 @@ def draw_trumpet_plot(df_gwas:pd.DataFrame, plots_dir:str, power_thr:list, epi:d
                         ncontrol=epi['ncontrol'], 
                         t=t,
                         sig_level=5e-8,
-                        n_matrix=1000)
+                        n_matrix=3000)
         xpower2 = xpower.copy()
         xpower2[1] = -xpower2[1] 
         xpower2[1] = xpower2[1] * yscale_factor
@@ -698,56 +810,42 @@ def draw_trumpet_plot(df_gwas:pd.DataFrame, plots_dir:str, power_thr:list, epi:d
         lines = LineCollection([xpower2,xpower], label=t, color=output_hex_colors[i])
         ax.add_collection(lines)
 
-    # get abs  and convert using scaling factor
-    df_gwas['b'] = df_gwas['b']*yscale_factor
-    df_gwas["ABS_BETA"] = df_gwas['b'].abs()
-
-    size_norm = (df_gwas["ABS_BETA"].min(), df_gwas["ABS_BETA"].max())
-
-    print(df_gwas.shape)
-
-    ax = sns.scatterplot(data=df_gwas,
-                    x='MAF',
-                    y='b',
-                    #size=size, 
-                    ax=ax,
-                    #size_norm=size_norm,
-                    legend=True, 
-                    edgecolor="black",
-                    alpha=0.8,
-                    zorder=2
-    )
-
-    hue = None
+    #hue = None
     h,l = ax.get_legend_handles_labels()
     if len(power_thr)>0:
-        l1 = ax.legend(h[:int(len(power_thr))],l[:int(len(power_thr))], title="Power", loc="upper right",fontsize =10,title_fontsize=10)
+        l1 = ax.legend(h[:int(len(power_thr))],l[:int(len(power_thr))], title="Power", loc="lower right",fontsize =10,title_fontsize=10)
         for line in l1.get_lines():
             line.set_linewidth(5.0)
-    if hue is None:
-        l2 = ax.legend(h[int(len(power_thr)):],l[int(len(power_thr)):], title=size, loc="lower right",fontsize =10,title_fontsize=10)
-    else:
-        l2 = ax.legend(h[int(len(power_thr)):],l[int(len(power_thr)):], title=None, loc="lower right",fontsize =10,title_fontsize=10)
+    #if hue is None:
+    #    l2 = ax.legend(h[int(len(power_thr)):],l[int(len(power_thr)):], title=None, loc="lower right",fontsize =10,title_fontsize=10)
+    #else:
+    #    l2 = ax.legend(h[int(len(power_thr)):],l[int(len(power_thr)):], title=None, loc="lower right",fontsize =10,title_fontsize=10)
     if len(power_thr)>0:
         ax.add_artist(l1)
 
     ax.tick_params(axis='y', labelsize=10)
+    ax.set_ylim(-df_gwas['b'].abs().max()*1.5, df_gwas['b'].abs().max()*1.5)
 
     ax.axhline(y=0,color="grey",linestyle="dashed")
     
     if xscale== "log":
-        ax.set_xscale('log')
-        rotation=0
-        ax.set_xticks(xticks,xticklabels,fontsize=10,rotation=rotation)
-        ax.set_xlim(min(df_gwas['MAF'].min()/2,0.001/2),0.52)
+        plt.xscale('log')
+        rotation=45
+        plt.xticks(fontsize=8)
+        ax.set_xlim(df_gwas['MAF'].min()*0.6,0.52)
+        xticks = np.round(np.logspace(np.log10(df_gwas['MAF'].min()*0.6), np.log10(0.52), 5),2).tolist()
+        ax.set_xticks(ticks=xticks, labels=[str(tick) for tick in xticks])
     else:
         rotation=90    
-        ax.set_xticks(xticks,xticklabels,fontsize=10,rotation=rotation)
-        ax.set_xlim(-0.02,0.52)
+        plt.xticks(fontsize=8)
+        ax.set_xlim(df_gwas['MAF'].min()*0.6,0.52)
 
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
     ax.spines["left"].set_visible(True)
+
+    ax.set_xlabel("Minor Allele Frequency",fontsize=10)
+    ax.set_ylabel("Effect Size",fontsize=10)
 
     # Adjust layout and show the plot
     plt.tight_layout()
