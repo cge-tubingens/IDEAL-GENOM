@@ -4,9 +4,10 @@ Module to perform a GWAS analysis using a fixed model.
 
 import os
 import pandas as pd
+import numpy as np
 
 from luxgiant_dstream.Helpers import shell_do, delete_temp_files
-from luxgiant_dstream.plots import manhattan_plot, qq_plot, miami_plot
+from luxgiant_dstream.plots import manhattan_plot, qq_plot, miami_plot, draw_trumpet_plot
 from luxgiant_dstream.annotate_tools import get_variant_context
 
 class GWASfixed:
@@ -363,3 +364,85 @@ class GWASfixed:
         )
 
         return miami
+    
+    def create_trumpet_plot(self)->None:
+
+        """
+        Create a trumpet plot for the GWAS analysis.
+        """
+
+        input_path = self.input_path
+        input_name = self.input_name
+        output_name= self.output_name
+        plots_dir  = self.plots_dir
+        results_dir= self.results_dir
+        dependables= self.dependables
+        preps_path = self.preps_path
+
+        prevalence = self.config_dict['prevalence']
+        maf = self.config_dict['maf']
+
+        # plink command to compute MAF
+        plink_cmd = f"plink --bfile {os.path.join(input_path, input_name)} --freq --maf {maf} --out {os.path.join(results_dir, output_name)}"
+
+        # execute plink command
+        #shell_do(plink_cmd, log=True)
+
+        # load gwas data
+        df_gwas = pd.read_csv(
+            os.path.join(results_dir, output_name+'_glm.PHENO1.glm.logistic.hybrid'), 
+            sep="\t",
+            usecols=['SNP', 'CHR', 'p', 'b']
+        )
+
+        # load frequencies
+        df_freq = pd.read_csv(
+            os.path.join(results_dir, output_name+'.frq'),
+            sep="\s+",
+            usecols=['SNP', 'MAF']
+        )
+
+        # load fam file
+        df_fam = pd.read_csv(
+            os.path.join(preps_path, output_name+'_LDpruned.fam'),
+            sep="\s+",
+            header=None
+        )
+
+        counts = df_fam[5].value_counts()
+
+        ncase = counts[2]
+        ncontrol = counts[1]
+        if prevalence is None:
+            prevalence = ncase / (ncase + ncontrol)
+
+        epi = {
+            'prevalence': prevalence,
+            'ncase'     : ncase,
+            'ncontrol'  : ncontrol
+        }
+
+        if os.path.isfile(os.path.join(results_dir, 'snps_annotated.csv')):
+            df_annot = pd.read_csv(os.path.join(results_dir, 'snps_annotated.csv'), sep="\t")
+        else:
+            df_annot = None
+        
+        # merge the data
+        df = pd.merge(df_gwas, df_freq, on='SNP', how='inner')
+
+        del df_gwas, df_freq, df_fam
+
+        # power curves thresholds
+        ts=[0.2,0.4,0.6,0.8]
+
+        trumpet = draw_trumpet_plot(
+            df_gwas  =df[df['p']<5e-8].reset_index(drop=True),
+            epi      =epi,
+            power_thr=ts,
+            annot    =df_annot,
+            plots_dir=plots_dir
+        )
+
+
+
+        pass

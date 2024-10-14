@@ -2,7 +2,7 @@
 name = "luxgiant-dstream"
 version = "0.1.0"
 description = ""
-authors = ["luisggon <luisggon@flyde.io>"]
+authors = ["luisggon <luisggon@protonmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
