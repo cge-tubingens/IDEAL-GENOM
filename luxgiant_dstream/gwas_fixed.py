@@ -386,7 +386,7 @@ class GWASfixed:
         plink_cmd = f"plink --bfile {os.path.join(input_path, input_name)} --freq --maf {maf} --out {os.path.join(results_dir, output_name)}"
 
         # execute plink command
-        shell_do(plink_cmd, log=True)
+        #shell_do(plink_cmd, log=True)
 
         # load gwas data
         df_gwas = pd.read_csv(
@@ -421,6 +421,11 @@ class GWASfixed:
             'ncase'     : ncase,
             'ncontrol'  : ncontrol
         }
+
+        if os.path.isfile(os.path.join(results_dir, 'snps_annotated.csv')):
+            df_annot = pd.read_csv(os.path.join(results_dir, 'snps_annotated.csv'), sep="\t")
+        else:
+            df_annot = None
         
         # merge the data
         df = pd.merge(df_gwas, df_freq, on='SNP', how='inner')
@@ -428,12 +433,13 @@ class GWASfixed:
         del df_gwas, df_freq, df_fam
 
         # power curves thresholds
-        ts=[0.3,0.5,0.8]
+        ts=[0.2,0.4,0.6,0.8]
 
         trumpet = draw_trumpet_plot(
             df_gwas  =df[df['p']<5e-8].reset_index(drop=True),
             epi      =epi,
             power_thr=ts,
+            annot    =df_annot,
             plots_dir=plots_dir
         )
 
