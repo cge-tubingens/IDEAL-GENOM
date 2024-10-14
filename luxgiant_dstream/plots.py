@@ -620,10 +620,12 @@ def annotate_miami(axes:Axes, gwas_data:pd.DataFrame, annotations:pd.DataFrame, 
     for i, row in snps_to_annotate.iterrows():
         gene = genes[snps.index(row['SNP'])]  # Get corresponding gene name
         # Add text label to the SNP
-        text = axes.text(row['rel_pos'], row['log10p'], gene, fontsize=10, ha='right', va='top', color='black',
+        text = axes.text(row['rel_pos'], row['log10p'], gene, fontsize=10, ha='center', va='center', color='black',
                     bbox=dict(boxstyle='round,pad=0.3', edgecolor='black', facecolor='white'))
         texts.append(text)
     # Adjust the text to prevent overlaps using adjustText
-    adjust_text(texts, arrowprops=dict(arrowstyle='-', color='black'), ax=axes)
+    adjust_text(texts, arrowprops=dict(arrowstyle="->", color='r', lw=0.5), ax=axes, force_points=0.2,  # Adjust the force on points
+    force_text=0.2,    # Adjust the force on text
+    only_move={'points': 'y', 'text': 'y'} )
 
     return axes
