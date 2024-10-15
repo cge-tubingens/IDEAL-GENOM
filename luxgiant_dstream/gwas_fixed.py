@@ -376,7 +376,6 @@ class GWASfixed:
         output_name= self.output_name
         plots_dir  = self.plots_dir
         results_dir= self.results_dir
-        dependables= self.dependables
         preps_path = self.preps_path
 
         prevalence = self.config_dict['prevalence']
@@ -386,42 +385,39 @@ class GWASfixed:
         plink_cmd = f"plink --bfile {os.path.join(input_path, input_name)} --freq --maf {maf} --out {os.path.join(results_dir, output_name)}"
 
         # execute plink command
-        #shell_do(plink_cmd, log=True)
+        shell_do(plink_cmd, log=True)
 
         # load gwas data
         df_gwas = pd.read_csv(
             os.path.join(results_dir, output_name+'_glm.PHENO1.glm.logistic.hybrid'), 
             sep="\t",
-            usecols=['SNP', 'CHR', 'p', 'b']
         )
+        # ensure column 'CHR' is of type int
+        df_gwas['CHR'] = df_gwas['CHR'].astype(int)
 
-        # load frequencies
+        # load file with 'MAF'
         df_freq = pd.read_csv(
             os.path.join(results_dir, output_name+'.frq'),
             sep="\s+",
             usecols=['SNP', 'MAF']
         )
 
-        # load fam file
+        # load .fam file to compute the number of cases and controls
         df_fam = pd.read_csv(
             os.path.join(preps_path, output_name+'_LDpruned.fam'),
             sep="\s+",
             header=None
         )
 
-        counts = df_fam[5].value_counts()
+        counts  = df_fam[5].value_counts()
+        ncase   = counts[2]
+        ncontrol= counts[1]
 
-        ncase = counts[2]
-        ncontrol = counts[1]
+        # estimate prevalence from ncase and ncontrol
         if prevalence is None:
             prevalence = ncase / (ncase + ncontrol)
 
-        epi = {
-            'prevalence': prevalence,
-            'ncase'     : ncase,
-            'ncontrol'  : ncontrol
-        }
-
+        # load SNPs to highlight and annotate
         if os.path.isfile(os.path.join(results_dir, 'snps_annotated.csv')):
             df_annot = pd.read_csv(os.path.join(results_dir, 'snps_annotated.csv'), sep="\t")
         else:
@@ -432,17 +428,60 @@ class GWASfixed:
 
         del df_gwas, df_freq, df_fam
 
+        # rename columns to match GWASlab format
+        rename_cols = {
+            'SNP': 'rsID',
+            'CHR': 'CHR',
+            'POS': 'POS',
+            'A1' : 'EA',
+            'A2' : 'NEA',
+            'freq': 'EAF',
+            'b'  : 'BETA',
+            'se' : 'SE',
+            'Z_STAT': 'Z',
+            'p'  : 'P',
+            'MAF': 'MAF'
+        }
+
+        df = df.rename(columns=rename_cols)
+
+        # create a column with the SNP ID CHR:POS:EA:NEA
+        df['SNPID'] = df['CHR'].astype(str) +':'+ df['POS'].astype(str) +':'+ df['EA'].astype(str) +':'+ df['NEA'].astype(str)
+        
+        # find SNP IDs to highlight
+        if df_annot is not None:
+            df_annot = df_annot.merge(
+                df[['rsID', 'SNPID', 'CHR', 'POS']], 
+                left_on='SNP', 
+                right_on='rsID', 
+                how='inner'
+            )
+            df_annot = df_annot.drop(columns=['SNP'])
+
         # power curves thresholds
         ts=[0.2,0.4,0.6,0.8]
 
         trumpet = draw_trumpet_plot(
-            df_gwas  =df[df['p']<5e-8].reset_index(drop=True),
-            epi      =epi,
-            power_thr=ts,
-            annot    =df_annot,
-            plots_dir=plots_dir
+            df_gwas    =df,
+            plot_dir   =plots_dir,
+            mode       ="b",
+            xscale     ='nonlog',
+            n_matrix   =3000,
+            ts         =ts,
+            ncase      =ncase, 
+            ncontrol   =ncontrol, 
+            prevalence =prevalence,
+            figargs    ={"figsize": (20, 16), "dpi": 400},
+            font_family='DejaVu Sans',
+            highlight  =df_annot['SNPID'].tolist(),
+            highlight_windowkb = 0.01,
+            anno       ="GENENAME",
+            build      ="38",
+            anno_set   =df_annot['SNPID'].tolist(),
+            anno_style ="expand",
+            ylim       =(-df['BETA'].abs().max()*1.5, df['BETA'].abs().max()*1.5),
+            xlim       =(df['MAF'].min()*0.5,0.52),
+            anno_args  ={'bbox':dict(boxstyle='round,pad=0.3', edgecolor='black', facecolor='#f0f0f0', alpha=0.8)}
         )
 
-
-
-        pass
+        return trumpet
