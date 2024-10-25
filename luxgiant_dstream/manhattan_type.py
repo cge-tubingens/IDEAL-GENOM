@@ -244,42 +244,37 @@ def draw_manhattan(data_df:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, 
                 gtf_path=gtf_path
             ).rename(columns={"GENE":"GENENAME"})
 
-        #return plot_data['data']
+        texts = []  # a list to store text annotations for adjustment
+        x = []      # a list to store x-coordinates for adjustment
+        y = []      # a list to store y-coordinates for adjustment
 
-        ax = annotate_single(
-            sumstats=plot_data['data'],
-            anno='GENENAME',
-            mode="m",
-            ax1=ax,
-            highlight_i=highlight_i,
-            highlight_chrpos=False,
-            highlight_anno_args=None,
-            to_annotate=variants_toanno,
-            anno_d=dict(),
-            anno_alias=dict(),
-            anno_style="right",
-            anno_args=dict(),
-            arm_scale=1,
-            anno_max_iter=100,
-            arm_scale_d=None,
-            arm_offset=50,
-            anno_adjust=False,
-            anno_fixed_arm_length=None,
-            maxy=plot_data['maxp'],
-            anno_fontsize= 8,
-            font_family="DejaVu sans",
-            region=None,
-            region_anno_bbox_args=None,
-            skip=0,
-            anno_height=1,
-            snpid=snp_col,
-            chrom=chr_col,
-            pos=pos_col,
-            repel_force=0.03,
-            verbose=False,
-            log=Log(),
-            _invert=False
-        )    
+        for i, row in variants_toanno.iterrows():
+
+            x.append(row['rel_pos'])
+            y.append(row['log10p'])
+            texts.append(row['GENENAME'])
+
+        x_lines_coor = np.linspace(0, max_x_axis, 1000).tolist() # list with a gris of x-coordinates for the lines
+
+        ta.allocate(
+            ax,              # the axis to which the text will be
+            x        =x,     # x-coordinates of the data point to annotate
+            y        =y,     # y-coordinates of the data point to annotate
+            text_list=texts, # list of text to annotate
+            x_scatter=plot_data['data']['rel_pos'], # all scatter points x-coordinates
+            y_scatter=plot_data['data']['log10p'],  # all scatter points y-coordinates
+            linecolor='black',                      # color of the line connecting the text to the data point
+            textsize =7,                            # size of the text (Default to Nature standard)
+            bbox     =dict(boxstyle='round,pad=0.3', edgecolor='black', facecolor='#f0f0f0', alpha=0.5),
+            x_lines  = [x_lines_coor, x_lines_coor],
+            y_lines  = [[suggestive_line]*len(x_lines_coor), [genome_line]*len(x_lines_coor)],
+            avoid_label_lines_overlap =True,
+            avoid_crossing_label_lines=True,
+            min_distance=0.01,
+            max_distance=0.4,
+            margin      =0.01,
+            rotation    =90
+        )
 
     plt.tight_layout()
     plt.show()
