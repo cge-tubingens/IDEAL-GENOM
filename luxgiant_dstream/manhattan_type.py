@@ -285,3 +285,241 @@ def manhattan_draw(data_df:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, 
     plt.show()
 
     return True
+
+def miami_process_data(data_top:pd.DataFrame, data_bottom:pd.DataFrame)->dict:
+    
+    """
+    Processes Miami plot data by preparing, computing relative positions, and splitting the data.
+
+    Parameters:
+    -----------
+    data_top (pd.DataFrame): 
+        The top part of the data to be processed.
+    data_bottom (pd.DataFrame): 
+        The bottom part of the data to be processed.
+    
+    Returns:
+    --------
+    dict: A dictionary containing the processed data with the following keys:
+        - 'upper': DataFrame containing the top part of the processed data.
+        - 'lower': DataFrame containing the bottom part of the processed data.
+        - 'axis': The center positions of the chromosomes.
+        - 'maxp': The maximum -log10(p-value) in the data.
+    """
+
+    data_top['split_by']   = 'top'
+    data_bottom['split_by']= 'bottom'
+
+    data = pd.concat([data_top, data_bottom], axis=0, ignore_index=True)
+
+    data = compute_relative_pos(data, chr_col='CHR', pos_col='POS', p_col='p')
+
+    axis_center = find_chromosomes_center(data)
+
+    maxp = np.ceil(data['log10p'].max(skipna=True))
+
+    miami_data = {
+        'upper': data[data['split_by'] == 'top'].reset_index(drop=True),
+        'lower': data[data['split_by'] == 'bottom'].reset_index(drop=True),
+        'axis': axis_center,
+        'maxp': maxp
+    }
+
+    return miami_data
+
+def miami_annotate(axes:Axes, gwas_data:pd.DataFrame, annotations:pd.DataFrame, to_annotate:list)->Axes:
+
+    snps = annotations['SNP'].to_list()
+    genes= annotations['GENE'].to_list()
+    highlighted_snps = pd.merge(annotations, gwas_data[['SNP', 'rel_pos', 'log10p']], on='SNP', how='inner')
+
+    custom_hue_colors = {
+        "on_both"      : "#1f77b4",  
+        "top_in_bottom": "#2ca02c",
+        "bottom_in_top": "#9467bd",
+    }
+
+    axes = sns.scatterplot(
+        x       =highlighted_snps['rel_pos'], 
+        y       =highlighted_snps['log10p'], 
+        ax      =axes,
+        hue     =highlighted_snps['type'],
+        palette =custom_hue_colors,
+        size    =10,
+        legend  =False,
+    )
+
+    snps_to_annotate = highlighted_snps[highlighted_snps['type'].isin(to_annotate)].reset_index(drop=True)
+
+    texts = []  # A list to store text annotations for adjustment
+    x = []
+    y = []
+    for i, row in snps_to_annotate.iterrows():
+        gene = genes[snps.index(row['SNP'])]  # Get corresponding gene name
+
+        x.append(row['rel_pos'])
+        y.append(row['log10p'])
+        texts.append(gene)
+
+    ta.allocate(
+        axes,
+        x        =x,
+        y        =y,
+        text_list=texts,
+        x_scatter=x,
+        y_scatter=y,
+        linecolor='black',
+        textsize =10,
+        bbox     =dict(boxstyle='round,pad=0.3', edgecolor='black', facecolor='#f0f0f0', alpha=0.8),
+    )
+
+    return axes
+
+def miami_classify_annotations(df_top_highlts:pd.DataFrame, df_bottom_highlts:pd.DataFrame)->dict:
+    
+    """
+    Splits the annotation data into two parts for the top and bottom plots.
+
+    Parameters:
+    -----------
+    df_top_highlts (pd.DataFrame): 
+        The annotation data for the top plot.
+    df_bottom_highlits (pd.DataFrame): 
+        The annotation data for the bottom plot.
+    
+    Returns:
+    --------
+    tuple: A tuple containing the split annotation data for the top and bottom plots.
+    """
+
+    df_both = pd.merge(df_top_highlts, df_bottom_highlts[['SNP']], on='SNP', how='inner')
+    df_both['type'] = 'on_both'
+
+    df_top_in_bottom = df_top_highlts[~df_top_highlts['SNP'].isin(df_bottom_highlts['SNP'])].reset_index(drop=True)
+    df_top_in_bottom['type'] = 'top_in_bottom'
+
+    df_bottom_in_top = df_bottom_highlts[~df_bottom_highlts['SNP'].isin(df_top_highlts['SNP'])].reset_index(drop=True)
+    df_bottom_in_top['type'] = 'bottom_in_top'
+
+
+    return pd.concat([df_both, df_top_in_bottom, df_bottom_in_top], axis=0).reset_index(drop=True)
+
+def miami_plot(df_top:pd.DataFrame, top_higlights:pd.DataFrame, df_bottom:pd.DataFrame, bottom_higlights:pd.DataFrame, plots_dir:str)->bool:
+    
+    """
+    Generates a Miami plot from two dataframes and saves the plot to the specified directory.
+
+    Parameters:
+    ----------
+    df_top (pd.DataFrame): 
+       DataFrame containing the data for the upper plot.
+    df_bottom (pd.DataFrame): 
+       DataFrame containing the data for the lower plot.
+    plots_dir (str): 
+       Directory where the plot image will be saved.
+     
+    Returns:
+    -------
+    bool: 
+       True if the plot is successfully created and saved.
+     
+    The function creates a Miami plot, which is a type of scatter plot used in genomic studies to display 
+    p-values from two different datasets. The plot consists of two panels: the upper panel for the first 
+    dataset and the lower panel for the second dataset. The x-axis represents the genomic position, and 
+    the y-axis represents the -log10(p) values. The function also adds genome-wide and suggestive significance 
+    lines to the plot.
+    """
+
+    chr_colors           = ['#66c2a5', '#fc8d62']
+    upper_ylab           = "-log10(p)" 
+    lower_ylab           = "-log10(p)" 
+    genome_line          = 5e-8
+    genome_line_color    = "red"
+    suggestive_line      = 1e-5 
+    suggestive_line_color= "blue"
+
+    # format data to draw miami plot
+    plot_data = miami_process_data(df_top, df_bottom)
+
+    # Set axis labels for upper and lower plot
+    def format_ylabel(label):
+        return f"{label}\n-log10(p)" if label != "-log10(p)" else r"-log10(p)"
+    
+    upper_ylab = format_ylabel(upper_ylab)
+    lower_ylab = format_ylabel(lower_ylab)
+
+    max_x_axis = max(plot_data['upper']['rel_pos'].max(), plot_data['lower']['rel_pos'].max())+10
+
+    # Create the figure
+    plt.figure(figsize=(15, 18.4))
+
+    # Create the upper plot
+
+    ax_upper = plt.subplot(211)
+    sns.scatterplot(x=plot_data['upper']['rel_pos'], y=plot_data['upper']['log10p'],
+                    hue=plot_data['upper']['CHR'], palette=chr_colors, ax=ax_upper, s=1, legend=False)
+    ax_upper.set_ylabel(upper_ylab)
+    ax_upper.set_xlim(0, max_x_axis)
+
+    x_ticks=plot_data['axis']['center'].tolist()
+    x_labels=plot_data['axis']['CHR'].astype(str).tolist()
+
+    ax_upper.set_xticks(ticks=x_ticks)  # Set x-ticks
+    ax_upper.set_xticklabels(x_labels)
+    
+    # Add genome-wide and suggestive lines
+    if suggestive_line is not None:
+        ax_upper.axhline(-np.log10(suggestive_line), color=suggestive_line_color, linestyle='solid', lw=0.5)
+    
+    if genome_line is not None:
+        ax_upper.axhline(-np.log10(genome_line), color=genome_line_color, linestyle='dashed', lw=0.5)
+
+    # Create the lower plot
+    ax_lower = plt.subplot(212)
+    sns.scatterplot(x=plot_data['lower']['rel_pos'], y=plot_data['lower']['log10p'],
+                    hue=plot_data['lower']['CHR'], palette=chr_colors, ax=ax_lower, s=1, legend=False)
+    ax_lower.set_ylabel(lower_ylab)
+    ax_lower.set_ylim(plot_data['maxp'], 0)  # Reverse y-axis
+    ax_lower.set_xlim(0, max_x_axis)
+
+    ax_lower.set_xticks(ticks=x_ticks) # Set x-ticks
+    ax_lower.set_xticklabels([])
+    ax_lower.xaxis.set_ticks_position('top')
+    
+    # Add genome-wide and suggestive lines
+    if suggestive_line is not None:
+        ax_lower.axhline(-np.log10(suggestive_line), color=suggestive_line_color, linestyle='solid', lw=0.5)
+    
+    if genome_line is not None:
+        ax_lower.axhline(-np.log10(genome_line), color=genome_line_color, linestyle='dashed', lw=0.5)
+    
+    if top_higlights is not None and bottom_higlights is None:
+
+        top_higlights['type'] = 'top_in_bottom'
+
+        ax_upper = miami_annotate(ax_upper, plot_data['upper'], top_higlights, to_annotate=['top_in_bottom'])
+        ax_lower = miami_annotate(ax_lower, plot_data['lower'], top_higlights, to_annotate=['top_in_bottom'])
+
+    if bottom_higlights is not None and top_higlights is None:
+
+        bottom_higlights['type'] = 'bottom_in_top'
+
+        ax_upper = miami_annotate(ax_upper, plot_data['upper'], bottom_higlights, to_annotate=['bottom_in_top'])
+        ax_lower = miami_annotate(ax_lower, plot_data['lower'], bottom_higlights, to_annotate=['bottom_in_top'])
+
+    if top_higlights is not None and bottom_higlights is not None:
+
+        split_annotations = miami_classify_annotations(top_higlights, bottom_higlights)
+
+        ax_upper = miami_annotate(ax_upper, plot_data['upper'], split_annotations, to_annotate=['on_both', 'top_in_bottom'])
+        ax_lower = miami_annotate(ax_lower, plot_data['lower'], split_annotations, to_annotate=['on_both'])
+
+    ax_lower.set_xlabel("Base pair position")
+    ax_upper.set_xlabel("")
+    
+    # Adjust layout and show the plot
+    plt.tight_layout()
+    plt.savefig(os.path.join(plots_dir, 'miami_plot.png'))
+    plt.show()
+
+    return True
