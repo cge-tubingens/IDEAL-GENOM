@@ -100,7 +100,7 @@ def find_chromosomes_center(data:pd.DataFrame, chr_col:str='CHR', chr_pos_col:st
 
     return axis_center
 
-def process_manhattan_data(data_df:pd.DataFrame, chr_col:str='CHR', pos_col:str='POS', p_col:str='p')->dict:
+def manhattan_process_data(data_df:pd.DataFrame, chr_col:str='CHR', pos_col:str='POS', p_col:str='p')->dict:
 
     data = compute_relative_pos(
         data_df, 
@@ -121,7 +121,7 @@ def process_manhattan_data(data_df:pd.DataFrame, chr_col:str='CHR', pos_col:str=
 
     return manhattan_data
 
-def draw_manhattan(data_df:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, p_col:str, plot_dir:str, to_highlight:list=None, to_annotate:list=None, build:str='38', gtf_path:str=None)->bool:
+def manhattan_draw(data_df:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, p_col:str, plot_dir:str, to_highlight:list=None, to_annotate:list=None, build:str='38', gtf_path:str=None)->bool:
 
     chr_colors           = ['grey', 'skyblue']
     ylab                 = "-log10(p)"
@@ -132,7 +132,7 @@ def draw_manhattan(data_df:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, 
     suggestive_line_color= "#377eb8"
 
     # format data to draw manhattan plot
-    plot_data = process_manhattan_data(
+    plot_data = manhattan_process_data(
         data_df=data_df,
         chr_col=chr_col,
         pos_col=pos_col,
