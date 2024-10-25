@@ -1,3 +1,14 @@
+"""
+This module provides functions to process and visualize Manhattan plots for genomic data. It includes functions to compute relative positions of SNPs, find chromosome centers, process data for Manhattan plots, and draw the plots with optional highlighting and annotation.
+
+Functions:
+- compute_relative_pos: Compute relative positions and -log10(p-values) for SNPs.
+- find_chromosomes_center: Calculate center positions of chromosomes.
+- process_manhattan_data: Prepare data for Manhattan plot visualization.
+- draw_manhattan: Generate and save a Manhattan plot with optional SNP highlighting and annotation.
+"""
+
+import gzip
 import os
 
 import pandas as pd
