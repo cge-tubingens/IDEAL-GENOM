@@ -160,7 +160,10 @@ def draw_manhattan(data_df:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, 
     # set axis labels and font size
     ax.set_ylabel(ylab, fontsize=7)
     ax.set_xlabel(xlab, fontsize=7)
-    ax.set_xlim(0, max_x_axis+10)
+
+    # set axis limits
+    ax.set_xlim(0, max_x_axis+1000)
+    ax.set_ylim(0, plot_data['maxp']+10)
 
     # set x-axis ticks and labels
     x_ticks=plot_data['axis']['center'].tolist()
