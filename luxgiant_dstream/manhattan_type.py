@@ -213,6 +213,21 @@ def draw_manhattan(data_df:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, 
     # annotate SNPs   
     if to_annotate is not None:
 
+        if gtf_path is None:
+            gtf_url = 'https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.40_GRCh38.p14/GCF_000001405.40_GRCh38.p14_genomic.gtf.gz'
+            path_to_gz = os.path.join(os.path.abspath('..'), 'GCF_000001405.40_GRCh38.p14_genomic.gtf.gz')
+            path_to_gtf= os.path.join(os.path.abspath('..'), 'GCF_000001405.40_GRCh38.p14_genomic.gtf')
+            
+            if os.path.exists(path_to_gz) is not True or os.path.exists(path_to_gtf) is not True:
+
+                download_file(gtf_url, path_to_gz)
+                
+                with gzip.open(path_to_gz, 'rb') as f_in:
+                     with open(path_to_gtf, 'wb') as f_out:
+                        shutil.copyfileobj(f_in, f_out)
+            gtf_path = path_to_gtf
+
+
         variants_toanno = plot_data['data'][plot_data['data'][snp_col].isin(to_annotate)]\
             .reset_index(drop=True)
         
