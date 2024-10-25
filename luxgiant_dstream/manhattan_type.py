@@ -119,7 +119,7 @@ def process_manhattan_data(data_df:pd.DataFrame, chr_col:str='CHR', pos_col:str=
 
     return manhattan_data
 
-def draw_manhattan(data_df:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, p_col:str, to_highlight:list=None, to_annotate:list=None, build:str='38'):
+def draw_manhattan(data_df:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, p_col:str, plot_dir:str, to_highlight:list=None, to_annotate:list=None, build:str='38', gtf_path:str=None)->bool:
 
     chr_colors           = ['#66c2a5', '#fc8d62']
     ylab                 = "-log10(p)"
