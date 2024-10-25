@@ -134,7 +134,7 @@ def draw_manhattan(data_df:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, 
         data_df=data_df,
         chr_col=chr_col,
         pos_col=pos_col,
-        p_col=p_col
+        p_col  =p_col
     )
 
     max_x_axis = plot_data['data']['rel_pos'].max()
@@ -148,13 +148,13 @@ def draw_manhattan(data_df:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, 
     warnings.filterwarnings("ignore", category=UserWarning)
 
     ax = sns.scatterplot(
-        x=plot_data['data']['rel_pos'], 
-        y=plot_data['data']['log10p'],
-        hue=plot_data['data'][chr_col], 
+        x      =plot_data['data']['rel_pos'], 
+        y      =plot_data['data']['log10p'],
+        hue    =plot_data['data'][chr_col], 
         palette=chr_colors, 
-        ax=ax, 
-        s=2, 
-        legend=False
+        ax     =ax, 
+        s      =3, 
+        legend =False
     )
 
     ax.set_ylabel(ylab, fontsize=7)
