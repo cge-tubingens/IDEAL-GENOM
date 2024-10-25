@@ -121,13 +121,13 @@ def process_manhattan_data(data_df:pd.DataFrame, chr_col:str='CHR', pos_col:str=
 
 def draw_manhattan(data_df:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, p_col:str, plot_dir:str, to_highlight:list=None, to_annotate:list=None, build:str='38', gtf_path:str=None)->bool:
 
-    chr_colors           = ['#66c2a5', '#fc8d62']
+    chr_colors           = ['grey', 'skyblue']
     ylab                 = "-log10(p)"
     xlab                 = "Chromosome"
     genome_line          = 5e-8
-    genome_line_color    = "red"
+    genome_line_color    = "#636363"
     suggestive_line      = 1e-5 
-    suggestive_line_color= "blue"
+    suggestive_line_color= "#377eb8"
 
     # format data to draw manhattan plot
     plot_data = process_manhattan_data(
