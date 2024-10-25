@@ -157,18 +157,22 @@ def draw_manhattan(data_df:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, 
         legend =False
     )
 
+    # set axis labels and font size
     ax.set_ylabel(ylab, fontsize=7)
     ax.set_xlabel(xlab, fontsize=7)
     ax.set_xlim(0, max_x_axis+10)
 
+    # set x-axis ticks and labels
     x_ticks=plot_data['axis']['center'].tolist()
     x_labels=plot_data['axis']['CHR'].astype(str).tolist()
 
-    ax.set_xticks(ticks=x_ticks)  # Set x-ticks
+    ax.set_xticks(ticks=x_ticks)
     ax.set_xticklabels(x_labels)
+
+    # set ticks font size
     ax.tick_params(axis='both', labelsize=7)
 
-    # Add genome-wide and suggestive lines
+    # add suggestive line
     if suggestive_line is not None:
         ax.axhline(
             -np.log10(suggestive_line), 
@@ -177,6 +181,7 @@ def draw_manhattan(data_df:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, 
             lw       =0.5
         )
     
+    # add genome-wide line
     if genome_line is not None:
         ax.axhline(
             -np.log10(genome_line), 
@@ -185,7 +190,8 @@ def draw_manhattan(data_df:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, 
             lw       =0.5
         )
 
-    if to_highlight is not None:
+    # highlight SNPs
+    if to_highlight is not None:            
 
         plot_data['data']["HUE"] = pd.NA
         plot_data['data']["HUE"] = plot_data['data']["HUE"].astype("Int64")
