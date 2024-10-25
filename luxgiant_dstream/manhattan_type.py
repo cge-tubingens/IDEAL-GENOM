@@ -180,7 +180,7 @@ def draw_manhattan(data_df:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, 
         ax.axhline(
             -np.log10(suggestive_line), 
             color    =suggestive_line_color, 
-            linestyle='solid', 
+            linestyle='dashed', 
             lw       =0.5
         )
     
@@ -189,7 +189,7 @@ def draw_manhattan(data_df:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, 
         ax.axhline(
             -np.log10(genome_line), 
             color    =genome_line_color, 
-            linestyle='dashed', 
+            linestyle='solid', 
             lw       =0.5
         )
 
