@@ -18,6 +18,8 @@ import pandas as pd
 import seaborn as sns
 import textalloc as ta
 
+from matplotlib.axes import Axes
+
 from gwaslab.bd_download import download_file
 from gwaslab.g_Log import Log
 from gwaslab.util_in_get_sig import annogene
