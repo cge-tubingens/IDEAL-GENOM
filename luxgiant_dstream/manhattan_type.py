@@ -239,8 +239,9 @@ def draw_manhattan(data_df:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, 
                 pos    =pos_col,
                 log    =Log(),
                 build  =build,
-                source ="ensembl",
-                verbose=False
+                source ="refseq",
+                verbose=True,
+                gtf_path=gtf_path
             ).rename(columns={"GENE":"GENENAME"})
 
         #return plot_data['data']
