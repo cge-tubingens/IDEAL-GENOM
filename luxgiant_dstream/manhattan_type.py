@@ -277,6 +277,9 @@ def draw_manhattan(data_df:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, 
         )
 
     plt.tight_layout()
+    plt.savefig(
+        os.path.join(plot_dir, "manhattan_plot.jpeg"), dpi=600
+    )
     plt.show()
 
-    return plot_data['data']
+    return True
