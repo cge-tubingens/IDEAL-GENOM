@@ -209,21 +209,8 @@ def draw_manhattan(data_df:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, 
                 edgecolor="black",
                 color   ='#CB132D',
             )
-        
-        plot_data['data'] = plot_data['data'].rename(columns={'log10p':"scaled_P"}, inplace=False)
-        
-        plot_data['data'], chrom_df = _quick_assign_i_with_rank(
-            plot_data['data'], 
-            chrpad=0.03, 
-            use_rank=False, 
-            chrom=chr_col,
-            pos=pos_col,
-            drop_chr_start=False,
-            _posdiccul=None
-        )
 
-        highlight_i = plot_data['data'].loc[plot_data['data'][snp_col].isin(to_annotate), "i"].tolist()
-        
+    # annotate SNPs   
     if to_annotate is not None:
 
         variants_toanno = plot_data['data'][plot_data['data'][snp_col].isin(to_annotate)]\
