@@ -10,40 +10,17 @@ Functions:
 
 import gzip
 import os
+import shutil
 
-import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 import seaborn as sns
-import scipy.stats as stats
 import textalloc as ta
 
-from matplotlib.axes import Axes
-from pandas.core.groupby.generic import DataFrameGroupBy
-
-import pandas as pd
-import matplotlib.pyplot as plt
-import matplotlib.ticker as ticker
-import matplotlib.patches as patches
-import seaborn as sns
-import numpy as np
-import scipy as sp
-from matplotlib.collections import LineCollection
-import matplotlib.colors as mc
-import matplotlib
-from adjustText import adjust_text
+from gwaslab.bd_download import download_file
+from gwaslab.g_Log import Log
 from gwaslab.util_in_get_sig import annogene
-from gwaslab.viz_aux_annotate_plot import annotate_single
-from gwaslab.viz_aux_quickfix import _quick_assign_i_with_rank
-from gwaslab.viz_aux_reposition_text import adjust_text_position
-from gwaslab.viz_aux_save_figure import save_figure
-from gwaslab.viz_plot_mqqplot import _process_highlight
-from gwaslab.g_Log import Log
-from gwaslab.util_in_calculate_power import get_beta
-from gwaslab.util_in_calculate_power import get_power
-from gwaslab.util_in_calculate_power import get_beta_binary
-from gwaslab.util_in_fill_data import filldata
-from gwaslab.g_Log import Log
 
 def compute_relative_pos(data:pd.DataFrame, chr_col:str='CHR', pos_col:str='POS', p_col:str='p')->pd.DataFrame:
     
