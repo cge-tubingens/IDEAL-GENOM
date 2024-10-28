@@ -220,7 +220,7 @@ def draw_trumpet_plot(df_gwas:pd.DataFrame,
                 anno_d=None,
                 anno_args=None,
                 anno_style="expand",
-                anno_source = "ensembl",
+                anno_source = "refseq",
                 anno_max_iter=100,
                 arm_scale=1,
                 repel_force=0.01,
@@ -555,7 +555,8 @@ def draw_trumpet_plot(df_gwas:pd.DataFrame,
                 log    =log,
                 build  =build,
                 source =anno_source,
-                verbose=verbose
+                verbose=verbose,
+                gtf_path='/mnt/0A2AAC152AABFBB7/CGE/luxgiant-dstream/GCF_000001405.40_GRCh38.p14_genomic.gtf'
             ).rename(columns={"GENE":"GENENAME"})
             
         texts_u=[]
@@ -680,7 +681,7 @@ def draw_trumpet_plot(df_gwas:pd.DataFrame,
         
     ############  Annotation ##################################################################################################
     plt.tight_layout()
-    plt.savefig(os.path.join(plot_dir, 'trumpet_plot.png'))
+    plt.savefig(os.path.join(plot_dir, 'trumpet_plot.jpeg'))
     plt.show()
 
     log.write("Finished creating trumpet plot!", verbose=verbose)
