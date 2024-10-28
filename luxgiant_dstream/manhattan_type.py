@@ -592,6 +592,8 @@ def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col
                 gtf_path=gtf_path
             ).rename(columns={"GENE":"GENENAME"})
 
+        x_lines_coor = np.linspace(0, max_x_axis, 1000).tolist() # list with a gris of x-coordinates for the lines
+
         texts_upper = []  # a list to store text annotations for adjustment
         x_upper = []      # a list to store x-coordinates for adjustment
         y_upper = []      # a list to store y-coordinates for adjustment
@@ -617,13 +619,13 @@ def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col
             x        =x_upper,     # x-coordinates of the data point to annotate
             y        =y_upper,     # y-coordinates of the data point to annotate
             text_list=texts_upper, # list of text to annotate
-            x_scatter=plot_data['upper']['rel_pos'], # all scatter points x-coordinates
-            y_scatter=plot_data['upper']['log10p'],  # all scatter points y-coordinates
+            #x_scatter=plot_data['upper']['rel_pos'], # all scatter points x-coordinates
+            #y_scatter=plot_data['upper']['log10p'],  # all scatter points y-coordinates
             linecolor='black',                      # color of the line connecting the text to the data point
             textsize =7,                            # size of the text (Default to Nature standard)
             bbox     =dict(boxstyle='round,pad=0.3', edgecolor='black', facecolor='#f0f0f0', alpha=0.5),
-            #x_lines  = [x_lines_coor, x_lines_coor],
-            #y_lines  = [[suggestive_line]*len(x_lines_coor), [genome_line]*len(x_lines_coor)],
+            x_lines  = [x_lines_coor, x_lines_coor],
+            y_lines  = [[-np.log10(suggestive_line)]*len(x_lines_coor), [-np.log10(genome_line)]*len(x_lines_coor)],
             avoid_label_lines_overlap =True,
             avoid_crossing_label_lines=True,
             min_distance=0.01,
@@ -637,13 +639,13 @@ def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col
             x        =x_lower,     # x-coordinates of the data point to annotate
             y        =y_lower,     # y-coordinates of the data point to annotate
             text_list=texts_lower, # list of text to annotate
-            x_scatter=plot_data['lower']['rel_pos'], # all scatter points x-coordinates
-            y_scatter=plot_data['loweer']['log10p'],  # all scatter points y-coordinates
+            #x_scatter=plot_data['lower']['rel_pos'], # all scatter points x-coordinates
+            #y_scatter=plot_data['loweer']['log10p'],  # all scatter points y-coordinates
             linecolor='black',                      # color of the line connecting the text to the data point
             textsize =7,                            # size of the text (Default to Nature standard)
             bbox     =dict(boxstyle='round,pad=0.3', edgecolor='black', facecolor='#f0f0f0', alpha=0.5),
-            #x_lines  = [x_lines_coor, x_lines_coor],
-            #y_lines  = [[suggestive_line]*len(x_lines_coor), [genome_line]*len(x_lines_coor)],
+            x_lines  = [x_lines_coor, x_lines_coor],
+            y_lines  = [[suggestive_line]*len(x_lines_coor), [genome_line]*len(x_lines_coor)],
             avoid_label_lines_overlap =True,
             avoid_crossing_label_lines=True,
             min_distance=0.01,
