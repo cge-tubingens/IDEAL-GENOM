@@ -527,7 +527,7 @@ def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col
     max_x_axis = max(plot_data['upper']['rel_pos'].max(), plot_data['lower']['rel_pos'].max())+10
 
     # Create the figure
-    plt.figure(figsize=(15, 18.4))
+    fig = plt.figure(figsize=(20, 13))
 
     # Create the upper plot
 
@@ -666,7 +666,7 @@ def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col
                 log    =Log(),
                 build  ='38',
                 source ="refseq",
-                verbose=True,
+                verbose=False,
                 gtf_path=gtf_path
             ).rename(columns={"GENE":"GENENAME"})
 
@@ -680,7 +680,7 @@ def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col
                 log    =Log(),
                 build  ='38',
                 source ="refseq",
-                verbose=True,
+                verbose=False,
                 gtf_path=gtf_path
             ).rename(columns={"GENE":"GENENAME"})
 
