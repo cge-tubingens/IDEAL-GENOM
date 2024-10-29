@@ -170,7 +170,7 @@ def manhattan_draw(data_df:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, 
 
     # set x-axis ticks and labels
     x_ticks=plot_data['axis']['center'].tolist()
-    x_labels=plot_data['axis']['CHR'].astype(str).tolist()
+    x_labels=plot_data['axis'][chr_col].astype(str).tolist()
 
     ax.set_xticks(ticks=x_ticks)
     ax.set_xticklabels(x_labels)
