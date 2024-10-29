@@ -717,10 +717,38 @@ def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col
     
     ax_lower.set_xlabel("Chromosome")
     ax_upper.set_xlabel("")
-    
-    # Adjust layout and show the plot
+
+    # adjust layout
     plt.tight_layout()
-    plt.savefig(os.path.join(plots_dir, 'miami_plot.png'))
+
+    # render and draw the figure without showing it 
+    r = fig.canvas.get_renderer()
+    fig.canvas.draw()
+
+    # lines between annotations and SNPs must be drawn after the plot is rendered
+
+    # draw lines between annotations and SNPs on the upper plot
+    if len(top_annotations)>0:
+
+        ax_upper = miami_draw_anno_lines(
+            renderer       =r, 
+            axes           =ax_upper, 
+            texts          =texts_upper, 
+            variants_toanno=top_variants_toanno
+        )
+
+    # draw lines between annotations and SNPs on the lower plot
+    if len(bottom_annotations)>0:
+
+        ax_lower = miami_draw_anno_lines(
+            renderer       =r, 
+            axes           =ax_lower, 
+            texts          =texts_lower, 
+            variants_toanno=bottom_variants_toanno
+        )
+    
+    # save ad show the plot
+    plt.savefig(os.path.join(plots_dir, save_name), dpi=500)
     plt.show()
 
     return True
