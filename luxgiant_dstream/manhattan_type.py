@@ -532,12 +532,20 @@ def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col
     # Create the upper plot
 
     ax_upper = plt.subplot(211)
-    sns.scatterplot(x=plot_data['upper']['rel_pos'], y=plot_data['upper']['log10p'],
-                    hue=plot_data['upper'][chr_col], palette=chr_colors, ax=ax_upper, s=1, legend=False)
+
+    sns.scatterplot(
+        x      =plot_data['upper']['rel_pos'], 
+        y      =plot_data['upper']['log10p'],
+        hue    =plot_data['upper'][chr_col], 
+        palette=chr_colors, 
+        ax     =ax_upper, 
+        s      =1, 
+        legend =False
+    )
     ax_upper.set_ylabel(upper_ylab)
     ax_upper.set_xlim(0, max_x_axis)
 
-    x_ticks=plot_data['axis']['center'].tolist()
+    x_ticks =plot_data['axis']['center'].tolist()
     x_labels=plot_data['axis'][chr_col].astype(str).tolist()
 
     ax_upper.set_xticks(ticks=x_ticks)  # Set x-ticks
@@ -545,15 +553,22 @@ def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col
     
     # Add genome-wide and suggestive lines
     if suggestive_line is not None:
-        ax_upper.axhline(-np.log10(suggestive_line), color=suggestive_line_color, linestyle='solid', lw=0.5)
+        ax_upper.axhline(-np.log10(suggestive_line), color=suggestive_line_color, linestyle='solid', lw=0.7)
     
     if genome_line is not None:
-        ax_upper.axhline(-np.log10(genome_line), color=genome_line_color, linestyle='dashed', lw=0.5)
+        ax_upper.axhline(-np.log10(genome_line), color=genome_line_color, linestyle='dashed', lw=0.7)
 
     # Create the lower plot
     ax_lower = plt.subplot(212)
-    sns.scatterplot(x=plot_data['lower']['rel_pos'], y=plot_data['lower']['log10p'],
-                    hue=plot_data['lower'][chr_col], palette=chr_colors, ax=ax_lower, s=1, legend=False)
+    sns.scatterplot(
+        x      =plot_data['lower']['rel_pos'], 
+        y      =plot_data['lower']['log10p'],
+        hue    =plot_data['lower'][chr_col], 
+        palette=chr_colors, 
+        ax     =ax_lower, 
+        s      =1, 
+        legend =False
+    )
     ax_lower.set_ylabel(lower_ylab)
     ax_lower.set_ylim(plot_data['maxp'], 0)  # Reverse y-axis
     ax_lower.set_xlim(0, max_x_axis)
@@ -564,10 +579,10 @@ def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col
     
     # Add genome-wide and suggestive lines
     if suggestive_line is not None:
-        ax_lower.axhline(-np.log10(suggestive_line), color=suggestive_line_color, linestyle='solid', lw=0.5)
+        ax_lower.axhline(-np.log10(suggestive_line), color=suggestive_line_color, linestyle='solid', lw=0.7)
     
     if genome_line is not None:
-        ax_lower.axhline(-np.log10(genome_line), color=genome_line_color, linestyle='dashed', lw=0.5)
+        ax_lower.axhline(-np.log10(genome_line), color=genome_line_color, linestyle='dashed', lw=0.7)
     
     top = set(top_highlights)
     bottom = set(bottom_highlights)
@@ -597,7 +612,7 @@ def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col
         }
 
         ax_upper = sns.scatterplot(
-            data=plot_data['upper'][~plot_data['upper']['type'].isnull()].reset_index(drop=True),
+            data    =plot_data['upper'][~plot_data['upper']['type'].isnull()].reset_index(drop=True),
             x       ='rel_pos', 
             y       ='log10p', 
             ax      =ax_upper,
@@ -608,7 +623,7 @@ def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col
         )
 
         ax_lower = sns.scatterplot(
-            data=plot_data['lower'][~plot_data['lower']['type'].isnull()].reset_index(drop=True),
+            data    =plot_data['lower'][~plot_data['lower']['type'].isnull()].reset_index(drop=True),
             x       ='rel_pos', 
             y       ='log10p', 
             ax      =ax_lower,
