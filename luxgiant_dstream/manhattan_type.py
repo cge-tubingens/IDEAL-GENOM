@@ -635,6 +635,7 @@ def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col
 
     if len(top_annotations)>0 or len(bottom_annotations)>0:
 
+        # download gtf file if not provided to annotate genes
         if gtf_path is None:
             gtf_url = 'https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.40_GRCh38.p14/GCF_000001405.40_GRCh38.p14_genomic.gtf.gz'
             path_to_gz = os.path.join(os.path.abspath('..'), 'GCF_000001405.40_GRCh38.p14_genomic.gtf.gz')
@@ -655,6 +656,7 @@ def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col
         bottom_variants_toanno = plot_data['lower'][plot_data['lower'][snp_col].isin(bottom_annotations)]\
             .reset_index(drop=True)
         
+        # get gene names for upper plot
         if (top_variants_toanno.empty is not True):
             top_variants_toanno = annogene(
                 top_variants_toanno,
@@ -668,6 +670,7 @@ def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col
                 gtf_path=gtf_path
             ).rename(columns={"GENE":"GENENAME"})
 
+        # get gane names for bottom plot
         if (bottom_variants_toanno.empty is not True):
             bottom_variants_toanno = annogene(
                 bottom_variants_toanno,
