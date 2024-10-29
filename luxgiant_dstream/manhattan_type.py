@@ -20,6 +20,7 @@ import seaborn as sns
 import textalloc as ta
 
 from matplotlib.axes import Axes
+from matplotlib.backend_bases import RendererBase
 
 from gwaslab.bd_download import download_file
 from gwaslab.g_Log import Log
@@ -499,6 +500,8 @@ def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col
     bool
         True if the plot is successfully created and saved, False otherwise.
     """
+    
+    
 
     chr_colors           = ['#66c2a5', '#fc8d62']
     upper_ylab           = "-log10(p)" 
