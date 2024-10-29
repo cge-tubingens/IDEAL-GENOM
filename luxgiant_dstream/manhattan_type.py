@@ -684,70 +684,38 @@ def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col
                 gtf_path=gtf_path
             ).rename(columns={"GENE":"GENENAME"})
 
-        x_lines_coor = np.linspace(0, max_x_axis, 1000).tolist() # list with a gris of x-coordinates for the lines
-
-        texts_upper = []  # a list to store text annotations for adjustment
-        x_upper = []      # a list to store x-coordinates for adjustment
-        y_upper = []      # a list to store y-coordinates for adjustment
-
-        for i, row in top_variants_toanno.iterrows():
-
-            x_upper.append(row['rel_pos'])
-            y_upper.append(row['log10p'])
-            texts_upper.append(row['GENENAME'])
-
-        texts_lower = []  # a list to store text annotations for adjustment
-        x_lower = []      # a list to store x-coordinates for adjustment
-        y_lower = []      # a list to store y-coordinates for adjustment
-
-        for i, row in bottom_variants_toanno.iterrows():
-
-            x_lower.append(row['rel_pos'])
-            y_lower.append(row['log10p'])
-            texts_lower.append(row['GENENAME'])
-
-        ta.allocate(
-            ax_upper,              # the axis to which the text will be
-            x        =x_upper,     # x-coordinates of the data point to annotate
-            y        =y_upper,     # y-coordinates of the data point to annotate
-            text_list=texts_upper, # list of text to annotate
-            #x_scatter=plot_data['upper']['rel_pos'], # all scatter points x-coordinates
-            #y_scatter=plot_data['upper']['log10p'],  # all scatter points y-coordinates
-            linecolor='black',                      # color of the line connecting the text to the data point
-            textsize =7,                            # size of the text (Default to Nature standard)
-            bbox     =dict(boxstyle='round,pad=0.3', edgecolor='black', facecolor='#f0f0f0', alpha=0.5),
-            x_lines  = [x_lines_coor, x_lines_coor],
-            y_lines  = [[-np.log10(suggestive_line)]*len(x_lines_coor), [-np.log10(genome_line)]*len(x_lines_coor)],
-            avoid_label_lines_overlap =True,
-            avoid_crossing_label_lines=True,
-            min_distance=0.01,
-            max_distance=0.4,
-            margin      =0.01,
-            rotation    =90
+        # annotate upper plot
+        ax_upper, texts_upper = manhattan_type_annotate(
+            axes           =ax_upper, 
+            data           =plot_data['upper'], 
+            variants_toanno=top_variants_toanno, 
+            max_x_axis     =max_x_axis, 
+            suggestive_line=suggestive_line, 
+            genome_line    =genome_line
         )
 
-        ta.allocate(
-            ax_lower,              # the axis to which the text will be
-            x        =x_lower,     # x-coordinates of the data point to annotate
-            y        =y_lower,     # y-coordinates of the data point to annotate
-            text_list=texts_lower, # list of text to annotate
-            #x_scatter=plot_data['lower']['rel_pos'], # all scatter points x-coordinates
-            #y_scatter=plot_data['loweer']['log10p'],  # all scatter points y-coordinates
-            linecolor='black',                      # color of the line connecting the text to the data point
-            textsize =7,                            # size of the text (Default to Nature standard)
-            bbox     =dict(boxstyle='round,pad=0.3', edgecolor='black', facecolor='#f0f0f0', alpha=0.5),
-            x_lines  = [x_lines_coor, x_lines_coor],
-            y_lines  = [[suggestive_line]*len(x_lines_coor), [genome_line]*len(x_lines_coor)],
-            avoid_label_lines_overlap =True,
-            avoid_crossing_label_lines=True,
-            min_distance=0.01,
-            max_distance=0.4,
-            margin      =0.01,
-            rotation    =90
+        # annotate lower plot
+        ax_lower, texts_lower = manhattan_type_annotate(
+            axes           =ax_lower, 
+            data           =plot_data['lower'], 
+            variants_toanno=bottom_variants_toanno, 
+            max_x_axis     =max_x_axis, 
+            suggestive_line=suggestive_line, 
+            genome_line    =genome_line
         )
 
+    from matplotlib.lines import Line2D
 
-    ax_lower.set_xlabel("Base pair position")
+    custom_dots = [
+        Line2D([0], [0], marker='o', color='w', markerfacecolor="#1f77b4", markersize=5, label='Top Hits on Both'),
+        Line2D([0], [0], marker='o', color='w', markerfacecolor="#2ca02c", markersize=5, label=f'Top Hits on {legend_top}'),
+        Line2D([0], [0], marker='o', color='w', markerfacecolor="#9467bd", markersize=5, label=f'Top Hits on {legend_bottom}'),
+    ]
+
+    # Add custom legend
+    ax_upper.legend(handles=custom_dots, title='Legend', loc="best", fontsize=7)
+    
+    ax_lower.set_xlabel("Chromosome")
     ax_upper.set_xlabel("")
     
     # Adjust layout and show the plot
