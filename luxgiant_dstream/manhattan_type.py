@@ -340,87 +340,80 @@ def miami_process_data(data_top:pd.DataFrame, data_bottom:pd.DataFrame, chr_col:
 
     return miami_data
 
-def miami_annotate(axes:Axes, gwas_data:pd.DataFrame, annotations:pd.DataFrame, to_annotate:list)->Axes:
-
-    snps = annotations['SNP'].to_list()
-    genes= annotations['GENE'].to_list()
-    highlighted_snps = pd.merge(annotations, gwas_data[['SNP', 'rel_pos', 'log10p']], on='SNP', how='inner')
-
-    custom_hue_colors = {
-        "on_both"      : "#1f77b4",  
-        "top_in_bottom": "#2ca02c",
-        "bottom_in_top": "#9467bd",
-    }
-
-    axes = sns.scatterplot(
-        x       =highlighted_snps['rel_pos'], 
-        y       =highlighted_snps['log10p'], 
-        ax      =axes,
-        hue     =highlighted_snps['type'],
-        palette =custom_hue_colors,
-        size    =10,
-        legend  =False,
-    )
-
-    snps_to_annotate = highlighted_snps[highlighted_snps['type'].isin(to_annotate)].reset_index(drop=True)
-
-    texts = []  # A list to store text annotations for adjustment
-    x = []
-    y = []
-    for i, row in snps_to_annotate.iterrows():
-        gene = genes[snps.index(row['SNP'])]  # Get corresponding gene name
-
-        x.append(row['rel_pos'])
-        y.append(row['log10p'])
-        texts.append(gene)
-
-    ta.allocate(
-        axes,
-        x        =x,
-        y        =y,
-        text_list=texts,
-        x_scatter=x,
-        y_scatter=y,
-        linecolor='black',
-        textsize =10,
-        bbox     =dict(boxstyle='round,pad=0.3', edgecolor='black', facecolor='#f0f0f0', alpha=0.8),
-    )
-
-    return axes
-
-def miami_classify_annotations(df_top_highlts:pd.DataFrame, df_bottom_highlts:pd.DataFrame)->dict:
+def manhattan_type_annotate(axes:Axes, data:pd.DataFrame, variants_toanno:pd.DataFrame, max_x_axis:float, suggestive_line, genome_line)->Axes:
     
     """
-    Splits the annotation data into two parts for the top and bottom plots.
+    Annotates a Manhattan plot with gene names.
 
     Parameters:
     -----------
-    df_top_highlts (pd.DataFrame): 
-        The annotation data for the top plot.
-    df_bottom_highlits (pd.DataFrame): 
-        The annotation data for the bottom plot.
-    
+    axes : Axes (matplotlib.axes.Axes)
+        The matplotlib axes object where the Manhattan plot is drawn.
+    data : pd.DataFrame
+        DataFrame containing the scatter plot data with columns 'rel_pos' and 'log10p'.
+    variants_toanno : pd.DataFrame
+        DataFrame containing the variants to annotate with columns 'rel_pos', 'log10p', and 'GENENAME'.
+    max_x_axis : float
+        The maximum value for the x-axis.
+    suggestive_line : float
+        The y-value for the suggestive significance line.
+    genome_line : float
+        The y-value for the genome-wide significance line.
+
     Returns:
     --------
-    tuple: A tuple containing the split annotation data for the top and bottom plots.
+    Axes
+        The matplotlib axes object with annotations.
+    list
+        A list of text objects for the annotations.
     """
+    
+    x_lines_coor = np.linspace(0, max_x_axis, 1000).tolist() # list with a gris of x-coordinates for the lines
+    
+    texts = []  # a list to store text annotations for adjustment
+    x = []      # a list to store x-coordinates for adjustment
+    y = []      # a list to store y-coordinates for adjustment
 
-    df_both = pd.merge(df_top_highlts, df_bottom_highlts[['SNP']], on='SNP', how='inner')
-    df_both['type'] = 'on_both'
+    for i, row in variants_toanno.iterrows():
 
-    df_top_in_bottom = df_top_highlts[~df_top_highlts['SNP'].isin(df_bottom_highlts['SNP'])].reset_index(drop=True)
-    df_top_in_bottom['type'] = 'top_in_bottom'
+        x.append(row['rel_pos'])
+        y.append(row['log10p'])
+        texts.append(row['GENENAME'])
 
-    df_bottom_in_top = df_bottom_highlts[~df_bottom_highlts['SNP'].isin(df_top_highlts['SNP'])].reset_index(drop=True)
-    df_bottom_in_top['type'] = 'bottom_in_top'
+    allocate = ta.allocate(
+            axes,              # the axis to which the text will be
+            x        =x,     # x-coordinates of the data point to annotate
+            y        =y,     # y-coordinates of the data point to annotate
+            text_list=texts, # list of text to annotate
+            x_scatter=data['rel_pos'], # all scatter points x-coordinates
+            y_scatter=data['log10p'],  # all scatter points y-coordinates
+            linecolor='black',                      # color of the line connecting the text to the data point
+            textsize =7,                            # size of the text (Default to Nature standard)
+            bbox     =dict(boxstyle='round,pad=0.3', edgecolor='black', facecolor='#f0f0f0', alpha=0.5),
+            x_lines  = [x_lines_coor, x_lines_coor],
+            y_lines  = [[-np.log10(suggestive_line)]*len(x_lines_coor), [-np.log10(genome_line)]*len(x_lines_coor)],
+            avoid_label_lines_overlap =True,
+            avoid_crossing_label_lines=False,
+            min_distance=0.01,
+            max_distance=0.4,
+            margin      =0.01,
+            rotation    =90,
+            nbr_candidates=300,
+            priority_strategy=42
+        )
 
+    text_objs = allocate[2]
 
-    return pd.concat([df_both, df_top_in_bottom, df_bottom_in_top], axis=0).reset_index(drop=True)
+    # remove the lines connecting the annotations to the SNPs (bounding boxes dimensions can change)
+    for line in allocate[3]:
+        line.remove()
+        
+    return axes, text_objs
 
-def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, p_col:str, plots_dir:str, top_highlights:list=[], top_annotations:list=[], bottom_highlights:list=[], bottom_annotations:list=[], gtf_path:str=None)->bool:
+def miami_draw_anno_lines(renderer:RendererBase, axes:Axes, texts:list, variants_toanno:pd.DataFrame):
     
     """
-    Generates a Miami plot from two dataframes and saves the plot to the specified directory.
+    Draws annotation lines from text labels to their corresponding data points on a plot.
 
     Parameters:
     ----------
