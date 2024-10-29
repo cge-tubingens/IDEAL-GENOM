@@ -417,23 +417,87 @@ def miami_draw_anno_lines(renderer:RendererBase, axes:Axes, texts:list, variants
 
     Parameters:
     ----------
-    df_top (pd.DataFrame): 
-       DataFrame containing the data for the upper plot.
-    df_bottom (pd.DataFrame): 
-       DataFrame containing the data for the lower plot.
-    plots_dir (str): 
-       Directory where the plot image will be saved.
-     
+    renderer : RendererBase 
+        The renderer used to draw the plot.
+    axes : Axes (matplotlib.axes.Axes) 
+        The axes on which the plot is drawn.
+    texts : list
+        A list of text objects to annotate.
+    variants_toanno : pd.DataFrame
+        A DataFrame containing the data points to annotate, with columns 'GENENAME', 'rel_pos', and 'log10p'.
+
     Returns:
     -------
-    bool: 
-       True if the plot is successfully created and saved.
-     
-    The function creates a Miami plot, which is a type of scatter plot used in genomic studies to display 
-    p-values from two different datasets. The plot consists of two panels: the upper panel for the first 
-    dataset and the lower panel for the second dataset. The x-axis represents the genomic position, and 
-    the y-axis represents the -log10(p) values. The function also adds genome-wide and suggestive significance 
-    lines to the plot.
+    Axes: The axes with the annotation lines drawn.
+    """
+
+    from math import dist
+
+    for k in range(len(texts)):
+
+        text_obj = texts[k]
+        bbox = text_obj.get_window_extent(renderer=renderer)
+        
+        # Transform to data coordinates the corners of the text bbox
+        data_coords = axes.transData.inverted().transform(bbox.corners()) # list with coordinates of the text box
+
+        anno = text_obj.get_text()
+
+        data_x = variants_toanno.loc[variants_toanno['GENENAME'] == anno, 'rel_pos'].values[0]
+        data_y = variants_toanno.loc[variants_toanno['GENENAME'] == anno, 'log10p'].values[0]
+
+        closest_point = data_coords[0]
+        for point in data_coords:
+            if dist([data_x, data_y], point) < dist([data_x, data_y], closest_point):
+                closest_point = point 
+
+        axes.plot(
+            [data_x, closest_point[0]], 
+            [data_y, closest_point[1]], 
+            color='black', 
+            linestyle=':', 
+            linewidth=1
+        )
+
+    return axes
+
+def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, p_col:str, plots_dir:str, top_highlights:list=[], top_annotations:list=[], bottom_highlights:list=[], bottom_annotations:list=[], gtf_path:str=None, save_name:str='miami_plot.jpeg', legend_top:str='top GWAS', legend_bottom:str='bottom GWAS')->bool:
+    
+    """
+    Draws a Miami plot (a combination of two Manhattan plots) for visualizing GWAS results.
+
+    Parameters:
+    -----------
+    df_top : pd.DataFrame
+        DataFrame containing the top plot data.
+    df_bottom : pd.DataFrame
+        DataFrame containing the bottom plot data.
+    snp_col : str
+        Column name for SNP identifiers.
+    chr_col : str
+        Column name for chromosome identifiers.
+    pos_col : str
+        Column name for base pair positions.
+    p_col : str
+        Column name for p-values.
+    plots_dir : str
+        Directory where the plot will be saved.
+    top_highlights : list, optional
+        List of SNPs to highlight in the top plot.
+    top_annotations : list, optional
+        List of SNPs to annotate in the top plot.
+    bottom_highlights : list, optional
+        List of SNPs to highlight in the bottom plot.
+    bottom_annotations : list, optional
+        List of SNPs to annotate in the bottom plot.
+    gtf_path : str, optional
+        Path to the GTF file for gene annotation. If None, the file will be downloaded.
+    save_name : str, optional
+        Name of the file to save the plot as. Default is 'miami_plot.jpeg'.
+    Returns:
+    --------
+    bool
+        True if the plot is successfully created and saved, False otherwise.
     """
 
     chr_colors           = ['#66c2a5', '#fc8d62']
