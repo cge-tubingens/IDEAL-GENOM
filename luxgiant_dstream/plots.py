@@ -117,7 +117,8 @@ def qqplot_draw(df_gwas:pd.DataFrame, plots_dir:str, conf_color="lightgray", sav
     ax.grid(True)
 
     plt.tight_layout()
-    plt.savefig(os.path.join(plots_dir, 'qq_plot.png'))
+    plt.savefig(os.path.join(plots_dir, save_name), dpi=500)
+    plt.show()
 
     return True
 
