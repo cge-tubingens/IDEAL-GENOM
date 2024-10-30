@@ -159,9 +159,131 @@ def confidence_interval(n:int, conf_points:int=1500, conf_alpha:float=0.05)->np.
     
     return mpts
 
-def beta_beta_draw(gwas_1:pd.DataFrame, gwas_2:pd.DataFrame, p_col:str, beta_col:str, se_col:str, significance:float=5e-8)->bool:
+def beta_beta_draw(gwas_1:pd.DataFrame, gwas_2:pd.DataFrame, p_col:str, beta_col:str, se_col:str, snp_col:str, label_1:str, label_2:str, plot_dir:str, significance:float=5e-8, annotate_coincidents:bool=True, save_name:str='beta_beta.jpeg')->bool:
 
+    df_gwas1 = gwas_1.copy()
+    df_gwas1.columns = [f"{col}_1" for col in df_gwas1.columns if col != snp_col]
+    df_gwas2 = gwas_2.copy()
+    df_gwas2.columns = [f"{col}_2" for col in df_gwas2.columns if col != snp_col]
 
+    df = pd.merge(df_gwas1, df_gwas2, on=snp_col, how='inner')
+
+    del df_gwas1, df_gwas2
+
+    mask_significance_1 = (df[f'{p_col}_1'] < significance)
+    mask_significance_2 = (df[f'{p_col}_2'] < significance)
+
+    on_first = df[mask_significance_1 &  ~mask_significance_2].reset_index(drop=True)[snp_col].to_list()
+    on_both  = df[mask_significance_1 &  mask_significance_2].reset_index(drop=True)[snp_col].to_list()
+    on_second= df[mask_significance_2 &  ~mask_significance_1].reset_index(drop=True)[snp_col].to_list()
+
+    df[f'P-val<{significance}']= None
+
+    df.loc[df['ID'].isin(on_both), f'P-val<{significance}']  = 'Both'
+    df.loc[df['ID'].isin(on_first), f'P-val<{significance}'] = f'{label_1} GWAS'
+    df.loc[df['ID'].isin(on_second), f'P-val<{significance}']= f'{label_2} GWAS'
+
+    max_beta_x = df[f'{beta_col}_1'].abs().max() + 0.01
+    max_beta_y = df[f'{beta_col}_2'].abs().max() + 0.01
+    max_coords = max(max_beta_x, max_beta_y)
+
+    x_lim = (-max_coords, max_coords)
+    y_lim = (-max_coords, max_coords)
+
+    result = stats.linregress(df[f'{beta_col}_2'], df[f'{beta_col}_2'])
+
+    colors = {
+        f'{label_1} GWAS': "#1f77b4", 
+        'Both'           : "#ff7f0e",
+        f'{label_2} GWAS': "#2ca02c"
+    }
+    markers= {
+        f'{label_1} GWAS': 'o', 
+        'Both'           : 's',
+        f'{label_2} GWAS': '^'
+    }
+
+    fig= plt.figure(figsize=(10, 10))
+    ax = plt.subplot(111)
+
+    for category in np.unique(df[f'P-val<{significance}']):
+        
+        mask_hue = (df[f'P-val<{significance}'] == category)
+        
+        ax.errorbar(
+            x         =df[f'{beta_col}_1'][mask_hue], 
+            y         =df[f'{beta_col}_2'][mask_hue], 
+            xerr      =df[f'{se_col}_1'][mask_hue], 
+            yerr      =df[f'{se_col}_2'][mask_hue],
+            fmt       =markers[category],
+            color     =colors[category], 
+            ecolor    ='lightgray', 
+            label     =category, 
+            elinewidth=0.75, 
+            capsize   =0,
+            markersize=5
+        )
+
+    # draw x and y axis
+    ax.axhline(0, color='black', linestyle='solid', lw=0.5)
+    ax.axvline(0, color='black', linestyle='solid', lw=0.5)
+    
+    # draw y=x line
+    help_line = np.linspace(-max_beta_x, max_beta_x, 100)
+    ax.plot(help_line, help_line, color='black', linestyle='solid', lw=0.5)
+    
+    # draw regression line
+    ax.plot(
+        help_line, 
+        result.slope*help_line + result.intercept, 
+        color    ='gray', 
+        linestyle='dashed', 
+        lw       =0.5
+    )
+
+    ax.set_xlim(x_lim)
+    ax.set_ylim(y_lim)
+    
+    ax.set_xlabel(f'Per Allele Effect Size {label_1} GWAS', fontsize=7)
+    ax.set_ylabel(f'Per Allele Effect Size {label_2} GWAS', fontsize=7)
+    
+    ax.tick_params(axis='both', which='major', labelsize=7)
+    
+    plt.legend(loc='best', fontsize=7, title=f'P-value < {significance}')
+
+    plt.tight_layout()
+
+    # render and draw the figure without showing it 
+    #r = fig.canvas.get_renderer()
+    fig.canvas.draw()
+
+    if annotate_coincidents:
+        to_annotate = df[df[f'P-val<{significance}']=='Both'].reset_index(drop=True)
+        
+        texts=[]
+        text_x = []
+        text_y = []
+
+        for i, row in to_annotate.iterrows():
+
+            texts.append(row[snp_col])
+            text_x.append(row[f'{beta_col}_1'])
+            text_y.append(row[f'{beta_col}_2'])
+
+        ta.allocate(
+                ax,
+                x        =text_x,
+                y        =text_y,
+                text_list=texts,
+                x_scatter=df[f'{beta_col}_1'].to_list(),
+                y_scatter=df[f'{beta_col}_2'].to_list(),
+                linecolor='black',
+                textsize =7,
+                bbox     =dict(boxstyle='round,pad=0.3', edgecolor='black', facecolor='#f0f0f0', alpha=0.8),
+            )
+        
+    plt.savefig(os.path.join(plot_dir, save_name), dpi=500)
+    plt.show()
 
     return True
 
