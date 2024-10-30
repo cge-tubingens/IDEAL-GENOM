@@ -122,14 +122,51 @@ def qqplot_draw(df_gwas:pd.DataFrame, plots_dir:str, conf_color="lightgray", sav
 
     return True
 
+def confidence_interval(n:int, conf_points:int=1500, conf_alpha:float=0.05)->np.ndarray:
 
+    """
+    Function to confidence intervals for the QQ plot.
 
+    Parameters:
+    -----------
+    n : int
+        Number of p-values.
+    conf_points : int (default=1500)
+        Number of points to plot the confidence interval.
+    conf_col : str (default="lightgray")
+        Color of the confidence interval.
+    conf_alpha : float (default=0.05)
+        Alpha value for the confidence interval.
 
-
-
+    Returns:
+    --------
+    ndarray
+    """
     
+    conf_points = min(conf_points, n - 1)
+    mpts = np.zeros((conf_points * 2, 2))
 
-def draw_trumpet_plot(df_gwas:pd.DataFrame,
+    for i in range(1, conf_points + 1):
+        x = -np.log10((i - 0.5) / n)
+        
+        y_upper = -np.log10(stats.beta.ppf(1 - conf_alpha / 2, i, n - i))
+        y_lower = -np.log10(stats.beta.ppf(conf_alpha / 2, i, n - i))
+        
+        mpts[i - 1, 0] = x
+        mpts[i - 1, 1] = y_upper
+        
+        mpts[conf_points * 2 - i, 0] = x
+        mpts[conf_points * 2 - i, 1] = y_lower
+    
+    return mpts
+
+def beta_beta_draw(gwas_1:pd.DataFrame, gwas_2:pd.DataFrame, p_col:str, beta_col:str, se_col:str, significance:float=5e-8)->bool:
+
+
+
+    return True
+
+def trumpet_draw(df_gwas:pd.DataFrame,
                       plot_dir:str,
                 snpid:str="SNPID",
                 mode:str="q",
