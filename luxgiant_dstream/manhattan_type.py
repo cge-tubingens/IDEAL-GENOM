@@ -103,6 +103,28 @@ def find_chromosomes_center(data:pd.DataFrame, chr_col:str='CHR', chr_pos_col:st
     return axis_center
 
 def manhattan_process_data(data_df:pd.DataFrame, chr_col:str='CHR', pos_col:str='POS', p_col:str='p')->dict:
+    
+    """
+    Processes the input DataFrame to prepare data for a Manhattan plot.
+
+    Parameters:
+    -----------
+    data_df : pd.DataFrame
+        The input DataFrame containing genomic data.
+    chr_col : str (optional)
+        The column name for chromosome data. Defaults to 'CHR'.
+    pos_col : str (optional)
+        The column name for position data. Defaults to 'POS'.
+    p_col : str (optional)
+        The column name for p-value data. Defaults to 'p'.
+
+    Returns:
+    --------
+        dict: A dictionary containing processed data for the Manhattan plot with the following keys:
+            - 'data' (pd.DataFrame): The processed DataFrame with relative positions and log-transformed p-values.
+            - 'axis' (dict): The center positions of each chromosome for plotting.
+            - 'maxp' (float): The maximum log-transformed p-value.
+    """
 
     data = compute_relative_pos(
         data_df, 
