@@ -39,8 +39,6 @@ from gwaslab.util_in_calculate_power import get_beta
 from gwaslab.util_in_calculate_power import get_beta_binary
 from gwaslab.util_in_fill_data import filldata
 
-
-
 def qqplot_draw(df_gwas:pd.DataFrame, plots_dir:str, conf_color="lightgray", save_name:str='qq_plot.jpeg')->bool:
 
     """
