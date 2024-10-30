@@ -280,40 +280,17 @@ def manhattan_draw(data_df:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, 
 
     plt.tight_layout()
 
-    from math import dist
-
     r = fig.canvas.get_renderer()
     fig.canvas.draw()
 
     if len(to_annotate)>0:
 
-        for k in range(len(texts)):
-
-            text_obj = texts[k]
-            bbox = text_obj.get_window_extent(renderer=r)
-            # Transform to data coordinates
-
-            data_coords = ax.transData.inverted().transform(bbox.corners()) # list with coordinates of the text box
-
-            anno = text_obj.get_text()
-
-            data_x = variants_toanno.loc[variants_toanno['GENENAME'] == anno, 'rel_pos'].values[0]
-            data_y = variants_toanno.loc[variants_toanno['GENENAME'] == anno, 'log10p'].values[0]
-
-            closest_point = data_coords[0]
-            for point in data_coords:
-                if dist([data_x, data_y], point) < dist([data_x, data_y], closest_point):
-                    closest_point = point 
-
-            ax.plot(
-                [data_x, closest_point[0]], 
-                [data_y, closest_point[1]], 
-                color='black', 
-                linestyle=':', 
-                linewidth=1
-            )
-
-
+        ax= miami_draw_anno_lines(
+            renderer       =r, 
+            axes           =ax, 
+            texts          =texts, 
+            variants_toanno=variants_toanno
+        )
 
     plt.savefig(
         os.path.join(plot_dir, "manhattan_plot.jpeg"), dpi=600
