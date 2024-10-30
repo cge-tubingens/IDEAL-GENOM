@@ -91,48 +91,11 @@ def qqplot_draw(df_gwas:pd.DataFrame, plots_dir:str, conf_color="lightgray", sav
 
     fig, ax = plt.subplots(figsize=(10,10))
 
-    # Calculate the confidence intervals if draw_conf is True
-    def plot_confidence_interval(n:int, conf_points:int=1500, conf_col:str="lightgray", conf_alpha:float=0.05)->None:
+    # compute confidence intervals
+    mpts = confidence_interval(n, conf_points=1500, conf_alpha=0.05)
 
-        """
-        Function to plot the confidence interval for the QQ plot.
-
-        Parameters:
-        -----------
-        n : int
-            Number of p-values.
-        conf_points : int (default=1500)
-            Number of points to plot the confidence interval.
-        conf_col : str (default="lightgray")
-            Color of the confidence interval.
-        conf_alpha : float (default=0.05)
-            Alpha value for the confidence interval.
-
-        Returns:
-        --------
-        None
-        """
-        
-        conf_points = min(conf_points, n - 1)
-        mpts = np.zeros((conf_points * 2, 2))
-
-        for i in range(1, conf_points + 1):
-
-            x = -np.log10((i - 0.5) / n)
-
-            y_upper = -np.log10(stats.beta.ppf(1 - conf_alpha / 2, i, n - i))
-            y_lower = -np.log10(stats.beta.ppf(conf_alpha / 2, i, n - i))
-
-            mpts[i - 1, 0] = x
-            mpts[i - 1, 1] = y_upper
-            mpts[conf_points * 2 - i, 0] = x
-            mpts[conf_points * 2 - i, 1] = y_lower
-
-        # Plot the confidence interval as a filled polygon
-        plt.fill(mpts[:, 0], mpts[:, 1], color=conf_col)
-        pass
-
-    plot_confidence_interval(n, conf_points=1500, conf_col="lightgray", conf_alpha=0.05)
+    # Plot the confidence interval as a filled polygon
+    plt.fill(mpts[:, 0], mpts[:, 1], color=conf_color)
 
     if grp is not None:
         unique_groups = np.unique(grp)
