@@ -20,6 +20,7 @@ import seaborn as sns
 import textalloc as ta
 
 from matplotlib.axes import Axes
+from matplotlib.backend_bases import RendererBase
 
 from gwaslab.bd_download import download_file
 from gwaslab.g_Log import Log
@@ -102,6 +103,28 @@ def find_chromosomes_center(data:pd.DataFrame, chr_col:str='CHR', chr_pos_col:st
     return axis_center
 
 def manhattan_process_data(data_df:pd.DataFrame, chr_col:str='CHR', pos_col:str='POS', p_col:str='p')->dict:
+    
+    """
+    Processes the input DataFrame to prepare data for a Manhattan plot.
+
+    Parameters:
+    -----------
+    data_df : pd.DataFrame
+        The input DataFrame containing genomic data.
+    chr_col : str (optional)
+        The column name for chromosome data. Defaults to 'CHR'.
+    pos_col : str (optional)
+        The column name for position data. Defaults to 'POS'.
+    p_col : str (optional)
+        The column name for p-value data. Defaults to 'p'.
+
+    Returns:
+    --------
+        dict: A dictionary containing processed data for the Manhattan plot with the following keys:
+            - 'data' (pd.DataFrame): The processed DataFrame with relative positions and log-transformed p-values.
+            - 'axis' (dict): The center positions of each chromosome for plotting.
+            - 'maxp' (float): The maximum log-transformed p-value.
+    """
 
     data = compute_relative_pos(
         data_df, 
@@ -122,7 +145,7 @@ def manhattan_process_data(data_df:pd.DataFrame, chr_col:str='CHR', pos_col:str=
 
     return manhattan_data
 
-def manhattan_draw(data_df:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, p_col:str, plot_dir:str, to_highlight:list=None, to_annotate:list=None, build:str='38', gtf_path:str=None)->bool:
+def manhattan_draw(data_df:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, p_col:str, plot_dir:str, to_highlight:list=[], to_annotate:list=[], build:str='38', gtf_path:str=None, save_name:str='manhattan_plot.jpeg')->bool:
 
     chr_colors           = ['#66c2a5', '#fc8d62']
     ylab                 = "-log10(p)"
@@ -169,7 +192,7 @@ def manhattan_draw(data_df:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, 
 
     # set x-axis ticks and labels
     x_ticks=plot_data['axis']['center'].tolist()
-    x_labels=plot_data['axis']['CHR'].astype(str).tolist()
+    x_labels=plot_data['axis'][chr_col].astype(str).tolist()
 
     ax.set_xticks(ticks=x_ticks)
     ax.set_xticklabels(x_labels)
@@ -245,41 +268,32 @@ def manhattan_draw(data_df:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, 
                 gtf_path=gtf_path
             ).rename(columns={"GENE":"GENENAME"})
 
-        texts = []  # a list to store text annotations for adjustment
-        x = []      # a list to store x-coordinates for adjustment
-        y = []      # a list to store y-coordinates for adjustment
-
-        for i, row in variants_toanno.iterrows():
-
-            x.append(row['rel_pos'])
-            y.append(row['log10p'])
-            texts.append(row['GENENAME'])
-
-        x_lines_coor = np.linspace(0, max_x_axis, 1000).tolist() # list with a gris of x-coordinates for the lines
-
-        ta.allocate(
-            ax,              # the axis to which the text will be
-            x        =x,     # x-coordinates of the data point to annotate
-            y        =y,     # y-coordinates of the data point to annotate
-            text_list=texts, # list of text to annotate
-            x_scatter=plot_data['data']['rel_pos'], # all scatter points x-coordinates
-            y_scatter=plot_data['data']['log10p'],  # all scatter points y-coordinates
-            linecolor='black',                      # color of the line connecting the text to the data point
-            textsize =7,                            # size of the text (Default to Nature standard)
-            bbox     =dict(boxstyle='round,pad=0.3', edgecolor='black', facecolor='#f0f0f0', alpha=0.5),
-            x_lines  = [x_lines_coor, x_lines_coor],
-            y_lines  = [[suggestive_line]*len(x_lines_coor), [genome_line]*len(x_lines_coor)],
-            avoid_label_lines_overlap =True,
-            avoid_crossing_label_lines=True,
-            min_distance=0.01,
-            max_distance=0.4,
-            margin      =0.01,
-            rotation    =90
+        ax, texts = manhattan_type_annotate(
+            axes           =ax, 
+            data           =plot_data['data'], 
+            variants_toanno=variants_toanno, 
+            max_x_axis     =max_x_axis, 
+            suggestive_line=suggestive_line, 
+            genome_line    =genome_line
         )
 
+
     plt.tight_layout()
+
+    r = fig.canvas.get_renderer()
+    fig.canvas.draw()
+
+    if len(to_annotate)>0:
+
+        ax= miami_draw_anno_lines(
+            renderer       =r, 
+            axes           =ax, 
+            texts          =texts, 
+            variants_toanno=variants_toanno
+        )
+
     plt.savefig(
-        os.path.join(plot_dir, "manhattan_plot.jpeg"), dpi=600
+        os.path.join(plot_dir, save_name), dpi=600
     )
     plt.show()
 
@@ -326,108 +340,167 @@ def miami_process_data(data_top:pd.DataFrame, data_bottom:pd.DataFrame, chr_col:
 
     return miami_data
 
-def miami_annotate(axes:Axes, gwas_data:pd.DataFrame, annotations:pd.DataFrame, to_annotate:list)->Axes:
-
-    snps = annotations['SNP'].to_list()
-    genes= annotations['GENE'].to_list()
-    highlighted_snps = pd.merge(annotations, gwas_data[['SNP', 'rel_pos', 'log10p']], on='SNP', how='inner')
-
-    custom_hue_colors = {
-        "on_both"      : "#1f77b4",  
-        "top_in_bottom": "#2ca02c",
-        "bottom_in_top": "#9467bd",
-    }
-
-    axes = sns.scatterplot(
-        x       =highlighted_snps['rel_pos'], 
-        y       =highlighted_snps['log10p'], 
-        ax      =axes,
-        hue     =highlighted_snps['type'],
-        palette =custom_hue_colors,
-        size    =10,
-        legend  =False,
-    )
-
-    snps_to_annotate = highlighted_snps[highlighted_snps['type'].isin(to_annotate)].reset_index(drop=True)
-
-    texts = []  # A list to store text annotations for adjustment
-    x = []
-    y = []
-    for i, row in snps_to_annotate.iterrows():
-        gene = genes[snps.index(row['SNP'])]  # Get corresponding gene name
-
-        x.append(row['rel_pos'])
-        y.append(row['log10p'])
-        texts.append(gene)
-
-    ta.allocate(
-        axes,
-        x        =x,
-        y        =y,
-        text_list=texts,
-        x_scatter=x,
-        y_scatter=y,
-        linecolor='black',
-        textsize =10,
-        bbox     =dict(boxstyle='round,pad=0.3', edgecolor='black', facecolor='#f0f0f0', alpha=0.8),
-    )
-
-    return axes
-
-def miami_classify_annotations(df_top_highlts:pd.DataFrame, df_bottom_highlts:pd.DataFrame)->dict:
+def manhattan_type_annotate(axes:Axes, data:pd.DataFrame, variants_toanno:pd.DataFrame, max_x_axis:float, suggestive_line, genome_line)->Axes:
     
     """
-    Splits the annotation data into two parts for the top and bottom plots.
+    Annotates a Manhattan plot with gene names.
 
     Parameters:
     -----------
-    df_top_highlts (pd.DataFrame): 
-        The annotation data for the top plot.
-    df_bottom_highlits (pd.DataFrame): 
-        The annotation data for the bottom plot.
-    
+    axes : Axes (matplotlib.axes.Axes)
+        The matplotlib axes object where the Manhattan plot is drawn.
+    data : pd.DataFrame
+        DataFrame containing the scatter plot data with columns 'rel_pos' and 'log10p'.
+    variants_toanno : pd.DataFrame
+        DataFrame containing the variants to annotate with columns 'rel_pos', 'log10p', and 'GENENAME'.
+    max_x_axis : float
+        The maximum value for the x-axis.
+    suggestive_line : float
+        The y-value for the suggestive significance line.
+    genome_line : float
+        The y-value for the genome-wide significance line.
+
     Returns:
     --------
-    tuple: A tuple containing the split annotation data for the top and bottom plots.
+    Axes
+        The matplotlib axes object with annotations.
+    list
+        A list of text objects for the annotations.
     """
+    
+    x_lines_coor = np.linspace(0, max_x_axis, 1000).tolist() # list with a gris of x-coordinates for the lines
+    
+    texts = []  # a list to store text annotations for adjustment
+    x = []      # a list to store x-coordinates for adjustment
+    y = []      # a list to store y-coordinates for adjustment
 
-    df_both = pd.merge(df_top_highlts, df_bottom_highlts[['SNP']], on='SNP', how='inner')
-    df_both['type'] = 'on_both'
+    for i, row in variants_toanno.iterrows():
 
-    df_top_in_bottom = df_top_highlts[~df_top_highlts['SNP'].isin(df_bottom_highlts['SNP'])].reset_index(drop=True)
-    df_top_in_bottom['type'] = 'top_in_bottom'
+        x.append(row['rel_pos'])
+        y.append(row['log10p'])
+        texts.append(row['GENENAME'])
 
-    df_bottom_in_top = df_bottom_highlts[~df_bottom_highlts['SNP'].isin(df_top_highlts['SNP'])].reset_index(drop=True)
-    df_bottom_in_top['type'] = 'bottom_in_top'
+    allocate = ta.allocate(
+            axes,              # the axis to which the text will be
+            x        =x,     # x-coordinates of the data point to annotate
+            y        =y,     # y-coordinates of the data point to annotate
+            text_list=texts, # list of text to annotate
+            x_scatter=data['rel_pos'], # all scatter points x-coordinates
+            y_scatter=data['log10p'],  # all scatter points y-coordinates
+            linecolor='black',                      # color of the line connecting the text to the data point
+            textsize =7,                            # size of the text (Default to Nature standard)
+            bbox     =dict(boxstyle='round,pad=0.3', edgecolor='black', facecolor='#f0f0f0', alpha=0.5),
+            x_lines  = [x_lines_coor, x_lines_coor],
+            y_lines  = [[-np.log10(suggestive_line)]*len(x_lines_coor), [-np.log10(genome_line)]*len(x_lines_coor)],
+            avoid_label_lines_overlap =True,
+            avoid_crossing_label_lines=False,
+            min_distance=0.01,
+            max_distance=0.4,
+            margin      =0.01,
+            rotation    =90,
+            nbr_candidates=300,
+            priority_strategy=42
+        )
 
+    text_objs = allocate[2]
 
-    return pd.concat([df_both, df_top_in_bottom, df_bottom_in_top], axis=0).reset_index(drop=True)
+    # remove the lines connecting the annotations to the SNPs (bounding boxes dimensions can change)
+    for line in allocate[3]:
+        line.remove()
+        
+    return axes, text_objs
 
-def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, p_col:str, plots_dir:str, top_highlights:list=[], top_annotations:list=[], bottom_highlights:list=[], bottom_annotations:list=[], gtf_path:str=None)->bool:
+def miami_draw_anno_lines(renderer:RendererBase, axes:Axes, texts:list, variants_toanno:pd.DataFrame):
     
     """
-    Generates a Miami plot from two dataframes and saves the plot to the specified directory.
+    Draws annotation lines from text labels to their corresponding data points on a plot.
 
     Parameters:
     ----------
-    df_top (pd.DataFrame): 
-       DataFrame containing the data for the upper plot.
-    df_bottom (pd.DataFrame): 
-       DataFrame containing the data for the lower plot.
-    plots_dir (str): 
-       Directory where the plot image will be saved.
-     
+    renderer : RendererBase 
+        The renderer used to draw the plot.
+    axes : Axes (matplotlib.axes.Axes) 
+        The axes on which the plot is drawn.
+    texts : list
+        A list of text objects to annotate.
+    variants_toanno : pd.DataFrame
+        A DataFrame containing the data points to annotate, with columns 'GENENAME', 'rel_pos', and 'log10p'.
+
     Returns:
     -------
-    bool: 
-       True if the plot is successfully created and saved.
-     
-    The function creates a Miami plot, which is a type of scatter plot used in genomic studies to display 
-    p-values from two different datasets. The plot consists of two panels: the upper panel for the first 
-    dataset and the lower panel for the second dataset. The x-axis represents the genomic position, and 
-    the y-axis represents the -log10(p) values. The function also adds genome-wide and suggestive significance 
-    lines to the plot.
+    Axes: The axes with the annotation lines drawn.
     """
+
+    from math import dist
+
+    for k in range(len(texts)):
+
+        text_obj = texts[k]
+        bbox = text_obj.get_window_extent(renderer=renderer)
+        
+        # Transform to data coordinates the corners of the text bbox
+        data_coords = axes.transData.inverted().transform(bbox.corners()) # list with coordinates of the text box
+
+        anno = text_obj.get_text()
+
+        data_x = variants_toanno.loc[variants_toanno['GENENAME'] == anno, 'rel_pos'].values[0]
+        data_y = variants_toanno.loc[variants_toanno['GENENAME'] == anno, 'log10p'].values[0]
+
+        closest_point = data_coords[0]
+        for point in data_coords:
+            if dist([data_x, data_y], point) < dist([data_x, data_y], closest_point):
+                closest_point = point 
+
+        axes.plot(
+            [data_x, closest_point[0]], 
+            [data_y, closest_point[1]], 
+            color='black', 
+            linestyle=':', 
+            linewidth=1
+        )
+
+    return axes
+
+def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, p_col:str, plots_dir:str, top_highlights:list=[], top_annotations:list=[], bottom_highlights:list=[], bottom_annotations:list=[], gtf_path:str=None, save_name:str='miami_plot.jpeg', legend_top:str='top GWAS', legend_bottom:str='bottom GWAS')->bool:
+    
+    """
+    Draws a Miami plot (a combination of two Manhattan plots) for visualizing GWAS results.
+
+    Parameters:
+    -----------
+    df_top : pd.DataFrame
+        DataFrame containing the top plot data.
+    df_bottom : pd.DataFrame
+        DataFrame containing the bottom plot data.
+    snp_col : str
+        Column name for SNP identifiers.
+    chr_col : str
+        Column name for chromosome identifiers.
+    pos_col : str
+        Column name for base pair positions.
+    p_col : str
+        Column name for p-values.
+    plots_dir : str
+        Directory where the plot will be saved.
+    top_highlights : list, optional
+        List of SNPs to highlight in the top plot.
+    top_annotations : list, optional
+        List of SNPs to annotate in the top plot.
+    bottom_highlights : list, optional
+        List of SNPs to highlight in the bottom plot.
+    bottom_annotations : list, optional
+        List of SNPs to annotate in the bottom plot.
+    gtf_path : str, optional
+        Path to the GTF file for gene annotation. If None, the file will be downloaded.
+    save_name : str, optional
+        Name of the file to save the plot as. Default is 'miami_plot.jpeg'.
+    Returns:
+    --------
+    bool
+        True if the plot is successfully created and saved, False otherwise.
+    """
+    
+    
 
     chr_colors           = ['#66c2a5', '#fc8d62']
     upper_ylab           = "-log10(p)" 
@@ -453,17 +526,25 @@ def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col
     max_x_axis = max(plot_data['upper']['rel_pos'].max(), plot_data['lower']['rel_pos'].max())+10
 
     # Create the figure
-    plt.figure(figsize=(15, 18.4))
+    fig = plt.figure(figsize=(20, 13))
 
     # Create the upper plot
 
     ax_upper = plt.subplot(211)
-    sns.scatterplot(x=plot_data['upper']['rel_pos'], y=plot_data['upper']['log10p'],
-                    hue=plot_data['upper'][chr_col], palette=chr_colors, ax=ax_upper, s=1, legend=False)
+
+    sns.scatterplot(
+        x      =plot_data['upper']['rel_pos'], 
+        y      =plot_data['upper']['log10p'],
+        hue    =plot_data['upper'][chr_col], 
+        palette=chr_colors, 
+        ax     =ax_upper, 
+        s      =1, 
+        legend =False
+    )
     ax_upper.set_ylabel(upper_ylab)
     ax_upper.set_xlim(0, max_x_axis)
 
-    x_ticks=plot_data['axis']['center'].tolist()
+    x_ticks =plot_data['axis']['center'].tolist()
     x_labels=plot_data['axis'][chr_col].astype(str).tolist()
 
     ax_upper.set_xticks(ticks=x_ticks)  # Set x-ticks
@@ -471,15 +552,22 @@ def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col
     
     # Add genome-wide and suggestive lines
     if suggestive_line is not None:
-        ax_upper.axhline(-np.log10(suggestive_line), color=suggestive_line_color, linestyle='solid', lw=0.5)
+        ax_upper.axhline(-np.log10(suggestive_line), color=suggestive_line_color, linestyle='solid', lw=0.7)
     
     if genome_line is not None:
-        ax_upper.axhline(-np.log10(genome_line), color=genome_line_color, linestyle='dashed', lw=0.5)
+        ax_upper.axhline(-np.log10(genome_line), color=genome_line_color, linestyle='dashed', lw=0.7)
 
     # Create the lower plot
     ax_lower = plt.subplot(212)
-    sns.scatterplot(x=plot_data['lower']['rel_pos'], y=plot_data['lower']['log10p'],
-                    hue=plot_data['lower'][chr_col], palette=chr_colors, ax=ax_lower, s=1, legend=False)
+    sns.scatterplot(
+        x      =plot_data['lower']['rel_pos'], 
+        y      =plot_data['lower']['log10p'],
+        hue    =plot_data['lower'][chr_col], 
+        palette=chr_colors, 
+        ax     =ax_lower, 
+        s      =1, 
+        legend =False
+    )
     ax_lower.set_ylabel(lower_ylab)
     ax_lower.set_ylim(plot_data['maxp'], 0)  # Reverse y-axis
     ax_lower.set_xlim(0, max_x_axis)
@@ -490,10 +578,10 @@ def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col
     
     # Add genome-wide and suggestive lines
     if suggestive_line is not None:
-        ax_lower.axhline(-np.log10(suggestive_line), color=suggestive_line_color, linestyle='solid', lw=0.5)
+        ax_lower.axhline(-np.log10(suggestive_line), color=suggestive_line_color, linestyle='solid', lw=0.7)
     
     if genome_line is not None:
-        ax_lower.axhline(-np.log10(genome_line), color=genome_line_color, linestyle='dashed', lw=0.5)
+        ax_lower.axhline(-np.log10(genome_line), color=genome_line_color, linestyle='dashed', lw=0.7)
     
     top = set(top_highlights)
     bottom = set(bottom_highlights)
@@ -523,7 +611,7 @@ def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col
         }
 
         ax_upper = sns.scatterplot(
-            data=plot_data['upper'][~plot_data['upper']['type'].isnull()].reset_index(drop=True),
+            data    =plot_data['upper'][~plot_data['upper']['type'].isnull()].reset_index(drop=True),
             x       ='rel_pos', 
             y       ='log10p', 
             ax      =ax_upper,
@@ -534,7 +622,7 @@ def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col
         )
 
         ax_lower = sns.scatterplot(
-            data=plot_data['lower'][~plot_data['lower']['type'].isnull()].reset_index(drop=True),
+            data    =plot_data['lower'][~plot_data['lower']['type'].isnull()].reset_index(drop=True),
             x       ='rel_pos', 
             y       ='log10p', 
             ax      =ax_lower,
@@ -546,6 +634,7 @@ def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col
 
     if len(top_annotations)>0 or len(bottom_annotations)>0:
 
+        # download gtf file if not provided to annotate genes
         if gtf_path is None:
             gtf_url = 'https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.40_GRCh38.p14/GCF_000001405.40_GRCh38.p14_genomic.gtf.gz'
             path_to_gz = os.path.join(os.path.abspath('..'), 'GCF_000001405.40_GRCh38.p14_genomic.gtf.gz')
@@ -566,6 +655,7 @@ def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col
         bottom_variants_toanno = plot_data['lower'][plot_data['lower'][snp_col].isin(bottom_annotations)]\
             .reset_index(drop=True)
         
+        # get gene names for upper plot
         if (top_variants_toanno.empty is not True):
             top_variants_toanno = annogene(
                 top_variants_toanno,
@@ -575,10 +665,11 @@ def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col
                 log    =Log(),
                 build  ='38',
                 source ="refseq",
-                verbose=True,
+                verbose=False,
                 gtf_path=gtf_path
             ).rename(columns={"GENE":"GENENAME"})
 
+        # get gane names for bottom plot
         if (bottom_variants_toanno.empty is not True):
             bottom_variants_toanno = annogene(
                 bottom_variants_toanno,
@@ -588,79 +679,75 @@ def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col
                 log    =Log(),
                 build  ='38',
                 source ="refseq",
-                verbose=True,
+                verbose=False,
                 gtf_path=gtf_path
             ).rename(columns={"GENE":"GENENAME"})
 
-        x_lines_coor = np.linspace(0, max_x_axis, 1000).tolist() # list with a gris of x-coordinates for the lines
-
-        texts_upper = []  # a list to store text annotations for adjustment
-        x_upper = []      # a list to store x-coordinates for adjustment
-        y_upper = []      # a list to store y-coordinates for adjustment
-
-        for i, row in top_variants_toanno.iterrows():
-
-            x_upper.append(row['rel_pos'])
-            y_upper.append(row['log10p'])
-            texts_upper.append(row['GENENAME'])
-
-        texts_lower = []  # a list to store text annotations for adjustment
-        x_lower = []      # a list to store x-coordinates for adjustment
-        y_lower = []      # a list to store y-coordinates for adjustment
-
-        for i, row in bottom_variants_toanno.iterrows():
-
-            x_lower.append(row['rel_pos'])
-            y_lower.append(row['log10p'])
-            texts_lower.append(row['GENENAME'])
-
-        ta.allocate(
-            ax_upper,              # the axis to which the text will be
-            x        =x_upper,     # x-coordinates of the data point to annotate
-            y        =y_upper,     # y-coordinates of the data point to annotate
-            text_list=texts_upper, # list of text to annotate
-            #x_scatter=plot_data['upper']['rel_pos'], # all scatter points x-coordinates
-            #y_scatter=plot_data['upper']['log10p'],  # all scatter points y-coordinates
-            linecolor='black',                      # color of the line connecting the text to the data point
-            textsize =7,                            # size of the text (Default to Nature standard)
-            bbox     =dict(boxstyle='round,pad=0.3', edgecolor='black', facecolor='#f0f0f0', alpha=0.5),
-            x_lines  = [x_lines_coor, x_lines_coor],
-            y_lines  = [[-np.log10(suggestive_line)]*len(x_lines_coor), [-np.log10(genome_line)]*len(x_lines_coor)],
-            avoid_label_lines_overlap =True,
-            avoid_crossing_label_lines=True,
-            min_distance=0.01,
-            max_distance=0.4,
-            margin      =0.01,
-            rotation    =90
+        # annotate upper plot
+        ax_upper, texts_upper = manhattan_type_annotate(
+            axes           =ax_upper, 
+            data           =plot_data['upper'], 
+            variants_toanno=top_variants_toanno, 
+            max_x_axis     =max_x_axis, 
+            suggestive_line=suggestive_line, 
+            genome_line    =genome_line
         )
 
-        ta.allocate(
-            ax_lower,              # the axis to which the text will be
-            x        =x_lower,     # x-coordinates of the data point to annotate
-            y        =y_lower,     # y-coordinates of the data point to annotate
-            text_list=texts_lower, # list of text to annotate
-            #x_scatter=plot_data['lower']['rel_pos'], # all scatter points x-coordinates
-            #y_scatter=plot_data['loweer']['log10p'],  # all scatter points y-coordinates
-            linecolor='black',                      # color of the line connecting the text to the data point
-            textsize =7,                            # size of the text (Default to Nature standard)
-            bbox     =dict(boxstyle='round,pad=0.3', edgecolor='black', facecolor='#f0f0f0', alpha=0.5),
-            x_lines  = [x_lines_coor, x_lines_coor],
-            y_lines  = [[suggestive_line]*len(x_lines_coor), [genome_line]*len(x_lines_coor)],
-            avoid_label_lines_overlap =True,
-            avoid_crossing_label_lines=True,
-            min_distance=0.01,
-            max_distance=0.4,
-            margin      =0.01,
-            rotation    =90
+        # annotate lower plot
+        ax_lower, texts_lower = manhattan_type_annotate(
+            axes           =ax_lower, 
+            data           =plot_data['lower'], 
+            variants_toanno=bottom_variants_toanno, 
+            max_x_axis     =max_x_axis, 
+            suggestive_line=suggestive_line, 
+            genome_line    =genome_line
         )
 
+    from matplotlib.lines import Line2D
 
-    ax_lower.set_xlabel("Base pair position")
-    ax_upper.set_xlabel("")
+    custom_dots = [
+        Line2D([0], [0], marker='o', color='w', markerfacecolor="#1f77b4", markersize=5, label='Top Hits on Both'),
+        Line2D([0], [0], marker='o', color='w', markerfacecolor="#2ca02c", markersize=5, label=f'Top Hits on {legend_top}'),
+        Line2D([0], [0], marker='o', color='w', markerfacecolor="#9467bd", markersize=5, label=f'Top Hits on {legend_bottom}'),
+    ]
+
+    # Add custom legend
+    ax_upper.legend(handles=custom_dots, title='Legend', loc="best", fontsize=7)
     
-    # Adjust layout and show the plot
+    ax_lower.set_xlabel("Chromosome")
+    ax_upper.set_xlabel("")
+
+    # adjust layout
     plt.tight_layout()
-    plt.savefig(os.path.join(plots_dir, 'miami_plot.png'))
+
+    # render and draw the figure without showing it 
+    r = fig.canvas.get_renderer()
+    fig.canvas.draw()
+
+    # lines between annotations and SNPs must be drawn after the plot is rendered
+
+    # draw lines between annotations and SNPs on the upper plot
+    if len(top_annotations)>0:
+
+        ax_upper = miami_draw_anno_lines(
+            renderer       =r, 
+            axes           =ax_upper, 
+            texts          =texts_upper, 
+            variants_toanno=top_variants_toanno
+        )
+
+    # draw lines between annotations and SNPs on the lower plot
+    if len(bottom_annotations)>0:
+
+        ax_lower = miami_draw_anno_lines(
+            renderer       =r, 
+            axes           =ax_lower, 
+            texts          =texts_lower, 
+            variants_toanno=bottom_variants_toanno
+        )
+    
+    # save ad show the plot
+    plt.savefig(os.path.join(plots_dir, save_name), dpi=500)
     plt.show()
 
     return True

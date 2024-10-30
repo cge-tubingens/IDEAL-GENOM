@@ -23,34 +23,25 @@ import seaborn as sns
 import scipy.stats as stats
 import textalloc as ta
 
-from matplotlib.axes import Axes
-from pandas.core.groupby.generic import DataFrameGroupBy
-
 import pandas as pd
 import matplotlib.pyplot as plt
-import matplotlib.ticker as ticker
-import matplotlib.patches as patches
 import seaborn as sns
 import numpy as np
-import scipy as sp
 from matplotlib.collections import LineCollection
 import matplotlib.colors as mc
 import matplotlib
 from adjustText import adjust_text
 from gwaslab.util_in_get_sig import annogene
-from gwaslab.viz_aux_annotate_plot import annotate_single
 from gwaslab.viz_aux_reposition_text import adjust_text_position
-from gwaslab.viz_aux_save_figure import save_figure
 from gwaslab.viz_plot_mqqplot import _process_highlight
 from gwaslab.g_Log import Log
 from gwaslab.util_in_calculate_power import get_beta
-from gwaslab.util_in_calculate_power import get_power
 from gwaslab.util_in_calculate_power import get_beta_binary
 from gwaslab.util_in_fill_data import filldata
 
 
 
-def qq_plot(df_gwas:pd.DataFrame, plots_dir:str)->bool:
+def qqplot_draw(df_gwas:pd.DataFrame, plots_dir:str, conf_color="lightgray", save_name:str='qq_plot.jpeg')->bool:
 
     """
     Function to draw a qq plot for GWAS data.
@@ -101,48 +92,11 @@ def qq_plot(df_gwas:pd.DataFrame, plots_dir:str)->bool:
 
     fig, ax = plt.subplots(figsize=(10,10))
 
-    # Calculate the confidence intervals if draw_conf is True
-    def plot_confidence_interval(n:int, conf_points:int=1500, conf_col:str="lightgray", conf_alpha:float=0.05)->None:
+    # compute confidence intervals
+    mpts = confidence_interval(n, conf_points=1500, conf_alpha=0.05)
 
-        """
-        Function to plot the confidence interval for the QQ plot.
-
-        Parameters:
-        -----------
-        n : int
-            Number of p-values.
-        conf_points : int (default=1500)
-            Number of points to plot the confidence interval.
-        conf_col : str (default="lightgray")
-            Color of the confidence interval.
-        conf_alpha : float (default=0.05)
-            Alpha value for the confidence interval.
-
-        Returns:
-        --------
-        None
-        """
-        
-        conf_points = min(conf_points, n - 1)
-        mpts = np.zeros((conf_points * 2, 2))
-
-        for i in range(1, conf_points + 1):
-
-            x = -np.log10((i - 0.5) / n)
-
-            y_upper = -np.log10(stats.beta.ppf(1 - conf_alpha / 2, i, n - i))
-            y_lower = -np.log10(stats.beta.ppf(conf_alpha / 2, i, n - i))
-
-            mpts[i - 1, 0] = x
-            mpts[i - 1, 1] = y_upper
-            mpts[conf_points * 2 - i, 0] = x
-            mpts[conf_points * 2 - i, 1] = y_lower
-
-        # Plot the confidence interval as a filled polygon
-        plt.fill(mpts[:, 0], mpts[:, 1], color=conf_col)
-        pass
-
-    plot_confidence_interval(n, conf_points=1500, conf_col="lightgray", conf_alpha=0.05)
+    # Plot the confidence interval as a filled polygon
+    plt.fill(mpts[:, 0], mpts[:, 1], color=conf_color)
 
     if grp is not None:
         unique_groups = np.unique(grp)
@@ -164,18 +118,56 @@ def qq_plot(df_gwas:pd.DataFrame, plots_dir:str)->bool:
     ax.grid(True)
 
     plt.tight_layout()
-    plt.savefig(os.path.join(plots_dir, 'qq_plot.png'))
+    plt.savefig(os.path.join(plots_dir, save_name), dpi=500)
+    plt.show()
 
     return True
 
+def confidence_interval(n:int, conf_points:int=1500, conf_alpha:float=0.05)->np.ndarray:
 
+    """
+    Function to confidence intervals for the QQ plot.
 
+    Parameters:
+    -----------
+    n : int
+        Number of p-values.
+    conf_points : int (default=1500)
+        Number of points to plot the confidence interval.
+    conf_col : str (default="lightgray")
+        Color of the confidence interval.
+    conf_alpha : float (default=0.05)
+        Alpha value for the confidence interval.
 
-
-
+    Returns:
+    --------
+    ndarray
+    """
     
+    conf_points = min(conf_points, n - 1)
+    mpts = np.zeros((conf_points * 2, 2))
 
-def draw_trumpet_plot(df_gwas:pd.DataFrame,
+    for i in range(1, conf_points + 1):
+        x = -np.log10((i - 0.5) / n)
+        
+        y_upper = -np.log10(stats.beta.ppf(1 - conf_alpha / 2, i, n - i))
+        y_lower = -np.log10(stats.beta.ppf(conf_alpha / 2, i, n - i))
+        
+        mpts[i - 1, 0] = x
+        mpts[i - 1, 1] = y_upper
+        
+        mpts[conf_points * 2 - i, 0] = x
+        mpts[conf_points * 2 - i, 1] = y_lower
+    
+    return mpts
+
+def beta_beta_draw(gwas_1:pd.DataFrame, gwas_2:pd.DataFrame, p_col:str, beta_col:str, se_col:str, significance:float=5e-8)->bool:
+
+
+
+    return True
+
+def trumpet_draw(df_gwas:pd.DataFrame,
                       plot_dir:str,
                 snpid:str="SNPID",
                 mode:str="q",
@@ -681,9 +673,8 @@ def draw_trumpet_plot(df_gwas:pd.DataFrame,
         
     ############  Annotation ##################################################################################################
     plt.tight_layout()
-    plt.savefig(os.path.join(plot_dir, 'trumpet_plot.jpeg'))
+    plt.savefig(os.path.join(plot_dir, 'trumpet_plot.jpeg'), dpi=500)
     plt.show()
 
-    log.write("Finished creating trumpet plot!", verbose=verbose)
     return None
     
