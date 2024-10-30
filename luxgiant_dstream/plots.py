@@ -672,9 +672,8 @@ def trumpet_draw(df_gwas:pd.DataFrame,
         
     ############  Annotation ##################################################################################################
     plt.tight_layout()
-    plt.savefig(os.path.join(plot_dir, 'trumpet_plot.jpeg'))
+    plt.savefig(os.path.join(plot_dir, 'trumpet_plot.jpeg'), dpi=500)
     plt.show()
 
-    log.write("Finished creating trumpet plot!", verbose=verbose)
     return None
     
