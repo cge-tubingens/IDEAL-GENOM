@@ -26,6 +26,7 @@ import textalloc as ta
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+import numpy as np
 from matplotlib.collections import LineCollection
 import matplotlib.colors as mc
 import matplotlib
