@@ -1,19 +1,16 @@
 """
-Module with function for drawing plots
-
-The module provides functions to draw manhattan and qq plots for GWAS data.
+This module provides functions for generating various plots for GWAS (Genome-Wide Association Studies) data. The plots include QQ plots, beta-beta scatter plots, and trumpet plots for visualizing the effect sizes and power of GWAS results.
 
 Functions:
 ----------
-manhattan_plot(df_gwas:pd.DataFrame, plots_dir:str, df_annot:pd.DataFrame=None, annotate:bool=False)->bool
-    Draw a manhattan plot for GWAS data.
-qq_plot(df_gwas:pd.DataFrame, plots_dir:str)->bool
-    Draw a qq plot for GWAS data.
-
-The function qq_plot is a Python implementation of the R code provided in the following links: https://gist.github.com/MrFlick/10477946 or here https://github.com/hakyimlab/IntroStatGen/blob/master/gists/qqunif.r
-
+- qqplot_draw(df_gwas: pd.DataFrame, plots_dir: str, conf_color="lightgray", save_name: str='qq_plot.jpeg') -> bool:
+    Draws a QQ plot for GWAS data.
+- confidence_interval(n: int, conf_points: int=1500, conf_alpha: float=0.05) -> np.ndarray:
+    Computes confidence intervals for the QQ plot.
+- beta_beta_draw(gwas_1: pd.DataFrame, gwas_2: pd.DataFrame, p_col: str, beta_col: str, se_col: str, snp_col: str, label_1: str, label_2: str, plot_dir: str, significance: float=5e-8, annotate_coincidents: bool=True, save_name: str='beta_beta.jpeg', draw_error_line: bool=True, draw_reg_line: bool=True) -> bool:
+- new_trumpet(df_gwas: pd.DataFrame, df_freq: pd.DataFrame, plot_dir: pd.DataFrame, snp_col: str, chr_col: str, pos_col: str, maf_col: str, beta_col: str, power_ts: list, n_case: int, n_control: int, sample_size: int=None, n_col: str='', sample_size_strategy: str='median', p_col: str=None, prevalence: int=None, mode: str='binary', p_filter: float=5e-8, to_highlight: list=[], to_annotate: list=[], cmap: str="cool", power_sig_level: float=5e-8, build='38', gtf_path: str=None, save_name: str='trumpet_plot.jpeg') -> bool:
+    Generates a trumpet plot for visualizing the effect sizes and power of GWAS results.
 """
-
 
 import os
 import gzip
