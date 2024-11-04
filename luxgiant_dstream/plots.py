@@ -472,6 +472,8 @@ def trumpet_draw(df_gwas:pd.DataFrame, df_freq:pd.DataFrame, plot_dir:pd.DataFra
         else:
             # filter the dataframe according to the significance level
             gwas_df = df_gwas[df_gwas[p_col] < p_filter].reset_index(drop=True)
+    else:
+        gwas_df = df_gwas.copy()
 
     if not isinstance(to_highlight, list):
         raise ValueError(f"to_highlight must be a list.")
@@ -484,11 +486,8 @@ def trumpet_draw(df_gwas:pd.DataFrame, df_freq:pd.DataFrame, plot_dir:pd.DataFra
         if not isinstance(val, str):
             raise ValueError(f"to_annotate must be a list of strings.")
 
-    else:
-        gwas_df = df_gwas.copy()
-        del df_gwas
             
-    if maf_col not in df_gwas.columns:
+    if maf_col not in gwas_df.columns:
         df = pd.merge(gwas_df, df_freq, on=snp_col, how='inner')
     
     del gwas_df, df_freq
