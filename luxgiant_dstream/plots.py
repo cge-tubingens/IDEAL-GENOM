@@ -14,27 +14,26 @@ The function qq_plot is a Python implementation of the R code provided in the fo
 
 """
 
+
 import os
 import gzip
 import shutil
 
+import matplotlib
+import matplotlib.colors as mc
+import matplotlib.pyplot as plt
+
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 import seaborn as sns
 import scipy.stats as stats
 import textalloc as ta
 
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-import numpy as np
 from matplotlib.collections import LineCollection
-import matplotlib.colors as mc
-import matplotlib
+
 from gwaslab.bd_download import download_file
-from gwaslab.util_in_get_sig import annogene
 from gwaslab.g_Log import Log
+from gwaslab.util_in_get_sig import annogene
 from gwaslab.util_in_calculate_power import get_beta
 from gwaslab.util_in_calculate_power import get_beta_binary
 
