@@ -15,6 +15,8 @@ The function qq_plot is a Python implementation of the R code provided in the fo
 """
 
 import os
+import gzip
+import shutil
 
 import pandas as pd
 import numpy as np
@@ -31,6 +33,7 @@ from matplotlib.collections import LineCollection
 import matplotlib.colors as mc
 import matplotlib
 from adjustText import adjust_text
+from gwaslab.bd_download import download_file
 from gwaslab.util_in_get_sig import annogene
 from gwaslab.viz_aux_reposition_text import adjust_text_position
 from gwaslab.viz_plot_mqqplot import _process_highlight
