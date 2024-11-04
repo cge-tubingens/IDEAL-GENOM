@@ -140,6 +140,21 @@ def confidence_interval(n:int, conf_points:int=1500, conf_alpha:float=0.05)->np.
     --------
     ndarray
     """
+
+    if not isinstance(n, int):
+        raise ValueError(f"n must be an integer.")
+    elif n < 0:
+        raise ValueError(f"n must be positive.")
+    
+    if not isinstance(conf_points, int):
+        raise ValueError(f"conf_points must be an integer.")
+    elif conf_points < 0:
+        raise ValueError(f"conf_points must be positive.")
+    
+    if not isinstance(conf_alpha, float):
+        raise ValueError(f"conf_alpha must be a float.")
+    elif conf_alpha < 0 or conf_alpha > 1:
+        raise ValueError(f"conf_alpha must be between 0 and 1.")
     
     conf_points = min(conf_points, n - 1)
     mpts = np.zeros((conf_points * 2, 2))
@@ -198,7 +213,7 @@ def beta_beta_draw(gwas_1:pd.DataFrame, gwas_2:pd.DataFrame, p_col:str, beta_col
     --------
     bool
         True if the plot is successfully generated and saved.
-        
+
     Raises:
     -------
     ValueError
