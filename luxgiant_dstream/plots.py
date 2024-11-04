@@ -801,7 +801,10 @@ def trumpet_draw(df_gwas:pd.DataFrame,
 
     return None
     
-def new_trumpet(df_gwas:pd.DataFrame, df_freq:pd.DataFrame, plot_dir:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, maf_col:str, beta_col:str, power_ts:list, n_case:int, n_control:int, p_col:str=None, prevalence:int=None, mode:str='binary', p_filter:float=5e-8, cmap:str="cool", power_sig_level:float=5e-8)->bool:
+def new_trumpet(df_gwas:pd.DataFrame, df_freq:pd.DataFrame, plot_dir:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, maf_col:str, beta_col:str, power_ts:list, n_case:int, n_control:int, sample_size:int=None, n_col:str='', p_col:str=None, prevalence:int=None, mode:str='binary', p_filter:float=5e-8, to_highlight:list=[], to_annotate:list=[], cmap:str="cool", power_sig_level:float=5e-8, build='38', gtf_path:str=None, save_name:str='trumpet_plot.jpeg')->bool:
+
+    if not isinstance(df_gwas, pd.DataFrame):
+        raise ValueError(f"GWAS dataframe must be a pandas dataframe.")
 
     # check if the column names are in the dataframe
     if maf_col not in df_gwas.columns:
