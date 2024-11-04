@@ -537,7 +537,8 @@ def trumpet_draw(df_gwas:pd.DataFrame, df_freq:pd.DataFrame, plot_dir:pd.DataFra
                 ncontrol  =n_control, 
                 t         =t,
                 sig_level =power_sig_level,
-                n_matrix  =2000
+                n_matrix  =2000,
+                verbose=False
             )
 
             xpower2   = xpower.copy()
@@ -557,7 +558,8 @@ def trumpet_draw(df_gwas:pd.DataFrame, df_freq:pd.DataFrame, plot_dir:pd.DataFra
                 n         =sample_size,
                 t         =t,
                 sig_level =power_sig_level,
-                n_matrix  =2000
+                n_matrix  =2000,
+                verbose=False
             )
             
             xpower2   = xpower.copy()
