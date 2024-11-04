@@ -172,6 +172,72 @@ def manhattan_process_data(data_df:pd.DataFrame, chr_col:str='CHR', pos_col:str=
 
 def manhattan_draw(data_df:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, p_col:str, plot_dir:str, to_highlight:list=[], to_annotate:list=[], build:str='38', gtf_path:str=None, save_name:str='manhattan_plot.jpeg')->bool:
 
+    """
+    Draws a Manhattan plot for visualizing GWAS results.
+
+    Parameters:
+    -----------
+    data_df : pd.DataFrame
+        The input DataFrame containing genomic data.
+    snp_col : str    
+        The column name for SNP identifiers.
+    chr_col : str
+        The column name for chromosome identifiers.
+    pos_col : str
+        The column name for base pair positions.
+    p_col : str
+        The column name for p-values.
+    plot_dir : str
+        The directory where the plot will be saved.
+    to_highlight : list, optional
+        A list of SNP identifiers to highlight in the plot. Default is an empty list.
+    to_annotate : list, optional
+        A list of SNP identifiers to annotate in the plot. Default is an empty list.
+    build : str, optional
+        The genome build version. Default is '38'.
+    gtf_path : str, optional
+        The path to the GTF file for gene annotation. If None, the file will be downloaded. Default is None.
+    save_name : str, optional
+        The name of the file to save the plot as. Default is 'manhattan_plot.jpeg'.
+
+    Returns:
+    --------
+    bool
+        True if the plot is successfully created and saved, False otherwise.
+    """
+
+    if not isinstance(data_df, pd.DataFrame):
+        raise TypeError("Input data must be a pandas DataFrame.")
+    if chr_col not in data_df.columns:
+        raise ValueError(f"Column '{chr_col}' not found in the input DataFrame.")
+    if pos_col not in data_df.columns:
+        raise ValueError(f"Column '{pos_col}' not found in the input DataFrame.")
+    if p_col not in data_df.columns:
+        raise ValueError(f"Column '{p_col}' not found in the input DataFrame.")
+    
+    if not isinstance(to_highlight, list):
+        raise TypeError("to_highlight must be a list of SNP identifiers.")
+    for val in to_highlight:
+        if not isinstance(val, str):
+            raise TypeError("to_highlight must be a list of SNP identifiers.")
+    if not isinstance(to_annotate, list):
+        raise TypeError("to_annotate must be a list of SNP identifiers.")
+    for val in to_annotate:
+        if not isinstance(val, str):
+            raise TypeError("to_annotate must be a list of SNP identifiers.")
+    
+    if snp_col not in data_df.columns:
+        raise ValueError(f"Column '{snp_col}' not found in the input DataFrame.")
+    if chr_col not in data_df.columns:
+        raise ValueError(f"Column '{chr_col}' not found in the input DataFrame.")
+    if pos_col not in data_df.columns:
+        raise ValueError(f"Column '{pos_col}' not found in the input DataFrame.")
+    if p_col not in data_df.columns:
+        raise ValueError(f"Column '{p_col}' not found in the input DataFrame.")
+    
+    if not os.path.exists(plot_dir):
+        raise FileNotFoundError(f"Directory '{plot_dir}' not found.")
+    
     chr_colors           = ['#66c2a5', '#fc8d62']
     ylab                 = "-log10(p)"
     xlab                 = "Chromosome"
