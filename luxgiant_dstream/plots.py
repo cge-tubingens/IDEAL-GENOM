@@ -992,6 +992,25 @@ def new_trumpet(df_gwas:pd.DataFrame, df_freq:pd.DataFrame, plot_dir:pd.DataFram
         title_fontsize=7
     )
 
+    if to_highlight is not None and len(to_highlight)>0:
+
+        df_high = df[df[snp_col].isin(to_highlight)].reset_index(drop=True)
+
+        ax = sns.scatterplot(
+            data=df_high,
+            x=maf_col,
+            y=beta_col,
+            size     ="ABS_BETA", 
+            ax       =ax, 
+            sizes    =(20,80),
+            size_norm=size_norm,
+            legend   =False,
+            color = 'red',
+            edgecolor="black",
+            alpha    =0.8,
+            zorder   =2,
+            )
+
     ax.tick_params(axis='y', labelsize=7)
 
     # add X axis
@@ -1005,6 +1024,86 @@ def new_trumpet(df_gwas:pd.DataFrame, df_freq:pd.DataFrame, plot_dir:pd.DataFram
     ax.set_ylim(ylim)
     
     plt.tight_layout()
+
+    r = fig.canvas.get_renderer()
+    fig.canvas.draw()
+
+    if to_annotate is not None and len(to_annotate)>0:
+
+        if gtf_path is None:
+            gtf_url = 'https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.40_GRCh38.p14/GCF_000001405.40_GRCh38.p14_genomic.gtf.gz'
+            path_to_gz = os.path.join(os.path.abspath('..'), 'GCF_000001405.40_GRCh38.p14_genomic.gtf.gz')
+            path_to_gtf= os.path.join(os.path.abspath('..'), 'GCF_000001405.40_GRCh38.p14_genomic.gtf')
+            
+            if os.path.exists(path_to_gz) is not True or os.path.exists(path_to_gtf) is not True:
+
+                download_file(gtf_url, path_to_gz)
+                
+                with gzip.open(path_to_gz, 'rb') as f_in:
+                     with open(path_to_gtf, 'wb') as f_out:
+                        shutil.copyfileobj(f_in, f_out)
+            gtf_path = path_to_gtf
+
+        variants_toanno = df[df[snp_col].isin(to_annotate)].reset_index(drop=True)
+        
+        if (variants_toanno.empty is not True):
+            variants_toanno = annogene(
+                variants_toanno,
+                id     =snp_col,
+                chrom  =chr_col,
+                pos    =pos_col,
+                log    =Log(),
+                build  =build,
+                source ="refseq",
+                verbose=True,
+                gtf_path=gtf_path
+            ).rename(columns={"GENE":"GENENAME"})
+
+        split = {
+            'top':variants_toanno[variants_toanno[beta_col]>0].reset_index(drop=True), 
+            'bottom':variants_toanno[variants_toanno[beta_col]<0].reset_index(drop=True)
+        }
+
+        for key in split.keys():
+            
+            texts = []  # a list to store text annotations for adjustment
+            x = []      # a list to store x-coordinates for adjustment
+            y = []      # a list to store y-coordinates for adjustment
+
+            for i, row in split[key].iterrows():
+
+                x.append(row[maf_col])
+                y.append(row[beta_col])
+                texts.append(row['GENENAME'])
+            
+            if key == 'top':
+                direction = 'northeast'
+            else:
+                direction = 'southeast'
+
+            ta.allocate(
+                    ax,              # the axis to which the text will be
+                    x        =x,     # x-coordinates of the data point to annotate
+                    y        =y,     # y-coordinates of the data point to annotate
+                    text_list=texts, # list of text to annotate
+                    x_scatter=df[maf_col], # all scatter points x-coordinates
+                    y_scatter=df[beta_col],  # all scatter points y-coordinates
+                    linecolor='black',                      # color of the line connecting the text to the data point
+                    textsize =7,                            # size of the text (Default to Nature standard)
+                    bbox     =dict(boxstyle='round,pad=0.5', edgecolor='black', facecolor='#f0f0f0', alpha=0.5),
+                    avoid_label_lines_overlap =True,
+                    avoid_crossing_label_lines=False,
+                    min_distance     =0.05,
+                    max_distance     =0.5,
+                    margin           =0.01,
+                    rotation         =90,
+                    ha               ='center',
+                    direction        =direction,
+                    nbr_candidates   =300,
+                    priority_strategy=42,
+                    plot_kwargs      =dict(linestyle=':')
+                )
+    
     plt.show()
     
     return True
