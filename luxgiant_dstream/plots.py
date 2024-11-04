@@ -1014,7 +1014,7 @@ def new_trumpet(df_gwas:pd.DataFrame, df_freq:pd.DataFrame, plot_dir:pd.DataFram
     ax.tick_params(axis='y', labelsize=7)
 
     # add X axis
-    ax.axhline(y=0,color="black",linestyle="solid")
+    ax.axhline(y=0,color="black",linestyle="solid", lw=0.5)
 
     # axis limits
     ylim =(-df[beta_col].abs().max()*1.5, df[beta_col].abs().max()*1.5)
@@ -1022,7 +1022,7 @@ def new_trumpet(df_gwas:pd.DataFrame, df_freq:pd.DataFrame, plot_dir:pd.DataFram
 
     ax.set_xlim(xlim)
     ax.set_ylim(ylim)
-    
+
     plt.tight_layout()
 
     r = fig.canvas.get_renderer()
