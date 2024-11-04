@@ -368,7 +368,7 @@ def manhattan_type_annotate(axes:Axes, data:pd.DataFrame, variants_toanno:pd.Dat
         A list of text objects for the annotations.
     """
     
-    x_lines_coor = np.linspace(0, max_x_axis, 1000).tolist() # list with a gris of x-coordinates for the lines
+    x_lines_coor = np.linspace(0, max_x_axis, 1000).tolist() # list with a grid of x-coordinates for the lines
     
     texts = []  # a list to store text annotations for adjustment
     x = []      # a list to store x-coordinates for adjustment
