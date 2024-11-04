@@ -910,6 +910,16 @@ def new_trumpet(df_gwas:pd.DataFrame, df_freq:pd.DataFrame, plot_dir:pd.DataFram
     else:
         beta_range=(0.0001, 3)
 
+    if mode=="quantitative" and sample_size is None:
+        if sample_size_strategy == "min":
+            sample_size = df[n_col].min() 
+        elif sample_size_strategy == "max":
+            sample_size = df[n_col].max() 
+        elif sample_size_strategy == "mean":
+            sample_size = df[n_col].mean() 
+        else:
+            sample_size = df[n_col].median()
+
     # generate power lines
     if mode=='binary':
         for i,t in enumerate(power_ts):
