@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "luxgiant-dstream"
+name = "ideal-genome"
 version = "0.1.0"
 description = ""
 authors = ["luisggon <luisggon@protonmail.com>"]
