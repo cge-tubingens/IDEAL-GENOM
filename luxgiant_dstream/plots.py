@@ -680,7 +680,7 @@ def trumpet_draw(df_gwas:pd.DataFrame, df_freq:pd.DataFrame, plot_dir:pd.DataFra
                 log    =Log(),
                 build  =build,
                 source ="refseq",
-                verbose=True,
+                verbose=False,
                 gtf_path=gtf_path
             ).rename(columns={"GENE":"GENENAME"})
 
