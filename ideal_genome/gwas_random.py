@@ -5,9 +5,9 @@ Module to perform a GWAS analysis using a random effect model.
 import os
 import pandas as pd
 
-from luxgiant_dstream.Helpers import shell_do, delete_temp_files
-from luxgiant_dstream.plots import manhattan_plot, qq_plot
-from luxgiant_dstream.annotate_tools import get_variant_context
+from ideal_genome.Helpers import shell_do, delete_temp_files
+from ideal_genome.plots import manhattan_plot, qq_plot
+from ideal_genome.annotate_tools import get_variant_context
 
 class GWASrandom:
 

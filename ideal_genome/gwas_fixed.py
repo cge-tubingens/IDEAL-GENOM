@@ -6,9 +6,9 @@ import os
 import pandas as pd
 import numpy as np
 
-from luxgiant_dstream.Helpers import shell_do, delete_temp_files
-from luxgiant_dstream.plots import manhattan_plot, qq_plot, miami_plot, draw_trumpet_plot
-from luxgiant_dstream.annotate_tools import get_variant_context
+from ideal_genome.Helpers import shell_do, delete_temp_files
+from ideal_genome.plots import manhattan_plot, qq_plot, miami_plot, draw_trumpet_plot
+from ideal_genome.annotate_tools import get_variant_context
 
 class GWASfixed:
 

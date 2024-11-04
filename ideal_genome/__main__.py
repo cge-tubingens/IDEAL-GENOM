@@ -1,11 +1,11 @@
 import os
 import json
 
-from luxgiant_dstream.Helpers import arg_parser
+from ideal_genome.Helpers import arg_parser
 
-from luxgiant_dstream.prep_ds import PrepDS
-from luxgiant_dstream.gwas_fixed import GWASfixed
-from luxgiant_dstream.gwas_random import GWASrandom
+from ideal_genome.prep_ds import PrepDS
+from ideal_genome.gwas_fixed import GWASfixed
+from ideal_genome.gwas_random import GWASrandom
 
 def analysis_pipe(params_dict:dict, data_dict:dict, steps_dict:dict)->None:
 
