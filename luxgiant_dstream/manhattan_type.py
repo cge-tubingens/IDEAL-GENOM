@@ -47,6 +47,15 @@ def compute_relative_pos(data:pd.DataFrame, chr_col:str='CHR', pos_col:str='POS'
     pd.DataFrame: DataFrame with additional columns for relative positions and -log10(p-values).
     """
 
+    if not isinstance(data, pd.DataFrame):
+        raise TypeError("Input data must be a pandas DataFrame.")
+    if chr_col not in data.columns:
+        raise ValueError(f"Column '{chr_col}' not found in the input DataFrame.")
+    if pos_col not in data.columns:
+        raise ValueError(f"Column '{pos_col}' not found in the input DataFrame.")
+    if p_col not in data.columns:
+        raise ValueError(f"Column '{p_col}' not found in the input DataFrame.")
+
     # Group by chromosome and compute chromosome size
     chr_grouped = data.groupby(chr_col).agg(chrlength=(pos_col, 'max')).reset_index()
 
@@ -89,6 +98,13 @@ def find_chromosomes_center(data:pd.DataFrame, chr_col:str='CHR', chr_pos_col:st
         A DataFrame with columns 'CHR' and 'center', where 'CHR' contains chromosome identifiers and 'center' contains the calculated center positions for each chromosome.
     """
 
+    if not isinstance(data, pd.DataFrame):
+        raise TypeError("Input data must be a pandas DataFrame.")
+    if chr_col not in data.columns:
+        raise ValueError(f"Column '{chr_col}' not found in the input DataFrame.")
+    if chr_pos_col not in data.columns:
+        raise ValueError(f"Column '{chr_pos_col}' not found in the input DataFrame.")
+
     chromosomes = data[chr_col].unique()
 
     axis_center = pd.DataFrame(columns=[chr_col, 'center'])
@@ -125,6 +141,15 @@ def manhattan_process_data(data_df:pd.DataFrame, chr_col:str='CHR', pos_col:str=
             - 'axis' (dict): The center positions of each chromosome for plotting.
             - 'maxp' (float): The maximum log-transformed p-value.
     """
+
+    if not isinstance(data, pd.DataFrame):
+        raise TypeError("Input data must be a pandas DataFrame.")
+    if chr_col not in data.columns:
+        raise ValueError(f"Column '{chr_col}' not found in the input DataFrame.")
+    if pos_col not in data.columns:
+        raise ValueError(f"Column '{pos_col}' not found in the input DataFrame.")
+    if p_col not in data.columns:
+        raise ValueError(f"Column '{p_col}' not found in the input DataFrame.")
 
     data = compute_relative_pos(
         data_df, 
