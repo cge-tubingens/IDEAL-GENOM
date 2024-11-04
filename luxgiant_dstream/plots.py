@@ -810,6 +810,8 @@ def new_trumpet(df_gwas:pd.DataFrame, df_freq:pd.DataFrame, plot_dir:pd.DataFram
     if maf_col not in df_gwas.columns:
         if df_freq is None:
             raise ValueError(f"Column {maf_col} not present in the GWAS dataframe and no frequency dataframe provided.")
+        elif not isinstance(df_freq, pd.DataFrame):
+            raise ValueError(f"Frequency dataframe must be a pandas dataframe.")
         elif maf_col not in df_freq.columns:
             raise ValueError(f"Column {maf_col} not present in the GWAS dataframe and frequency dataframe.")
         elif df_freq.shape[0]==0:
@@ -841,6 +843,14 @@ def new_trumpet(df_gwas:pd.DataFrame, df_freq:pd.DataFrame, plot_dir:pd.DataFram
         if prevalence is None:
             prevalence = n_case / (n_case + n_control)
 
+    if mode == 'quantitative':
+        if n_col not in df_gwas.columns and sample_size is None:
+            raise ValueError(f"Column {n_col} not present in the GWAS dataframe and sample size is unknown.")
+        elif sample_size is not None and not isinstance(sample_size, int):
+            raise ValueError(f"Sample size must be an integer.")
+        elif sample_size < 0:
+            raise ValueError(f"Sample size must be positive.")
+
     if p_filter is not None and p_col is not None:
         if not isinstance(p_filter, float):
             raise ValueError(f"Significance level must be a float.")
@@ -851,6 +861,17 @@ def new_trumpet(df_gwas:pd.DataFrame, df_freq:pd.DataFrame, plot_dir:pd.DataFram
         else:
             # filter the dataframe according to the significance level
             gwas_df = df_gwas[df_gwas[p_col] < p_filter].reset_index(drop=True)
+
+    if not isinstance(to_highlight, list):
+        raise ValueError(f"to_highlight must be a list.")
+    if not isinstance(to_annotate, list):
+        raise ValueError(f"to_annotate must be a list.")
+    for val in to_highlight:
+        if not isinstance(val, str):
+            raise ValueError(f"to_highlight must be a list of strings.")
+    for val in to_annotate:
+        if not isinstance(val, str):
+            raise ValueError(f"to_annotate must be a list of strings.")
 
     else:
         gwas_df = df_gwas.copy()
