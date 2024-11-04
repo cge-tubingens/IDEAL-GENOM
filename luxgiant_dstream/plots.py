@@ -645,6 +645,9 @@ def trumpet_draw(df_gwas:pd.DataFrame, df_freq:pd.DataFrame, plot_dir:pd.DataFra
     ax.set_xlim(xlim)
     ax.set_ylim(ylim)
 
+    ax.set_xlabel("Minor Allele Frequency", fontsize=7)
+    ax.set_ylabel("Effect Size (Beta)", fontsize=7)
+
     plt.tight_layout()
 
     r = fig.canvas.get_renderer()
