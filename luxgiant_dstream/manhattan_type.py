@@ -411,6 +411,17 @@ def miami_process_data(data_top:pd.DataFrame, data_bottom:pd.DataFrame, chr_col:
         - 'maxp': The maximum -log10(p-value) in the data.
     """
 
+    if not isinstance(data_top, pd.DataFrame):
+        raise TypeError("Input data must be a pandas DataFrame.")
+    if not isinstance(data_bottom, pd.DataFrame):
+        raise TypeError("Input data must be a pandas DataFrame.")
+    if chr_col not in data_top.columns:
+        raise ValueError(f"Column '{chr_col}' not found in the input DataFrame.")
+    if pos_col not in data_top.columns:
+        raise ValueError(f"Column '{pos_col}' not found in the input DataFrame.")
+    if p_col not in data_top.columns:
+        raise ValueError(f"Column '{p_col}' not found in the input DataFrame.")
+
     data_top['split_by']   = 'top'
     data_bottom['split_by']= 'bottom'
 
@@ -458,6 +469,19 @@ def manhattan_type_annotate(axes:Axes, data:pd.DataFrame, variants_toanno:pd.Dat
     list
         A list of text objects for the annotations.
     """
+
+    if not isinstance(axes, Axes):
+        raise TypeError("axes must be a matplotlib Axes object.")
+    if not isinstance(data, pd.DataFrame):
+        raise TypeError("data must be a pandas DataFrame.")
+    if not isinstance(variants_toanno, pd.DataFrame):
+        raise TypeError("variants_toanno must be a pandas DataFrame.")
+    if not isinstance(max_x_axis, (int, float)):
+        raise TypeError("max_x_axis must be an integer or float.")
+    if not isinstance(suggestive_line, float):
+        raise TypeError("suggestive_line must be a float.")
+    if not isinstance(genome_line, float):
+        raise TypeError("genome_line must be a float.")
     
     x_lines_coor = np.linspace(0, max_x_axis, 1000).tolist() # list with a grid of x-coordinates for the lines
     
@@ -591,7 +615,33 @@ def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col
         True if the plot is successfully created and saved, False otherwise.
     """
     
+    if not isinstance(df_top, pd.DataFrame):
+        raise TypeError("Input data must be a pandas DataFrame.")
+    if not isinstance(df_bottom, pd.DataFrame):
+        raise TypeError("Input data must be a pandas DataFrame.")
+    if chr_col not in df_top.columns or chr_col not in df_bottom.columns:
+        raise ValueError(f"Column '{chr_col}' not found in the input DataFrame.")
+    if pos_col not in df_top.columns or pos_col not in df_bottom.columns:
+        raise ValueError(f"Column '{pos_col}' not found in the input DataFrame.")
+    if p_col not in df_top.columns or p_col not in df_bottom.columns:
+        raise ValueError(f"Column '{p_col}' not found in the input DataFrame.")
+    if not os.path.exists(plots_dir):
+        raise FileNotFoundError(f"Directory '{plots_dir}' not found.")
     
+    annot_high = [top_highlights, top_annotations, bottom_highlights, bottom_annotations]
+    for lst in annot_high:
+        if not isinstance(lst, list):
+            raise TypeError("Annotation lists must be lists of SNP identifiers.")
+        for val in lst:
+            if not isinstance(val, str):
+                raise TypeError("Annotation lists must be lists of SNP identifiers.")
+    
+    if not isinstance(save_name, str):
+        raise TypeError("save_name must be a string.")
+    if not isinstance(legend_top, str):
+        raise TypeError("legend_top must be a string.")
+    if not isinstance(legend_bottom, str):
+        raise TypeError("legend_bottom must be a string.")
 
     chr_colors           = ['#66c2a5', '#fc8d62']
     upper_ylab           = "-log10(p)" 
