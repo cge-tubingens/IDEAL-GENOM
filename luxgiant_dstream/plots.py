@@ -1105,5 +1105,6 @@ def new_trumpet(df_gwas:pd.DataFrame, df_freq:pd.DataFrame, plot_dir:pd.DataFram
                 )
     
     plt.show()
+    plt.savefig(os.path.join(plot_dir, save_name), dpi=500)
     
     return True
