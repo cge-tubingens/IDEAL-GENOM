@@ -340,13 +340,17 @@ def beta_beta_draw(gwas_1:pd.DataFrame, gwas_2:pd.DataFrame, p_col:str, beta_col
     ax.plot(help_line, help_line, color='black', linestyle='solid', lw=0.5)
     
     # draw regression line
-    ax.plot(
-        help_line, 
-        result.slope*help_line + result.intercept, 
-        color    ='gray', 
-        linestyle='dashed', 
-        lw       =0.5
-    )
+    if draw_reg_line:
+    
+        result = stats.linregress(df[f'{beta_col}_2'], df[f'{beta_col}_2'])
+
+        ax.plot(
+            help_line, 
+            result.slope*help_line + result.intercept, 
+            color    ='gray', 
+            linestyle='dashed', 
+            lw       =0.5
+        )
 
     ax.set_xlim(x_lim)
     ax.set_ylim(y_lim)
