@@ -928,6 +928,27 @@ def new_trumpet(df_gwas:pd.DataFrame, df_freq:pd.DataFrame, plot_dir:pd.DataFram
 
             ax.add_collection(lines)
 
+    if mode=='quantitative':
+        for i,t in enumerate(power_ts):
+            xpower = get_beta(
+                mode      ="q",          
+                eaf_range =maf_range,
+                beta_range=beta_range, 
+                n         =n,
+                t         =t,
+                sig_level =power_sig_level,
+                n_matrix  =2000
+            )
+            
+            xpower2   = xpower.copy()
+            xpower2[1]= -xpower2[1]
+            xpower2[1]= xpower2[1]
+            xpower[1] = xpower[1]
+
+            lines = LineCollection([xpower2,xpower], label=t,color=output_hex_colors[i],zorder=0)
+
+            ax.add_collection(lines)
+
     # get absolute value of BETA for scaling
     df["ABS_BETA"] = df[beta_col].abs()
     size_norm = (df["ABS_BETA"].min(), df["ABS_BETA"].max())
