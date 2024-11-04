@@ -949,7 +949,7 @@ def new_trumpet(df_gwas:pd.DataFrame, df_freq:pd.DataFrame, plot_dir:pd.DataFram
                 mode      ="q",          
                 eaf_range =maf_range,
                 beta_range=beta_range, 
-                n         =n,
+                n         =sample_size,
                 t         =t,
                 sig_level =power_sig_level,
                 n_matrix  =2000
