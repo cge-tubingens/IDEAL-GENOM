@@ -254,10 +254,12 @@ def beta_beta_draw(gwas_1:pd.DataFrame, gwas_2:pd.DataFrame, p_col:str, beta_col
     df_gwas2 = gwas_2.copy()
     df_gwas2.columns = [f"{col}_2" for col in df_gwas2.columns if col != snp_col]
 
+    # merge the dataframes
     df = pd.merge(df_gwas1, df_gwas2, on=snp_col, how='inner')
 
     del df_gwas1, df_gwas2
 
+    # create masks to identify the SNPs that are significant in one or both GWAS
     mask_significance_1 = (df[f'{p_col}_1'] < significance)
     mask_significance_2 = (df[f'{p_col}_2'] < significance)
 
@@ -271,6 +273,7 @@ def beta_beta_draw(gwas_1:pd.DataFrame, gwas_2:pd.DataFrame, p_col:str, beta_col
     df.loc[df['ID'].isin(on_first), f'P-val<{significance}'] = f'{label_1} GWAS'
     df.loc[df['ID'].isin(on_second), f'P-val<{significance}']= f'{label_2} GWAS'
 
+    # set the limits for the plot
     max_beta_x = df[f'{beta_col}_1'].abs().max() + 0.01
     max_beta_y = df[f'{beta_col}_2'].abs().max() + 0.01
     max_coords = max(max_beta_x, max_beta_y)
@@ -278,8 +281,7 @@ def beta_beta_draw(gwas_1:pd.DataFrame, gwas_2:pd.DataFrame, p_col:str, beta_col
     x_lim = (-max_coords, max_coords)
     y_lim = (-max_coords, max_coords)
 
-    result = stats.linregress(df[f'{beta_col}_2'], df[f'{beta_col}_2'])
-
+    # determine colors and markers for the plot
     colors = {
         f'{label_1} GWAS': "#1f77b4", 
         'Both'           : "#ff7f0e",
@@ -293,6 +295,9 @@ def beta_beta_draw(gwas_1:pd.DataFrame, gwas_2:pd.DataFrame, p_col:str, beta_col
 
     fig= plt.figure(figsize=(10, 10))
     ax = plt.subplot(111)
+
+    # plot with error bars
+    if draw_error_line:
 
     for category in np.unique(df[f'P-val<{significance}']):
         
