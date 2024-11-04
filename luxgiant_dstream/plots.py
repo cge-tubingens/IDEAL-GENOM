@@ -798,3 +798,165 @@ def trumpet_draw(df_gwas:pd.DataFrame,
 
     return None
     
+def new_trumpet(df_gwas:pd.DataFrame, df_freq:pd.DataFrame, plot_dir:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, maf_col:str, beta_col:str, power_ts:list, n_case:int, n_control:int, p_col:str=None, prevalence:int=None, mode:str='binary', p_filter:float=5e-8, cmap:str="cool", power_sig_level:float=5e-8)->bool:
+
+    # check if the column names are in the dataframe
+    if maf_col not in df_gwas.columns:
+        if df_freq is None:
+            raise ValueError(f"Column {maf_col} not present in the GWAS dataframe and no frequency dataframe provided.")
+        elif maf_col not in df_freq.columns:
+            raise ValueError(f"Column {maf_col} not present in the GWAS dataframe and frequency dataframe.")
+        elif df_freq.shape[0]==0:
+            raise ValueError(f"Frequency dataframe is empty.")
+        elif snp_col not in df_freq.columns or snp_col not in df_gwas.columns:
+            raise ValueError(f"Column {snp_col} is not a common column. No possible merge.")
+    
+    if df_gwas.shape[0]==0:
+        raise ValueError(f"GWAS dataframe is empty.")
+    if df_gwas is None:
+        raise ValueError(f"GWAS dataframe is None.")
+    if not isinstance(power_ts, list):
+        raise ValueError(f"Power thresholds must be a list.")
+    for val in power_ts:
+        if not isinstance(val, float):
+            raise ValueError(f"Power thresholds must be floats.")
+        elif val > 1 or val < 0:
+            raise ValueError(f"Power thresholds must be between 0 and 1.")
+    if mode not in ['binary', 'quantitative']:
+        raise ValueError(f"Mode must be either 'binary' or 'quantitative'.")
+    
+    if mode == 'binary':
+        if n_case is None or n_control is None:
+            raise ValueError(f"Number of cases and controls must be provided.")
+        elif not isinstance(n_case, int) or not isinstance(n_control, int):
+            raise ValueError(f"Number of cases and controls must be integers.")
+        elif n_case < 0 or n_control < 0:
+            raise ValueError(f"Number of cases and controls must be positive.")
+        if prevalence is None:
+            prevalence = n_case / (n_case + n_control)
+
+    if p_filter is not None and p_col is not None:
+        if not isinstance(p_filter, float):
+            raise ValueError(f"Significance level must be a float.")
+        elif p_filter < 0 or p_filter > 1:
+            raise ValueError(f"Significance level must be between 0 and 1.")
+        elif p_col not in df_gwas.columns:
+            raise ValueError(f"Column {p_col} not present in the GWAS dataframe.")
+        else:
+            # filter the dataframe according to the significance level
+            gwas_df = df_gwas[df_gwas[p_col] < p_filter].reset_index(drop=True)
+
+    else:
+        gwas_df = df_gwas.copy()
+        del df_gwas
+            
+    if maf_col not in df_gwas.columns:
+        df = pd.merge(gwas_df, df_freq, on=snp_col, how='inner')
+    
+    del gwas_df, df_freq
+
+    # colormap
+    cmap_to_use = matplotlib.colormaps[cmap]
+    if cmap_to_use.N >100:
+        rgba = cmap_to_use(power_ts)
+    else:
+        rgba = cmap_to_use(range(len(power_ts)))
+
+    output_hex_colors=[]
+    for i in range(len(rgba)):
+        output_hex_colors.append(mc.to_hex(rgba[i]))
+
+    # generate figure
+    fig, ax = plt.subplots(figsize=(10, 10))
+
+    # BETA and MAF range for power calculation
+    maf_min_power = np.floor( -np.log10(df[maf_col].min())) + 1
+    maf_range=(min(np.power(10.0,-maf_min_power),np.power(10.0,-4)),0.5)
+    
+    if df[beta_col].max()>3:
+        beta_range=(0.0001, df[beta_col].max())
+    else:
+        beta_range=(0.0001, 3)
+
+    # generate power lines
+    if mode=='binary':
+        for i,t in enumerate(power_ts):
+            xpower = get_beta_binary(
+                eaf_range =maf_range,
+                beta_range=beta_range, 
+                prevalence=prevalence,
+                or_to_rr  =False,
+                ncase     =n_case, 
+                ncontrol  =n_control, 
+                t         =t,
+                sig_level =power_sig_level,
+                n_matrix  =2000
+            )
+
+            xpower2   = xpower.copy()
+            xpower2[1]= -xpower2[1] 
+            xpower2[1]= xpower2[1] 
+            xpower[1] = xpower[1] 
+            lines     = LineCollection([xpower2,xpower], label=t,color=output_hex_colors[i])
+
+            ax.add_collection(lines)
+
+    # get absolute value of BETA for scaling
+    df["ABS_BETA"] = df[beta_col].abs()
+    size_norm = (df["ABS_BETA"].min(), df["ABS_BETA"].max())
+
+    # scatter plot
+    ax = sns.scatterplot(data=df,
+                    x=maf_col,
+                    y=beta_col,
+                    size     ="ABS_BETA", 
+                    ax       =ax, 
+                    sizes    =(20,80),
+                    size_norm=size_norm,
+                    legend   =True, 
+                    edgecolor="black",
+                    alpha    =0.8,
+                    zorder   =2,
+    )
+
+    # add legend for power lines
+    h,l = ax.get_legend_handles_labels()
+    if len(power_ts)>0:
+        l1 = ax.legend(
+            h[:int(len(power_ts))],
+            l[:int(len(power_ts))], 
+            title         ="Power", 
+            loc           ="upper right",
+            fontsize      =7,
+            title_fontsize=7
+        )
+        for line in l1.get_lines():
+            line.set_linewidth(5.0)
+        ax.add_artist(l1)
+
+    # add legend for size
+    l2 = ax.legend(
+        h[int(len(power_ts)):],
+        l[int(len(power_ts)):], 
+        title="ABS_BETA", 
+        loc="lower right",
+        fontsize =7, 
+        title_fontsize=7
+    )
+
+    ax.tick_params(axis='y', labelsize=7)
+
+    # add X axis
+    ax.axhline(y=0,color="black",linestyle="solid")
+
+    # axis limits
+    ylim =(-df[beta_col].abs().max()*1.5, df[beta_col].abs().max()*1.5)
+    xlim =(df[maf_col].min()*0.5,0.52)
+
+    ax.set_xlim(xlim)
+    ax.set_ylim(ylim)
+    
+    plt.tight_layout()
+    plt.show()
+    
+    return True
