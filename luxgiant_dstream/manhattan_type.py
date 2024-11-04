@@ -442,7 +442,7 @@ def miami_process_data(data_top:pd.DataFrame, data_bottom:pd.DataFrame, chr_col:
 
     return miami_data
 
-def manhattan_type_annotate(axes:Axes, data:pd.DataFrame, variants_toanno:pd.DataFrame, max_x_axis:float, suggestive_line, genome_line)->Axes:
+def manhattan_type_annotate(axes:Axes, data:pd.DataFrame, variants_toanno:pd.DataFrame, max_x_axis:float, suggestive_line:float, genome_line:float)->Axes:
     
     """
     Annotates a Manhattan plot with gene names.
