@@ -1,4 +1,4 @@
-# Genome Wide Association Analysis (GWAS) Pipeline
+# IDEAL-GENOME
 
 This Python package is designed to execute a GWAS pipeline, encapsulating several years of reseach as well as new experiences at CGE Tübingen.
 
