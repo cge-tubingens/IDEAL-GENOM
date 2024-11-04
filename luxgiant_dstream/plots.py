@@ -299,22 +299,36 @@ def beta_beta_draw(gwas_1:pd.DataFrame, gwas_2:pd.DataFrame, p_col:str, beta_col
     # plot with error bars
     if draw_error_line:
 
-    for category in np.unique(df[f'P-val<{significance}']):
-        
-        mask_hue = (df[f'P-val<{significance}'] == category)
-        
-        ax.errorbar(
-            x         =df[f'{beta_col}_1'][mask_hue], 
-            y         =df[f'{beta_col}_2'][mask_hue], 
-            xerr      =df[f'{se_col}_1'][mask_hue], 
-            yerr      =df[f'{se_col}_2'][mask_hue],
-            fmt       =markers[category],
-            color     =colors[category], 
-            ecolor    ='lightgray', 
-            label     =category, 
-            elinewidth=0.75, 
-            capsize   =0,
-            markersize=5
+        for category in np.unique(df[f'P-val<{significance}']):
+
+            mask_hue = (df[f'P-val<{significance}'] == category)
+
+            ax.errorbar(
+                x         =df[f'{beta_col}_1'][mask_hue], 
+                y         =df[f'{beta_col}_2'][mask_hue], 
+                xerr      =df[f'{se_col}_1'][mask_hue], 
+                yerr      =df[f'{se_col}_2'][mask_hue],
+                fmt       =markers[category],
+                color     =colors[category], 
+                ecolor    ='lightgray', 
+                label     =category, 
+                elinewidth=0.75, 
+                capsize   =0,
+                markersize=5
+            )
+    # plot without error bars
+    else:
+        ax = sns.scatterplot(
+            data=df,
+            x=f'{beta_col}_1',
+            y=f'{beta_col}_2',
+            hue=f'P-val<{significance}',
+            palette=colors,
+            style=f'P-val<{significance}',
+            markers=markers,
+            s=50,
+            edgecolor='black',
+            alpha=0.8
         )
 
     # draw x and y axis
