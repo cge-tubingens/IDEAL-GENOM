@@ -801,7 +801,7 @@ def trumpet_draw(df_gwas:pd.DataFrame,
 
     return None
     
-def new_trumpet(df_gwas:pd.DataFrame, df_freq:pd.DataFrame, plot_dir:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, maf_col:str, beta_col:str, power_ts:list, n_case:int, n_control:int, sample_size:int=None, n_col:str='', p_col:str=None, prevalence:int=None, mode:str='binary', p_filter:float=5e-8, to_highlight:list=[], to_annotate:list=[], cmap:str="cool", power_sig_level:float=5e-8, build='38', gtf_path:str=None, save_name:str='trumpet_plot.jpeg')->bool:
+def new_trumpet(df_gwas:pd.DataFrame, df_freq:pd.DataFrame, plot_dir:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, maf_col:str, beta_col:str, power_ts:list, n_case:int, n_control:int, sample_size:int=None, n_col:str='', sample_size_strategy:str='median', p_col:str=None, prevalence:int=None, mode:str='binary', p_filter:float=5e-8, to_highlight:list=[], to_annotate:list=[], cmap:str="cool", power_sig_level:float=5e-8, build='38', gtf_path:str=None, save_name:str='trumpet_plot.jpeg')->bool:
 
     if not isinstance(df_gwas, pd.DataFrame):
         raise ValueError(f"GWAS dataframe must be a pandas dataframe.")
@@ -850,6 +850,11 @@ def new_trumpet(df_gwas:pd.DataFrame, df_freq:pd.DataFrame, plot_dir:pd.DataFram
             raise ValueError(f"Sample size must be an integer.")
         elif sample_size < 0:
             raise ValueError(f"Sample size must be positive.")
+        
+        if n_col in df_gwas.columns:
+            if sample_size_strategy not in ['min', 'max', 'median', 'mean']:
+                raise ValueError(f"Sample size strategy must be either 'min', 'max', 'median' or 'mean'.")
+
 
     if p_filter is not None and p_col is not None:
         if not isinstance(p_filter, float):
