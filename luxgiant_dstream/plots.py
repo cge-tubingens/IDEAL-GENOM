@@ -35,8 +35,6 @@ import matplotlib
 from adjustText import adjust_text
 from gwaslab.bd_download import download_file
 from gwaslab.util_in_get_sig import annogene
-from gwaslab.viz_aux_reposition_text import adjust_text_position
-from gwaslab.viz_plot_mqqplot import _process_highlight
 from gwaslab.g_Log import Log
 from gwaslab.util_in_calculate_power import get_beta
 from gwaslab.util_in_calculate_power import get_beta_binary
