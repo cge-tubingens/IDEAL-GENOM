@@ -160,8 +160,95 @@ def confidence_interval(n:int, conf_points:int=1500, conf_alpha:float=0.05)->np.
     
     return mpts
 
-def beta_beta_draw(gwas_1:pd.DataFrame, gwas_2:pd.DataFrame, p_col:str, beta_col:str, se_col:str, snp_col:str, label_1:str, label_2:str, plot_dir:str, significance:float=5e-8, annotate_coincidents:bool=True, save_name:str='beta_beta.jpeg')->bool:
+def beta_beta_draw(gwas_1:pd.DataFrame, gwas_2:pd.DataFrame, p_col:str, beta_col:str, se_col:str, snp_col:str, label_1:str, label_2:str, plot_dir:str, significance:float=5e-8, annotate_coincidents:bool=True, save_name:str='beta_beta.jpeg', draw_error_line:bool=True, draw_reg_line:bool=True)->bool:
+    
+    """
+    Generates a scatter plot comparing the effect sizes (beta values) of two GWAS studies.
 
+    Parameters:
+    -----------
+    gwas_1 : pd.DataFrame
+        DataFrame containing the first GWAS data.
+    gwas_2 : pd.DataFrame
+        DataFrame containing the second GWAS data.
+    p_col : str
+        Column name for p-values in the GWAS dataframes.
+    beta_col : str
+        Column name for beta values in the GWAS dataframes.
+    se_col : str
+        Column name for standard errors in the GWAS dataframes.
+    snp_col : str
+        Column name for SNP identifiers in the GWAS dataframes.
+    label_1 : str
+        Label for the first GWAS study.
+    label_2 : str
+        Label for the second GWAS study.
+    plot_dir : str
+        Directory where the plot will be saved.
+    significance : float, optional
+        Significance threshold for p-values, by default 5e-8.
+    annotate_coincidents : bool, optional
+        Whether to annotate SNPs that are significant in both GWAS studies, by default True.
+    save_name : str, optional
+        Name of the saved plot file, by default 'beta_beta.jpeg'.
+    draw_error_line : bool, optional
+        Whether to draw error bars, by default True.
+    draw_reg_line : bool, optional
+        Whether to draw a regression line, by default True.
+
+    Returns:
+    --------
+    bool
+        True if the plot is successfully generated and saved.
+        
+    Raises:
+    -------
+    ValueError
+        If the input dataframes are not pandas dataframes.
+        If the specified columns are not present in the dataframes.
+        If the significance level is not a float between 0 and 1.
+        If the boolean parameters are not boolean.
+    """
+
+    
+    
+    # check if the dataframes are pandas dataframes
+    if not isinstance(gwas_1, pd.DataFrame):
+        raise ValueError(f"GWAS 1 dataframe must be a pandas dataframe.")
+    if not isinstance(gwas_2, pd.DataFrame):
+        raise ValueError(f"GWAS 2 dataframe must be a pandas dataframe.")
+    
+    # check if the column names are in the dataframe
+    if beta_col not in gwas_1.columns or p_col not in gwas_2.columns:
+        raise ValueError(f"Column {beta_col} not present in both GWAS dataframes.")
+    if p_col not in gwas_1.columns or p_col not in gwas_2.columns:
+        raise ValueError(f"Column {p_col} not present in both GWAS dataframes.")
+    
+    # check if the significance level is a float between 0 and 1
+    if not isinstance(significance, float):
+        raise ValueError(f"Significance level must be a float.")
+    elif significance < 0 or significance > 1:
+        raise ValueError(f"Significance level must be between 0 and 1.")
+    
+    # check if the boolean values are boolean
+    if not isinstance(annotate_coincidents, bool):
+        raise ValueError(f"annotate_coincidents must be a boolean.")
+    if not isinstance(draw_error_line, bool):
+        raise ValueError(f"draw_error_line must be a boolean.")
+    if not isinstance(draw_reg_line, bool):
+        raise ValueError(f"draw_reg_line must be a boolean.")
+    
+    # check if the se column in dataframes if draw_error_line is True
+    if draw_error_line is True:
+        if se_col not in gwas_1.columns or se_col not in gwas_2.columns:
+            raise ValueError(f"Column {se_col} not present in both GWAS dataframes.")
+
+    # check if the snp column is in the dataframes if annotate_coincidents is True
+    if annotate_coincidents is True:
+        if snp_col not in gwas_1.columns or snp_col not in gwas_2.columns:
+            raise ValueError(f"Column {snp_col} not present in both GWAS dataframes.")
+    
+    # rename columns to avoid conflicts
     df_gwas1 = gwas_1.copy()
     df_gwas1.columns = [f"{col}_1" for col in df_gwas1.columns if col != snp_col]
     df_gwas2 = gwas_2.copy()
