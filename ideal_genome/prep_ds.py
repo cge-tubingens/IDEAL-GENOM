@@ -234,11 +234,15 @@ class PrepDS:
         else:
             max_threads = 10
 
-        # plink command to perform PCA decomposition
-        plink_cmd = f"plink --bfile {os.path.join(results_dir, output_name+'_LDpruned')} --pca {pca} --threads {max_threads} --out {os.path.join(results_dir, output_name+'_pca')}"
+        if recompute:
+            if not os.path.exists(os.path.join(results_dir, output_name+'_LDpruned.bed')):
+                raise FileNotFoundError(f"File with pruned data was not found: {os.path.join(results_dir, output_name+'_LDpruned')}")
 
-        # execute plink command
-        shell_do(plink_cmd, log=True)
+            # plink command to perform PCA decomposition
+            plink_cmd = f"plink --bfile {os.path.join(results_dir, output_name+'_LDpruned')} --pca {pca} --threads {max_threads} --out {os.path.join(results_dir, output_name+'_pca')}"
+
+            # execute plink command
+            shell_do(plink_cmd, log=True)
 
         self.files_to_keep.append(output_name+'_pca.eigenvec')
 
