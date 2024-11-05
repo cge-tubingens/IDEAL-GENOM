@@ -18,7 +18,7 @@ class PrepDS:
     Class designed to perform data preparation for downstream analysis.
     """
 
-    def __init__(self, input_path:str, input_name:str, output_path:str, output_name:str, config_dict:str, dependables_path:str) -> None:
+    def __init__(self, input_path:str, input_name:str, output_path:str, output_name:str, config_dict:str, dependables_path:str, recompute:bool=True) -> None:
 
         """
         Initialize the PrepDS class.
