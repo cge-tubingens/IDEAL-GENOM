@@ -168,32 +168,6 @@ class GWASfixed:
             # execute plink command
             shell_do(plink2_cmd, log=True)
 
-        # rename columns for later use with GCTA
-        df = pd.read_csv(os.path.join(results_dir, output_name+'_glm.PHENO1.glm.logistic.hybrid'), sep="\t")
-        rename = {
-            '#CHROM'          : 'CHR',	
-            'POS'             : 'POS',	
-            'ID'              : 'SNP',
-            'REF'             : 'A2',	
-            'ALT'             : 'ALT',	
-            'PROVISIONAL_REF?': 'PROVISIONAL_REF',	
-            'A1'              : 'A1',	
-            'OMITTED'         : 'OMITTED',	
-            'A1_FREQ'         : 'freq',	
-            'FIRTH?'          : 'FIRTH',	
-            'TEST'            : 'TEST',	
-            'OBS_CT'          : 'N',	
-            'BETA'            : 'b',	
-            'SE'              : 'se',	
-            'L95'             : 'L95',	
-            'U95'             : 'U95',	
-            'Z_STAT'          : 'Z_STAT',	
-            'P'               : 'p',	
-            'ERRCODE'         : 'ERRCODE'
-        }
-        df = df.rename(columns=rename)
-        df.to_csv(os.path.join(results_dir, output_name+'_glm.PHENO1.glm.logistic.hybrid'), sep="\t", index=False)
-
         self.files_to_keep.append(output_name+'_glm.PHENO1.glm.logistic.hybrid')
         self.files_to_keep.append(output_name+'_glm.PHENO1.glm.logistic.hybrid.adjusted')
 
