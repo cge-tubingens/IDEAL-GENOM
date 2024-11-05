@@ -2,11 +2,17 @@
 Module to perform a GWAS analysis using a fixed model.
 """
 
+import gzip
 import os
+import shutil
+
 import pandas as pd
 
 from ideal_genome.Helpers import shell_do, delete_temp_files
-from ideal_genome.plots import manhattan_plot, qq_plot, miami_plot, draw_trumpet_plot
+
+from gwaslab.bd_download import download_file
+from gwaslab.util_in_get_sig import annogene
+from gwaslab.g_Log import Log
 
 class GWASfixed:
 
