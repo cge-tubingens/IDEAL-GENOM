@@ -89,11 +89,6 @@ class GWASfixed:
         if not os.path.exists(self.results_dir):
             os.mkdir(self.results_dir)
 
-        # create figures folder
-        self.plots_dir = os.path.join(output_path, 'plots_fixed')
-        if not os.path.exists(self.plots_dir):
-            os.mkdir(self.plots_dir)
-
         print("\033[1;32mAnalysis of GWAS data using a fixed model initialized.\033[0m")
 
         pass
