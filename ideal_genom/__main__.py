@@ -1,11 +1,11 @@
 import os
 import json
 
-from ideal_genome.Helpers import arg_parser
+from ideal_genom.Helpers import arg_parser
 
-from ideal_genome.prep_ds import PrepDS
-from ideal_genome.gwas_fixed import GWASfixed
-from ideal_genome.gwas_random import GWASrandom
+from ideal_genom.prep_ds import PrepDS
+from ideal_genom.gwas_fixed import GWASfixed
+from ideal_genom.gwas_random import GWASrandom
 
 def analysis_pipe(params_dict:dict, data_dict:dict, steps_dict:dict)->None:
 

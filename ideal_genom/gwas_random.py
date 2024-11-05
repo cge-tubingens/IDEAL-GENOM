@@ -5,7 +5,7 @@ Module to perform a GWAS analysis using a random effect model.
 import os
 import pandas as pd
 
-from ideal_genome.Helpers import shell_do, delete_temp_files
+from ideal_genom.Helpers import shell_do, delete_temp_files
 
 from gwaslab.bd_download import download_file
 from gwaslab.util_in_get_sig import annogene

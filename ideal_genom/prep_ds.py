@@ -11,7 +11,7 @@ PrepDS
 
 import os
 
-from ideal_genome.Helpers import shell_do, delete_temp_files
+from ideal_genom.Helpers import shell_do, delete_temp_files
 
 class PrepDS:
 
