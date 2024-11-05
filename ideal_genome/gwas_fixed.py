@@ -40,10 +40,36 @@ class GWASfixed:
         --------
         None
         """
-        
+    
         # check if paths are set
-        if input_path is None or output_path is None:
+        if input_path is None or output_path is None or dependables_path is None:
             raise ValueError("Values for input_path, output_path and dependables_path must be set upon initialization.")
+        
+        if not os.path.exists(input_path):
+            raise FileNotFoundError(f"Input path does not exist: {input_path}")
+        if not os.path.exists(dependables_path):
+            raise FileNotFoundError(f"Dependables path does not exist: {dependables_path}")
+        if not os.path.exists(output_path):
+            raise FileNotFoundError(f"Output path does not exist: {output_path}")
+        
+        # check if input_name and output_name are set
+        if input_name is None or output_name is None:
+            raise ValueError("Values for input_name and output_name must be set upon initialization.")
+        if not isinstance(input_name, str) or not isinstance(output_name, str):
+            raise TypeError("input_name and output_name should be of type str.")
+        
+        # check existence of PLINK files
+        if not os.path.exists(os.path.join(input_path, input_name+'.bed')):
+            raise FileNotFoundError(f"PLINK bed file was not found: {os.path.join(input_path, input_name+'.bed')}")
+        if not os.path.exists(os.path.join(input_path, input_name+'.bim')):
+            raise FileNotFoundError(f"PLINK bim file was not found: {os.path.join(input_path, input_name+'.bim')}")
+        if not os.path.exists(os.path.join(input_path, input_name+'.fam')):
+            raise FileNotFoundError(f"PLINK fam file was not found: {os.path.join(input_path, input_name+'.fam')}")
+        
+        if not isinstance(config_dict, dict):
+            raise TypeError("config_dict should be of type dict.")
+        if not isinstance(recompute, bool):
+            raise TypeError("recompute should be of type bool.")
 
         self.input_path  = input_path
         self.output_path = output_path
@@ -91,6 +117,42 @@ class GWASfixed:
         ci  = self.config_dict['ci']
 
         step = "association_analysis"
+
+        # Check type of maf
+        if not isinstance(maf, float):
+             raise TypeError("maf should be of type float.")
+
+        # Check type of mind
+        if not isinstance(mind, float):
+            raise TypeError("mind should be of type float.")
+        
+        # Check type of hwe
+        if not isinstance(hwe, float):
+            raise TypeError("hwe should be of type float.")
+        
+        # Check type of ci
+        if not isinstance(ci, float):
+            raise TypeError("ci should be of type float.")
+        
+        # Check if maf is in range
+        if maf < 0 or maf > 0.5:
+            raise ValueError("maf should be between 0 and 0.5")
+        
+        # Check if mind is in range
+        if mind < 0 or mind > 1:
+            raise ValueError("mind should be between 0 and 1")
+        
+        # Check if hwe is in range
+        if hwe < 0 or hwe > 1:
+            raise ValueError("hwe should be between 0 and 1")
+        
+        # Check if ci is in range
+        if ci <= 0 or ci >= 1:
+            raise ValueError("ci should be between 0 and 1")
+        
+        # check if the PCA file exists
+        if not os.path.exists(os.path.join(preps_dir, output_name+'_pca.eigenvec')):
+            raise FileNotFoundError(f"PCA file was not found: {os.path.join(preps_dir, output_name+'_pca.eigenvec')}")
 
         # compute the number of threads to use
         if os.cpu_count() is not None:
@@ -163,6 +225,12 @@ class GWASfixed:
         recompute   = self.recompute
 
         maf = self.config_dict['maf']
+
+        # check type and range of maf
+        if not isinstance(maf, float):
+            raise TypeError("maf should be of type float.")
+        if maf < 0 or maf > 0.5:
+            raise ValueError("maf should be between 0 and 0.5")
 
         step = "get_top_hits"
 
