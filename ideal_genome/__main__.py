@@ -42,18 +42,11 @@ def analysis_pipe(params_dict:dict, data_dict:dict, steps_dict:dict)->None:
             preps_path = os.path.join(data_dict['output_directory'], 'preparatory'),
         )
 
-        if data_dict['miami_fixed_gwas'] is not None or data_dict['miami_fixed_gwas'] != '':
-            gwas_f.compare_gwas_fixed_file_name = data_dict['compare_gwas_fixed_file_name']
-        if data_dict['miami_fixed_highlights'] is not None or data_dict['miami_fixed_highlights'] != '':
-            gwas_f.compare_gwas_fixed_highlights = data_dict['compare_gwas_fixed_highlights']
-
         # pipeline steps
         gwas_f_steps = {
             'train_model': gwas_f.fixed_model_association_analysis,
             'top_hits'   : gwas_f.get_top_hits,
             'annotate'   : gwas_f.annotate_top_hits,
-            'plots'      : gwas_f.plot_drawings,
-            'one_cohort' : gwas_f.one_cohort_comparison
         }
 
         for step in gwas_f_steps.keys():
@@ -79,7 +72,6 @@ def analysis_pipe(params_dict:dict, data_dict:dict, steps_dict:dict)->None:
             'random'     : gwas_r.run_gwas_random,
             'top_hits'   : gwas_r.get_top_hits,
             'annotate'   : gwas_r.annotate_top_hits,
-            'plots'      : gwas_r.plot_drawings
         }
         for step in gwas_r_steps.keys():
             gwas_r_steps[step]()
