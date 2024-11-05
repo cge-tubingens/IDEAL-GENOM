@@ -1,4 +1,4 @@
-# IDEAL-GENOME
+# IDEAL-GENOM
 
 This Python package is intended to perform a GWAS pipeline, that starts with the data coming from the imputation process to the files with the summary statistics resulting from a GWAS. We have implemented a 'divergent' pipeline: in one branch we train a fixed effect model and in the other one a random effect model.
 
