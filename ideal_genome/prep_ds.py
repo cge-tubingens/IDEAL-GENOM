@@ -216,6 +216,7 @@ class PrepDS:
 
         results_dir = self.results_dir
         output_name = self.output_name
+        recompute   = self.recompute
 
         pca = self.config_dict['pca']
 
