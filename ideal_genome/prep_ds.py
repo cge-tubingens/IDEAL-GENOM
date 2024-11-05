@@ -92,6 +92,7 @@ class PrepDS:
         self.output_name = output_name
         self.dependables = dependables_path
         self.config_dict = config_dict
+        self.recompute   = recompute
         
         self.files_to_keep = []
 
@@ -118,6 +119,7 @@ class PrepDS:
         results_dir      = self.results_dir
         output_name      = self.output_name
         dependables_path = self.dependables
+        recompute        = self.recompute
 
         maf      = self.config_dict['maf']
         geno     = self.config_dict['geno']
