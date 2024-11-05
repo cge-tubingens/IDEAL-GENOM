@@ -1,6 +1,6 @@
 # IDEAL-GENOME
 
-This Python package is designed to execute a GWAS pipeline, encapsulating several years of reseach as well as new experiences at CGE Tübingen.
+This Python package is intended to perform a GWAS pipeline, that starts with the data coming from the imputation process to the files with the summary statistics resulting from a GWAS. We have implemented a 'divergent' pipeline: in one branch we train a fixed effect model and in the other one a random effect model.
 
 # Basic Requirements
 
