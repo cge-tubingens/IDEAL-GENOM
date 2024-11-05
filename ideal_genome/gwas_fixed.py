@@ -16,7 +16,7 @@ from gwaslab.g_Log import Log
 
 class GWASfixed:
 
-    def __init__(self, input_path:str, input_name:str, output_path:str, output_name:str, config_dict:str, preps_path:str, dependables:str) -> None:
+    def __init__(self, input_path:str, input_name:str, output_path:str, output_name:str, config_dict:str, preps_path:str, dependables_path:str, recompute:bool=True) -> None:
 
         """
         Initialize the GWASfixed class.
@@ -51,7 +51,8 @@ class GWASfixed:
         self.output_name = output_name
         self.config_dict = config_dict
         self.preps_path  = preps_path
-        self.dependables = dependables
+        self.dependables = dependables_path
+        self.recompute   = recompute
 
         self.files_to_keep = []
         self.compare_gwas_fixed_file_name = None
@@ -82,6 +83,7 @@ class GWASfixed:
         input_name = self.input_name
         results_dir= self.results_dir
         preps_dir  = self.preps_path
+        recompute  = self.recompute
 
         maf = self.config_dict['maf']
         mind= self.config_dict['mind']
@@ -156,6 +158,7 @@ class GWASfixed:
         input_name  = self.input_name
         input_path  = self.input_path
         output_name = self.output_name
+        recompute   = self.recompute
 
         maf = self.config_dict['maf']
 
