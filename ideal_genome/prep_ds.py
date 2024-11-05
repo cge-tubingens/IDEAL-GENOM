@@ -157,7 +157,7 @@ class PrepDS:
         
         # Check if hwe is in range
         if hwe < 0 or hwe > 1:
-            raise ValueError("hwe should be between 0.00000001 and 0.001")
+            raise ValueError("hwe should be between 0 and 1")
         
         # check existence of high LD regions file
         high_ld_regions_file = os.path.join(dependables_path, 'high-LD-regions.txt')
