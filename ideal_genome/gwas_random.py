@@ -312,13 +312,11 @@ class GWASrandom:
 
         return out_dict
 
-    def annotate_top_hits(self)->dict:
+    def annotate_top_hits(self, gtf_path:str=None, build:str='38')->dict:
 
         """
         Annotate the top hits from the association analysis.
         """
-
-        import time
 
         results_dir = self.results_dir
         output_name = self.output_name
@@ -336,25 +334,36 @@ class GWASrandom:
 
         df_hits = df_hits[['Chr', 'SNP', 'bp']].copy()
 
-        for k in range(df_hits.shape[0]):
-            # get variant context
-            chr = df_hits.loc[k, 'Chr']
-            pos = df_hits.loc[k, 'bp']
+        if gtf_path is None:
+            gtf_url = 'https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.40_GRCh38.p14/GCF_000001405.40_GRCh38.p14_genomic.gtf.gz'
+            path_to_gz = os.path.join(os.path.abspath('..'), 'GCF_000001405.40_GRCh38.p14_genomic.gtf.gz')
+            path_to_gtf= os.path.join(os.path.abspath('..'), 'GCF_000001405.40_GRCh38.p14_genomic.gtf')
+            
+            if os.path.exists(path_to_gz) is not True or os.path.exists(path_to_gtf) is not True:
 
-            context = get_variant_context(chr, pos)
+                download_file(gtf_url, path_to_gz)
+                
+                with gzip.open(path_to_gz, 'rb') as f_in:
+                     with open(path_to_gtf, 'wb') as f_out:
+                        shutil.copyfileobj(f_in, f_out)
+            gtf_path = path_to_gtf
 
-            if context is None:
-                context = 'NA'
-            df_hits.loc[k, 'GENE'] = context[0]
+        if (df_hits.empty is not True):
+            variants_toanno = annogene(
+                variants_toanno,
+                id     ='SNP',
+                chrom  ='Chr',
+                pos    ='bp',
+                log    =Log(),
+                build  =build,
+                source ="refseq",
+                verbose=False,
+                gtf_path=gtf_path
+            ).rename(columns={"GENE":"GENENAME"})
 
-            time.sleep(1.5)
+        df_hits.to_csv(os.path.join(results_dir, 'top_hits_annotated.tsv'), sep="\t", index=False)
 
-        df_hits = df_hits[['SNP', 'GENE']].copy()
-
-        # save the annotated data
-        df_hits.to_csv(os.path.join(results_dir, 'snps_annotated.csv'), sep="\t", index=False)
-
-        self.files_to_keep.append('snps_annotated.csv')
+        self.files_to_keep.append('top_hits_annotated.tsv')
 
         # report
         process_complete = True
