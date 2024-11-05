@@ -288,11 +288,12 @@ class GWASrandom:
 
         del df
 
-        # gcta command
-        gcta_cmd = f"gcta64 --bfile {os.path.join(input_path, input_name)} --maf {maf} --cojo-slct --cojo-file {os.path.join(results_dir, 'cojo_file.ma')}   --out {os.path.join(results_dir, output_name+'_assocSparseCovar_pca_sex-mlm-binary-cojo')} --thread-num {max_threads}"
+        if recompute:
+            # gcta command
+            gcta_cmd = f"gcta64 --bfile {os.path.join(input_path, input_name)} --maf {maf} --cojo-slct --cojo-file {os.path.join(results_dir, 'cojo_file.ma')}   --out {os.path.join(results_dir, output_name+'_assocSparseCovar_pca_sex-mlm-binary-cojo')} --thread-num {max_threads}"
 
-        # execute gcta command
-        shell_do(gcta_cmd, log=True)
+            # execute gcta command
+            shell_do(gcta_cmd, log=True)
 
         self.files_to_keep.append(output_name+'_assocSparseCovar_pca_sex-mlm-binary-cojo.jma.cojo')
         self.files_to_keep.append(output_name+'_assocSparseCovar_pca_sex-mlm-binary-cojo.ldr.cojo')
