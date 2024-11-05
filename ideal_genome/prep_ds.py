@@ -219,6 +219,12 @@ class PrepDS:
 
         pca = self.config_dict['pca']
 
+        # Check type of pca and range
+        if not isinstance(pca, int):
+            raise TypeError("pca should be of type int.")
+        if pca < 1:
+            raise ValueError("pca should be greater than 0.")
+
         step = "pca_decomposition"
 
         # compute the number of threads to use
