@@ -153,15 +153,16 @@ class GWASrandom:
         else:
             max_threads = 10
 
-        # gcta commands
-        gcta_cmd1 = f"gcta64 --bfile {os.path.join(prep_path, output_name+'_LDpruned')} --make-grm --thread-num {max_threads} --out {os.path.join(results_dir, output_name+'_grm')}"
+        if recompute:
+            # gcta commands
+            gcta_cmd1 = f"gcta64 --bfile {os.path.join(prep_path, output_name+'_LDpruned')} --make-grm --thread-num {max_threads} --out {os.path.join(results_dir, output_name+'_grm')}"
 
-        gcta_cmd2 = f"gcta64 --grm {os.path.join(results_dir, output_name+'_grm')} --make-bK-sparse 0.05 --out {os.path.join(results_dir, output_name+'_sparse')}"
+            gcta_cmd2 = f"gcta64 --grm {os.path.join(results_dir, output_name+'_grm')} --make-bK-sparse 0.05 --out {os.path.join(results_dir, output_name+'_sparse')}"
 
-        # run gcta commands
-        cmds = [gcta_cmd1, gcta_cmd2]
-        for cmd in cmds:
-            shell_do(cmd, log=True)
+            # run gcta commands
+            cmds = [gcta_cmd1, gcta_cmd2]
+            for cmd in cmds:
+                shell_do(cmd, log=True)
 
         # report
         process_complete = True
