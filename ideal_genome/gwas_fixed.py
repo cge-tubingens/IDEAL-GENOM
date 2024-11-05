@@ -98,11 +98,13 @@ class GWASfixed:
         else:
             max_threads = 10
 
-        # plink2 command to perform association analysis
-        plink2_cmd = f"plink2 --bfile {os.path.join(input_path, input_name)} --adjust --ci {ci} --maf {maf} --mind {mind} --hwe {hwe} --covar {os.path.join(preps_dir, output_name+'_pca.eigenvec')} --glm hide-covar omit-ref sex cols=+a1freq,+beta --out {os.path.join(results_dir, output_name+'_glm')} --threads {max_threads}"
+        if recompute:
 
-        # execute plink command
-        shell_do(plink2_cmd, log=True)
+            # plink2 command to perform association analysis
+            plink2_cmd = f"plink2 --bfile {os.path.join(input_path, input_name)} --adjust --ci {ci} --maf {maf} --mind {mind} --hwe {hwe} --covar {os.path.join(preps_dir, output_name+'_pca.eigenvec')} --glm hide-covar omit-ref sex cols=+a1freq,+beta --out {os.path.join(results_dir, output_name+'_glm')} --threads {max_threads}"
+
+            # execute plink command
+            shell_do(plink2_cmd, log=True)
 
         # rename columns for later use with GCTA
         df = pd.read_csv(os.path.join(results_dir, output_name+'_glm.PHENO1.glm.logistic.hybrid'), sep="\t")
@@ -180,11 +182,12 @@ class GWASfixed:
 
         del df
 
-        # gcta command
-        gcta_cmd = f"gcta64 --bfile {os.path.join(input_path, input_name)} --maf {maf} --cojo-slct --cojo-file {os.path.join(results_dir, 'cojo_file.ma')}   --out {os.path.join(results_dir, 'cojo_file')} --thread-num {max_threads}"
+        if recompute:
+            # gcta command
+            gcta_cmd = f"gcta64 --bfile {os.path.join(input_path, input_name)} --maf {maf} --cojo-slct --cojo-file {os.path.join(results_dir, 'cojo_file.ma')}   --out {os.path.join(results_dir, 'cojo_file')} --thread-num {max_threads}"
 
-        # execute gcta command
-        shell_do(gcta_cmd, log=True)
+            # execute gcta command
+            shell_do(gcta_cmd, log=True)
 
         self.files_to_keep.append('cojo_file.jma.cojo')
         self.files_to_keep.append('cojo_file.ldr.cojo')
