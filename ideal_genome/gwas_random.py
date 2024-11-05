@@ -13,7 +13,7 @@ from gwaslab.g_Log import Log
 
 class GWASrandom:
 
-    def __init__(self, input_path:str, input_name:str, output_path:str, output_name:str, config_dict:str, preps_path:str) -> None:
+    def __init__(self, input_path:str, input_name:str, output_path:str, output_name:str, config_dict:str, preps_path:str, recompute:str=True) -> None:
 
         """
         Initialize the GWASrandom class.
@@ -48,6 +48,7 @@ class GWASrandom:
         self.output_name = output_name
         self.config_dict = config_dict
         self.preps_path  = preps_path
+        self.recompute   = recompute
 
         self.files_to_keep = []
 
@@ -116,6 +117,7 @@ class GWASrandom:
         results_dir= self.results_dir
         prep_path  = self.preps_path
         output_name= self.output_name
+        recompute  = self.recompute
 
         step = "compute_grm"
 
@@ -162,6 +164,7 @@ class GWASrandom:
         output_name = self.output_name
         config_dict = self.config_dict
         preps_path  = self.preps_path
+        recompute   = self.recompute
 
         maf = config_dict['maf']
 
@@ -227,6 +230,7 @@ class GWASrandom:
         input_name  = self.input_name
         input_path  = self.input_path
         output_name = self.output_name
+        recompute   = self.recompute
 
         maf = self.config_dict['maf']
 
