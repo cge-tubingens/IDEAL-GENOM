@@ -38,9 +38,35 @@ class GWASrandom:
         None
         """
         
-        # check if paths are set
-        if input_path is None or output_path is None:
+       # check if paths are set
+        if input_path is None or output_path is None or preps_path is None:
             raise ValueError("Values for input_path, output_path and dependables_path must be set upon initialization.")
+        
+        if not os.path.exists(input_path):
+            raise FileNotFoundError(f"Input path does not exist: {input_path}")
+        if not os.path.exists(preps_path):
+            raise FileNotFoundError(f"Dependables path does not exist: {preps_path}")
+        if not os.path.exists(output_path):
+            raise FileNotFoundError(f"Output path does not exist: {output_path}")
+        
+        # check if input_name and output_name are set
+        if input_name is None or output_name is None:
+            raise ValueError("Values for input_name and output_name must be set upon initialization.")
+        if not isinstance(input_name, str) or not isinstance(output_name, str):
+            raise TypeError("input_name and output_name should be of type str.")
+        
+        # check existence of PLINK files
+        if not os.path.exists(os.path.join(input_path, input_name+'.bed')):
+            raise FileNotFoundError(f"PLINK bed file was not found: {os.path.join(input_path, input_name+'.bed')}")
+        if not os.path.exists(os.path.join(input_path, input_name+'.bim')):
+            raise FileNotFoundError(f"PLINK bim file was not found: {os.path.join(input_path, input_name+'.bim')}")
+        if not os.path.exists(os.path.join(input_path, input_name+'.fam')):
+            raise FileNotFoundError(f"PLINK fam file was not found: {os.path.join(input_path, input_name+'.fam')}")
+        
+        if not isinstance(config_dict, dict):
+            raise TypeError("config_dict should be of type dict.")
+        if not isinstance(recompute, bool):
+            raise TypeError("recompute should be of type bool.")
 
         self.input_path  = input_path
         self.output_path = output_path
@@ -168,6 +194,11 @@ class GWASrandom:
 
         maf = config_dict['maf']
 
+        if not isinstance(maf, float):
+            raise TypeError("maf should be of type float.")
+        if maf < 0 or maf > 1:
+            raise ValueError("maf should be between 0 and 1.")
+
         step = "run_gwas_random"
 
         # compute the number of threads to use
@@ -233,6 +264,11 @@ class GWASrandom:
         recompute   = self.recompute
 
         maf = self.config_dict['maf']
+
+        if not isinstance(maf, float):
+            raise TypeError("maf should be of type float.")
+        if maf < 0 or maf > 1:
+            raise ValueError("maf should be between 0 and 1.")
 
         step = "get_top_hits"
 
