@@ -8,6 +8,7 @@ Classes:
 PrepDS
     Class to perform data preparation for downstream analysis.
 """
+
 import os
 
 from ideal_genome.Helpers import shell_do, delete_temp_files
