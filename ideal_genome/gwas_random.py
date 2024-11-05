@@ -278,8 +278,25 @@ class GWASrandom:
         else:
             max_threads = 10
 
-        # load results of association analysis
+        # load results of association analysis and rename columns according to GCTA requirements
         df = pd.read_csv(os.path.join(results_dir, output_name+'_assocSparseCovar_pca_sex-mlm-binary--thread-num.fastGWA'), sep="\t")
+        rename = {
+            'CHR'     :'CHR',	
+            'SNP'     :'SNP',
+            'POS'     :'POS',	
+            'A1'      :'A1', 
+            'A2'      :'A2', 
+            'N'       :'N', 
+            'AF1'     :'freq', 
+            'T'       :'T', 
+            'SE_T'    :'SE_T', 
+            'P_noSPA' :'P_noSPA',
+            'BETA'    :'b', 
+            'SE'      :'se', 
+            'P'       :'p', 
+            'CONVERGE':'CONVERGE'
+        }
+        df = df.rename(columns=rename)        
 
         # prepare .ma file
         df = df[['SNP', 'A1', 'A2', 'freq', 'b', 'se', 'p', 'N']].copy()
