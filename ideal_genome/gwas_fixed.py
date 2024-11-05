@@ -240,8 +240,30 @@ class GWASfixed:
         else:
             max_threads = 10
 
-        # load results of association analysis
+        # load results of association analysis and rename columns according GCTA requirements
         df = pd.read_csv(os.path.join(results_dir, output_name+'_glm.PHENO1.glm.logistic.hybrid'), sep="\t")
+        rename = {
+            '#CHROM'          : 'CHR',	
+            'POS'             : 'POS',	
+            'ID'              : 'SNP',
+            'REF'             : 'A2',	
+            'ALT'             : 'ALT',	
+            'PROVISIONAL_REF?': 'PROVISIONAL_REF',	
+            'A1'              : 'A1',	
+            'OMITTED'         : 'OMITTED',	
+            'A1_FREQ'         : 'freq',	
+            'FIRTH?'          : 'FIRTH',	
+            'TEST'            : 'TEST',	
+            'OBS_CT'          : 'N',	
+            'BETA'            : 'b',	
+            'SE'              : 'se',	
+            'L95'             : 'L95',	
+            'U95'             : 'U95',	
+            'Z_STAT'          : 'Z_STAT',	
+            'P'               : 'p',	
+            'ERRCODE'         : 'ERRCODE'
+        }
+        df = df.rename(columns=rename)
 
         # prepare .ma file
         df = df[['SNP', 'A1', 'A2', 'freq', 'b', 'se', 'p', 'N']].copy()
