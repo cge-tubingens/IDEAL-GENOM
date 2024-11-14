@@ -1,3 +1,6 @@
+Introduction
+============
+
 IDEAL-GENOM is a a dedicated Python library to run Genome Wide Association Analysis (GWAS) on large-scale genomic data and to ease downstream analysis. It is desgined to be easy to use and to be integrated in a pipeline. This library encompases several years of experience in the field of GWAS and is designed to be used by both beginners and experts in the field. It is designed to be used in a Jupyter notebook or in a Python script.
 
 It is intended to receive the output data of an imputation process and streamline the GWAS analysis. We have incorporated two divergent branches of GWAS, one for fixed effects and another for random effects. The fixed effects branch is based on the `PLINK <https://www.cog-genomics.org/plink2>`_ software and the random effects branch is based on the `GCTA <https://cnsgenomics.com/software/gcta/>`_ software.
