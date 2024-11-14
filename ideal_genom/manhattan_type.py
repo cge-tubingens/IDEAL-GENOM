@@ -142,13 +142,13 @@ def manhattan_process_data(data_df:pd.DataFrame, chr_col:str='CHR', pos_col:str=
             - 'maxp' (float): The maximum log-transformed p-value.
     """
 
-    if not isinstance(data, pd.DataFrame):
+    if not isinstance(data_df, pd.DataFrame):
         raise TypeError("Input data must be a pandas DataFrame.")
-    if chr_col not in data.columns:
+    if chr_col not in data_df.columns:
         raise ValueError(f"Column '{chr_col}' not found in the input DataFrame.")
-    if pos_col not in data.columns:
+    if pos_col not in data_df.columns:
         raise ValueError(f"Column '{pos_col}' not found in the input DataFrame.")
-    if p_col not in data.columns:
+    if p_col not in data_df.columns:
         raise ValueError(f"Column '{p_col}' not found in the input DataFrame.")
 
     data = compute_relative_pos(
@@ -476,7 +476,7 @@ def manhattan_type_annotate(axes:Axes, data:pd.DataFrame, variants_toanno:pd.Dat
         raise TypeError("data must be a pandas DataFrame.")
     if not isinstance(variants_toanno, pd.DataFrame):
         raise TypeError("variants_toanno must be a pandas DataFrame.")
-    if not isinstance(max_x_axis, (int, float)):
+    if not isinstance(max_x_axis, (int, float, np.int64, np.float64)):
         raise TypeError("max_x_axis must be an integer or float.")
     if not isinstance(suggestive_line, float):
         raise TypeError("suggestive_line must be a float.")
