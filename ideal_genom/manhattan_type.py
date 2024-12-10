@@ -476,13 +476,8 @@ def manhattan_type_annotate(axes:Axes, data:pd.DataFrame, variants_toanno:pd.Dat
         raise TypeError("data must be a pandas DataFrame.")
     if not isinstance(variants_toanno, pd.DataFrame):
         raise TypeError("variants_toanno must be a pandas DataFrame.")
-<<<<<<< HEAD
-    #if not isinstance(max_x_axis, (int, float, np.int64, np.float64)):
-    #    raise TypeError("max_x_axis must be an integer or float.")
-=======
     if not isinstance(max_x_axis, (int, float, np.int64, np.float64)):
         raise TypeError("max_x_axis must be an integer or float.")
->>>>>>> 01ea50edcf8206d63d6a83eb6ed979bc2437e0e8
     if not isinstance(suggestive_line, float):
         raise TypeError("suggestive_line must be a float.")
     if not isinstance(genome_line, float):
