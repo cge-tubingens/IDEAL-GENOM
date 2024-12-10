@@ -476,8 +476,8 @@ def manhattan_type_annotate(axes:Axes, data:pd.DataFrame, variants_toanno:pd.Dat
         raise TypeError("data must be a pandas DataFrame.")
     if not isinstance(variants_toanno, pd.DataFrame):
         raise TypeError("variants_toanno must be a pandas DataFrame.")
-    if not isinstance(max_x_axis, (int, float)):
-        raise TypeError("max_x_axis must be an integer or float.")
+    #if not isinstance(max_x_axis, (int, float, np.int64, np.float64)):
+    #    raise TypeError("max_x_axis must be an integer or float.")
     if not isinstance(suggestive_line, float):
         raise TypeError("suggestive_line must be a float.")
     if not isinstance(genome_line, float):
@@ -500,10 +500,10 @@ def manhattan_type_annotate(axes:Axes, data:pd.DataFrame, variants_toanno:pd.Dat
             x        =x,     # x-coordinates of the data point to annotate
             y        =y,     # y-coordinates of the data point to annotate
             text_list=texts, # list of text to annotate
-            x_scatter=data['rel_pos'], # all scatter points x-coordinates
-            y_scatter=data['log10p'],  # all scatter points y-coordinates
+            #x_scatter=data['rel_pos'], # all scatter points x-coordinates
+            #y_scatter=data['log10p'],  # all scatter points y-coordinates
             linecolor='black',                      # color of the line connecting the text to the data point
-            textsize =7,                            # size of the text (Default to Nature standard)
+            textsize =8,                            # size of the text (Default to Nature standard)
             bbox     =dict(boxstyle='round,pad=0.3', edgecolor='black', facecolor='#f0f0f0', alpha=0.5),
             x_lines  = [x_lines_coor, x_lines_coor],
             y_lines  = [[-np.log10(suggestive_line)]*len(x_lines_coor), [-np.log10(genome_line)]*len(x_lines_coor)],
@@ -666,6 +666,7 @@ def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col
 
     max_x_axis = max(plot_data['upper']['rel_pos'].max(), plot_data['lower']['rel_pos'].max())+10
 
+    print("type max_x_axis", type(max_x_axis))
     # Create the figure
     fig = plt.figure(figsize=(20, 13))
 
@@ -679,7 +680,7 @@ def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col
         hue    =plot_data['upper'][chr_col], 
         palette=chr_colors, 
         ax     =ax_upper, 
-        s      =1, 
+        s      =3, 
         legend =False
     )
     ax_upper.set_ylabel(upper_ylab)
@@ -706,7 +707,7 @@ def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col
         hue    =plot_data['lower'][chr_col], 
         palette=chr_colors, 
         ax     =ax_lower, 
-        s      =1, 
+        s      =3, 
         legend =False
     )
     ax_lower.set_ylabel(lower_ylab)
@@ -853,7 +854,7 @@ def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col
     ]
 
     # Add custom legend
-    ax_upper.legend(handles=custom_dots, title='Legend', loc="best", fontsize=7)
+    ax_upper.legend(handles=custom_dots, title='Legend', loc="best", fontsize=10)
     
     ax_lower.set_xlabel("Chromosome")
     ax_upper.set_xlabel("")
