@@ -1,0 +1,2 @@
+Fixed Effect Model
+==================

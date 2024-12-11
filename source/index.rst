@@ -21,7 +21,7 @@ Contents:
    installation
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: User Guide
 
    user_guide/getting_started
@@ -32,8 +32,9 @@ Contents:
    :maxdepth: 2
    :caption: API Reference
 
-   api_reference/module1
-   api_reference/module2
+   api_reference/gwas_fixed
+   api_reference/gwas_random
+   api_reference/preps_ds
 
 
    contributing
