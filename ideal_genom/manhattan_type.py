@@ -666,7 +666,6 @@ def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col
 
     max_x_axis = max(plot_data['upper']['rel_pos'].max(), plot_data['lower']['rel_pos'].max())+10
 
-    print("type max_x_axis", type(max_x_axis))
     # Create the figure
     fig = plt.figure(figsize=(20, 13))
 
