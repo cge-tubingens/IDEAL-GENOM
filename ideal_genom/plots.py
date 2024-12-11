@@ -727,7 +727,7 @@ def trumpet_draw(df_gwas:pd.DataFrame, df_freq:pd.DataFrame, plot_dir:pd.DataFra
                     plot_kwargs      =dict(linestyle=':')
                 )
     
-    plt.show()
     plt.savefig(os.path.join(plot_dir, save_name), dpi=500)
+    plt.show()
     
     return True
