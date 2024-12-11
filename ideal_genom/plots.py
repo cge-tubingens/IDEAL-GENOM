@@ -597,8 +597,8 @@ def trumpet_draw(df_gwas:pd.DataFrame, df_freq:pd.DataFrame, plot_dir:pd.DataFra
             l[:int(len(power_ts))], 
             title         ="Power", 
             loc           ="upper right",
-            fontsize      =7,
-            title_fontsize=7
+            fontsize      =10,
+            title_fontsize=11
         )
         for line in l1.get_lines():
             line.set_linewidth(5.0)
@@ -610,8 +610,8 @@ def trumpet_draw(df_gwas:pd.DataFrame, df_freq:pd.DataFrame, plot_dir:pd.DataFra
         l[int(len(power_ts)):], 
         title="ABS_BETA", 
         loc="lower right",
-        fontsize =7, 
-        title_fontsize=7
+        fontsize =10, 
+        title_fontsize=11
     )
 
     if to_highlight is not None and len(to_highlight)>0:
@@ -645,8 +645,8 @@ def trumpet_draw(df_gwas:pd.DataFrame, df_freq:pd.DataFrame, plot_dir:pd.DataFra
     ax.set_xlim(xlim)
     ax.set_ylim(ylim)
 
-    ax.set_xlabel("Minor Allele Frequency", fontsize=7)
-    ax.set_ylabel("Effect Size (Beta)", fontsize=7)
+    ax.set_xlabel("Minor Allele Frequency", fontsize=10)
+    ax.set_ylabel("Effect Size (Beta)", fontsize=10)
 
     plt.tight_layout()
 
@@ -714,7 +714,7 @@ def trumpet_draw(df_gwas:pd.DataFrame, df_freq:pd.DataFrame, plot_dir:pd.DataFra
                     x_scatter=df[maf_col], # all scatter points x-coordinates
                     y_scatter=df[beta_col],  # all scatter points y-coordinates
                     linecolor='black',                      # color of the line connecting the text to the data point
-                    textsize =7,                            # size of the text (Default to Nature standard)
+                    textsize =8,                            # size of the text (Default to Nature standard)
                     bbox     =dict(boxstyle='round,pad=0.5', edgecolor='black', facecolor='#f0f0f0', alpha=0.5),
                     avoid_label_lines_overlap =True,
                     avoid_crossing_label_lines=False,
