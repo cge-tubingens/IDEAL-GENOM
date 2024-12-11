@@ -219,8 +219,6 @@ def beta_beta_draw(gwas_1:pd.DataFrame, gwas_2:pd.DataFrame, p_col:str, beta_col
         If the boolean parameters are not boolean.
     """
 
-    
-    
     # check if the dataframes are pandas dataframes
     if not isinstance(gwas_1, pd.DataFrame):
         raise ValueError(f"GWAS 1 dataframe must be a pandas dataframe.")
