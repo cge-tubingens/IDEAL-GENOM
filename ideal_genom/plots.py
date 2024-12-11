@@ -257,9 +257,9 @@ def beta_beta_draw(gwas_1:pd.DataFrame, gwas_2:pd.DataFrame, p_col:str, beta_col
     
     # rename columns to avoid conflicts
     df_gwas1 = gwas_1.copy()
-    df_gwas1.columns = [f"{col}_1" for col in df_gwas1.columns if col != snp_col]
+    df_gwas1.columns = [f"{col}_1" if col != snp_col else col for col in df_gwas1.columns]
     df_gwas2 = gwas_2.copy()
-    df_gwas2.columns = [f"{col}_2" for col in df_gwas2.columns if col != snp_col]
+    df_gwas2.columns = [f"{col}_2" if col != snp_col else col for col in df_gwas2.columns]
 
     # merge the dataframes
     df = pd.merge(df_gwas1, df_gwas2, on=snp_col, how='inner')
