@@ -3,7 +3,8 @@ import time
 import logging
 import json
 
-class VEPRestClient:
+class VEPEnsemblRestClient:
+
     def __init__(self, server='https://rest.ensembl.org', reqs_per_sec=15):
         self.server = server
         self.reqs_per_sec = reqs_per_sec
