@@ -763,9 +763,9 @@ def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col
         plot_data['lower'].loc[plot_data['lower'][snp_col].isin(bottom_only), 'type'] = 'bottom_only'
 
         custom_hue_colors = {
-        "on_both"    : "#1f77b4",  
-        "top_only"   : "#2ca02c",
-        "bottom_only": "#9467bd",
+        "on_both"    : "#7B68EE",  
+        "top_only"   : "#008080",
+        "bottom_only": "#FF1493",
         }
 
         ax_upper = sns.scatterplot(
@@ -863,11 +863,17 @@ def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col
 
     from matplotlib.lines import Line2D
 
-    custom_dots = [
-        Line2D([0], [0], marker='o', color='w', markerfacecolor="#1f77b4", markersize=5, label='Top Hits on Both'),
-        Line2D([0], [0], marker='o', color='w', markerfacecolor="#2ca02c", markersize=5, label=f'Top Hits on {legend_top}'),
-        Line2D([0], [0], marker='o', color='w', markerfacecolor="#9467bd", markersize=5, label=f'Top Hits on {legend_bottom}'),
-    ]
+        custom_dots = [
+            Line2D([0], [0], marker='o', color='w', markerfacecolor="#7B68EE", markersize=5, label='Top Hits on Both'),
+            Line2D([0], [0], marker='o', color='w', markerfacecolor="#008080", markersize=5, label=f'Top Hits on {legend_top}'),
+            Line2D([0], [0], marker='o', color='w', markerfacecolor="#FF1493", markersize=5, label=f'Top Hits on {legend_bottom}'),
+        ]
+
+    else:
+        custom_dots = [
+            Line2D([0], [0], marker='o', color='w', markerfacecolor="#008080", markersize=5, label=f'Top Hits on {legend_top}'),
+            Line2D([0], [0], marker='o', color='w', markerfacecolor="#FF1493", markersize=5, label=f'Top Hits on {legend_bottom}'),
+        ]
 
     # Add custom legend
     ax_upper.legend(handles=custom_dots, title='Legend', loc="best", fontsize=10)
