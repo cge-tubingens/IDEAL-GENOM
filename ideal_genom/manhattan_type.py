@@ -695,7 +695,8 @@ def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col
         palette=chr_colors, 
         ax     =ax_upper, 
         s      =3, 
-        legend =False
+        legend =False,
+        edgecolor='none'
     )
     ax_upper.set_ylabel(upper_ylab)
     ax_upper.set_xlim(0, max_x_axis)
