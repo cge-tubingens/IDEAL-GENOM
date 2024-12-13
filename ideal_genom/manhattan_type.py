@@ -723,7 +723,8 @@ def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col
         palette=chr_colors, 
         ax     =ax_lower, 
         s      =3, 
-        legend =False
+        legend =False,
+        edgecolor='none'
     )
     ax_lower.set_ylabel(lower_ylab)
     ax_lower.set_ylim(plot_data['maxp'], 0)  # Reverse y-axis
