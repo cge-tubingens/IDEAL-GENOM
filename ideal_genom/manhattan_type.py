@@ -777,6 +777,7 @@ def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col
             palette =custom_hue_colors,
             size    =10,
             legend  =False,
+            edgecolor='none'
         )
 
         ax_lower = sns.scatterplot(
@@ -788,6 +789,7 @@ def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col
             palette =custom_hue_colors,
             size    =10,
             legend  =False,
+            edgecolor='none'
         )
 
     if top_annotations.shape[0]>0:
