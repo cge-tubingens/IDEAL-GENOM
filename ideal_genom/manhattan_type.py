@@ -586,7 +586,7 @@ def miami_draw_anno_lines(renderer:RendererBase, axes:Axes, texts:list, variants
 
     return axes
 
-def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, p_col:str, plots_dir:str, top_highlights:list=[], top_annotations:list=[], bottom_highlights:list=[], bottom_annotations:list=[], gtf_path:str=None, save_name:str='miami_plot.jpeg', legend_top:str='top GWAS', legend_bottom:str='bottom GWAS')->bool:
+def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, p_col:str, plots_dir:str, top_highlights:list=[], top_annotations:pd.DataFrame=None, bottom_highlights:list=[], bottom_annotations:pd.DataFrame=None, top_gen_col:str=None, bottom_gen_col:str=None, gtf_path:str=None, save_name:str='miami_plot.jpeg', legend_top:str='top GWAS', legend_bottom:str='bottom GWAS')->bool:
     
     """
     Draws a Miami plot (a combination of two Manhattan plots) for visualizing GWAS results.
@@ -638,13 +638,18 @@ def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col
     if not os.path.exists(plots_dir):
         raise FileNotFoundError(f"Directory '{plots_dir}' not found.")
     
-    annot_high = [top_highlights, top_annotations, bottom_highlights, bottom_annotations]
+    annot_high = [top_highlights,  bottom_highlights]
     for lst in annot_high:
         if not isinstance(lst, list):
             raise TypeError("Annotation lists must be lists of SNP identifiers.")
         for val in lst:
             if not isinstance(val, str):
                 raise TypeError("Annotation lists must be lists of SNP identifiers.")
+    
+    if not isinstance(top_annotations, pd.DataFrame):
+        raise TypeError("Annotation data must be a pandas DataFrame.")
+    if not isinstance(bottom_annotations, pd.DataFrame):
+        raise TypeError("Annotation data must be a pandas DataFrame.")
     
     if not isinstance(save_name, str):
         raise TypeError("save_name must be a string.")
