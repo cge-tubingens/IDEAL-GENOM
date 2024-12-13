@@ -43,35 +43,106 @@ def filter_sumstats(data_df:pd.DataFrame, lead_snp:str, snp_col:str, p_col:str, 
     mask_upper = (df_filtered[pos_col] <= upper_bound)
     mask_lower = (df_filtered[pos_col] >= lower_bound)
 
-    df_filtered = df_filtered[mask_upper & mask_lower].reset_index(drop=True)
+    df_filtered = df_filtered[mask_upper & mask_lower].reset_index(drop=True)   
 
-    if get_gene_names:
+    return df_filtered
 
-        if gtf_path is None:
-            gtf_url = 'https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.40_GRCh38.p14/GCF_000001405.40_GRCh38.p14_genomic.gtf.gz'
-            path_to_gz = os.path.join(os.path.abspath('..'), 'GCF_000001405.40_GRCh38.p14_genomic.gtf.gz')
-            path_to_gtf= os.path.join(os.path.abspath('..'), 'GCF_000001405.40_GRCh38.p14_genomic.gtf')
+def snp_annotations(data_df:pd.DataFrame, snp_col:str, pos_col:str, chr_col:str, build:str='38', gtf_path:str=None) -> pd.DataFrame:
+    
+    if gtf_path is None:
+        gtf_url = 'https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.40_GRCh38.p14/GCF_000001405.40_GRCh38.p14_genomic.gtf.gz'
+        path_to_gz = os.path.join(os.path.abspath('..'), 'GCF_000001405.40_GRCh38.p14_genomic.gtf.gz')
+        path_to_gtf= os.path.join(os.path.abspath('..'), 'GCF_000001405.40_GRCh38.p14_genomic.gtf')
+        
+        if os.path.exists(path_to_gz) is not True or os.path.exists(path_to_gtf) is not True:
+            download_file(gtf_url, path_to_gz)
             
-            if os.path.exists(path_to_gz) is not True or os.path.exists(path_to_gtf) is not True:
+            with gzip.open(path_to_gz, 'rb') as f_in:
+                 with open(path_to_gtf, 'wb') as f_out:
+                    shutil.copyfileobj(f_in, f_out)
 
-                download_file(gtf_url, path_to_gz)
-                
-                with gzip.open(path_to_gz, 'rb') as f_in:
-                     with open(path_to_gtf, 'wb') as f_out:
-                        shutil.copyfileobj(f_in, f_out)
-            gtf_path = path_to_gtf
+        gtf_path = path_to_gtf
 
-        variants_toanno = annogene(
-                df_filtered,
-                id     =snp_col,
-                chrom  =chr_col,
-                pos    =pos_col,
-                log    =Log(),
-                build  =build,
-                source ="refseq",
-                verbose=True,
-                gtf_path=gtf_path
-            ).rename(columns={"GENE":"GENENAME"})   
+    variants_toanno = annogene(
+            data_df,
+            id     =snp_col,
+            chrom  =chr_col,
+            pos    =pos_col,
+            log    =Log(),
+            build  =build,
+            source ="refseq",
+            verbose=True,
+            gtf_path=gtf_path
+        ).rename(columns={"GENE":"GENENAME"})
+    
+    vep_client = VEPEnsemblRestClient()
 
-    return variants_toanno
+    # Example list of IDs for the POST request
+    snps = variants_toanno[snp_col].to_list()
 
+    response = vep_client.post_vep_request(snps)
+
+    if response:
+        df_vep = pd.DataFrame({
+            snp_col: [ res['id'] for res in response ],
+            'consequence': [ res['most_severe_consequence'] for res in response ]
+        })
+
+        variants_toanno = variants_toanno.merge(df_vep, on=snp_col, how='left')
+    else:
+        print("Failed to get response.")
+    
+    return variants_toanno.drop(columns=['LOCATION'], inplace=False)
+
+def get_gene_information(genes:list, gtf_path:str=None, build:str=38)->pd.DataFrame:
+
+    if gtf_path is None:
+        gtf_url = 'https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.40_GRCh38.p14/GCF_000001405.40_GRCh38.p14_genomic.gtf.gz'
+        path_to_gz = os.path.join(os.path.abspath('..'), 'GCF_000001405.40_GRCh38.p14_genomic.gtf.gz')
+        path_to_gtf= os.path.join(os.path.abspath('..'), 'GCF_000001405.40_GRCh38.p14_genomic.gtf')
+        
+        if os.path.exists(path_to_gz) is not True or os.path.exists(path_to_gtf) is not True:
+            download_file(gtf_url, path_to_gz)
+            
+            with gzip.open(path_to_gz, 'rb') as f_in:
+                 with open(path_to_gtf, 'wb') as f_out:
+                    shutil.copyfileobj(f_in, f_out)
+
+        gtf_path = path_to_gtf
+
+    gtf_path = gtf_to_all_gene(gtf_path, log=Log())
+
+    if build == '38':
+        data = Genome(
+            reference_name='GRCh38',
+            annotation_name='Refseq',
+            gtf_path_or_url=gtf_path
+        )
+    elif build == '19':
+        data = Genome(
+            reference_name='GRCh37',
+            annotation_name='Refseq',
+            gtf_path_or_url=gtf_path
+        )
+
+    gene_info = {
+        'gene':genes,
+        'start':[],
+        'end':[],
+        'strand':[],
+        'length':[]
+    }
+
+    for gene in gene_info['gene']:
+        try:
+            gene_info['start'].append(data.gene_by_id(gene).start)
+            gene_info['end'].append(data.gene_by_id(gene).end)
+            gene_info['strand'].append(data.gene_by_id(gene).strand)
+            gene_info['length'].append(data.gene_by_id(gene).length)
+        except:
+            gene_info['start'].append(None)
+            gene_info['end'].append(None)
+            gene_info['strand'].append(None)
+            gene_info['length'].append(None)
+
+    return pd.DataFrame(gene_info)
