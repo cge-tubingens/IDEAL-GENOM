@@ -651,36 +651,46 @@ def trumpet_draw(df_gwas:pd.DataFrame, df_freq:pd.DataFrame, plot_dir:pd.DataFra
     r = fig.canvas.get_renderer()
     fig.canvas.draw()
 
-    if to_annotate is not None and len(to_annotate)>0:
+    if to_annotate is not None:
 
-        if gtf_path is None:
-            gtf_url = 'https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.40_GRCh38.p14/GCF_000001405.40_GRCh38.p14_genomic.gtf.gz'
-            path_to_gz = os.path.join(os.path.abspath('..'), 'GCF_000001405.40_GRCh38.p14_genomic.gtf.gz')
-            path_to_gtf= os.path.join(os.path.abspath('..'), 'GCF_000001405.40_GRCh38.p14_genomic.gtf')
-            
-            if os.path.exists(path_to_gz) is not True or os.path.exists(path_to_gtf) is not True:
+        if gen_col is not None:
 
-                download_file(gtf_url, path_to_gz)
-                
-                with gzip.open(path_to_gz, 'rb') as f_in:
-                     with open(path_to_gtf, 'wb') as f_out:
-                        shutil.copyfileobj(f_in, f_out)
-            gtf_path = path_to_gtf
+            variants_toanno = df[df[snp_col].isin(to_annotate[snp_col])]\
+                .reset_index(drop=True)
+            variants_toanno = variants_toanno.merge(to_annotate, on=snp_col, how='left')
+            variants_toanno = variants_toanno.rename(columns={gen_col:"GENENAME"})
 
-        variants_toanno = df[df[snp_col].isin(to_annotate)].reset_index(drop=True)
-        
-        if (variants_toanno.empty is not True):
-            variants_toanno = annogene(
-                variants_toanno,
-                id     =snp_col,
-                chrom  =chr_col,
-                pos    =pos_col,
-                log    =Log(),
-                build  =build,
-                source ="refseq",
-                verbose=False,
-                gtf_path=gtf_path
-            ).rename(columns={"GENE":"GENENAME"})
+        else:
+
+            if gtf_path is None:
+                gtf_url = 'https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.40_GRCh38.p14/GCF_000001405.40_GRCh38.p14_genomic.gtf.gz'
+                path_to_gz = os.path.join(os.path.abspath('..'), 'GCF_000001405.40_GRCh38.p14_genomic.gtf.gz')
+                path_to_gtf= os.path.join(os.path.abspath('..'), 'GCF_000001405.40_GRCh38.p14_genomic.gtf')
+
+                if os.path.exists(path_to_gz) is not True or os.path.exists(path_to_gtf) is not True:
+
+                    download_file(gtf_url, path_to_gz)
+
+                    with gzip.open(path_to_gz, 'rb') as f_in:
+                         with open(path_to_gtf, 'wb') as f_out:
+                            shutil.copyfileobj(f_in, f_out)
+                gtf_path = path_to_gtf
+
+            variants_toanno = plot_data['data'][plot_data['data'][snp_col].isin(to_annotate[snp_col])]\
+                .reset_index(drop=True)
+
+            if (variants_toanno.empty is not True):
+                variants_toanno = annogene(
+                    variants_toanno,
+                    id     =snp_col,
+                    chrom  =chr_col,
+                    pos    =pos_col,
+                    log    =Log(),
+                    build  =build,
+                    source ="refseq",
+                    verbose=True,
+                    gtf_path=gtf_path
+                ).rename(columns={"GENE":"GENENAME"})
 
         split = {
             'top':variants_toanno[variants_toanno[beta_col]>0].reset_index(drop=True), 
@@ -688,7 +698,7 @@ def trumpet_draw(df_gwas:pd.DataFrame, df_freq:pd.DataFrame, plot_dir:pd.DataFra
         }
 
         for key in split.keys():
-            
+
             texts = []  # a list to store text annotations for adjustment
             x = []      # a list to store x-coordinates for adjustment
             y = []      # a list to store y-coordinates for adjustment
@@ -698,7 +708,7 @@ def trumpet_draw(df_gwas:pd.DataFrame, df_freq:pd.DataFrame, plot_dir:pd.DataFra
                 x.append(row[maf_col])
                 y.append(row[beta_col])
                 texts.append(row['GENENAME'])
-            
+
             if key == 'top':
                 direction = 'northeast'
             else:
