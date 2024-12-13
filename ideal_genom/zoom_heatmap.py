@@ -13,10 +13,15 @@ from matplotlib.axes import Axes
 from matplotlib.backend_bases import RendererBase
 
 from gwaslab.bd_download import download_file
+from gwaslab.bd_common_data import gtf_to_all_gene
 from gwaslab.g_Log import Log
 from gwaslab.util_in_get_sig import annogene
 
-def filter_sumstats(data_df:pd.DataFrame, lead_snp:str, snp_col:str, p_col:str, pos_col:str, chr_col:str, pval_threshold:float=5e-8, radius:int=10e6, get_gene_names:bool=True, build:str='38', gtf_path:str=None) -> pd.DataFrame:
+from pyensembl import Genome
+
+from ideal_genom.api_client import VEPEnsemblRestClient
+
+def filter_sumstats(data_df:pd.DataFrame, lead_snp:str, snp_col:str, p_col:str, pos_col:str, chr_col:str, pval_threshold:float=5e-8, radius:int=10e6) -> pd.DataFrame:
     """
     Filter the summary statistics data frame to only include SNPs with p-value less than the threshold
     and the lead SNP
