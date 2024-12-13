@@ -270,7 +270,8 @@ def manhattan_draw(data_df:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, 
         palette=chr_colors, 
         ax     =ax, 
         s      =3, 
-        legend =False
+        legend =False,
+        edgecolor='none'
     )
 
     # set axis labels and font size
