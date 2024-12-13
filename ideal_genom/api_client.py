@@ -16,7 +16,7 @@ class VEPEnsemblRestClient:
         if self.req_count >= self.reqs_per_sec:
             delta = time.time() - self.last_req
             if delta < 1:
-                time.sleep(1 - delta)
+                time.sleep(2 - delta)
             self.last_req = time.time()
             self.req_count = 0
 
