@@ -790,56 +790,46 @@ def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col
             legend  =False,
         )
 
-    if len(top_annotations)>0 or len(bottom_annotations)>0:
-
-        # download gtf file if not provided to annotate genes
-        if gtf_path is None:
-            gtf_url = 'https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.40_GRCh38.p14/GCF_000001405.40_GRCh38.p14_genomic.gtf.gz'
-            path_to_gz = os.path.join(os.path.abspath('..'), 'GCF_000001405.40_GRCh38.p14_genomic.gtf.gz')
-            path_to_gtf= os.path.join(os.path.abspath('..'), 'GCF_000001405.40_GRCh38.p14_genomic.gtf')
+    if top_annotations.shape[0]>0:
+        
+        if top_gen_col is not None:
             
-            if os.path.exists(path_to_gz) is not True or os.path.exists(path_to_gtf) is not True:
+            top_variants_toanno = plot_data['upper'][plot_data['upper'][snp_col].isin(top_annotations[snp_col])]\
+                .reset_index(drop=True)
+            top_variants_toanno = top_variants_toanno.merge(top_annotations, on=snp_col, how='left')
+            top_variants_toanno = top_variants_toanno.rename(columns={top_gen_col:"GENENAME"})
 
-                download_file(gtf_url, path_to_gz)
+        else:
+            if gtf_path is None:
+                gtf_url = 'https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.40_GRCh38.p14/GCF_000001405.40_GRCh38.p14_genomic.gtf.gz'
+                path_to_gz = os.path.join(os.path.abspath('..'), 'GCF_000001405.40_GRCh38.p14_genomic.gtf.gz')
+                path_to_gtf= os.path.join(os.path.abspath('..'), 'GCF_000001405.40_GRCh38.p14_genomic.gtf')
+
+                if os.path.exists(path_to_gz) is not True or os.path.exists(path_to_gtf) is not True:
+
+                    download_file(gtf_url, path_to_gz)
+
+                    with gzip.open(path_to_gz, 'rb') as f_in:
+                         with open(path_to_gtf, 'wb') as f_out:
+                            shutil.copyfileobj(f_in, f_out)
+                gtf_path = path_to_gtf
+
+            top_variants_toanno = plot_data['upper'][plot_data['upper'][snp_col].isin(top_annotations[snp_col])]\
+                .reset_index(drop=True)
                 
-                with gzip.open(path_to_gz, 'rb') as f_in:
-                     with open(path_to_gtf, 'wb') as f_out:
-                        shutil.copyfileobj(f_in, f_out)
-            gtf_path = path_to_gtf
-
-        top_variants_toanno = plot_data['upper'][plot_data['upper'][snp_col].isin(top_annotations)]\
-            .reset_index(drop=True)
-        
-        bottom_variants_toanno = plot_data['lower'][plot_data['lower'][snp_col].isin(bottom_annotations)]\
-            .reset_index(drop=True)
-        
-        # get gene names for upper plot
-        if (top_variants_toanno.empty is not True):
-            top_variants_toanno = annogene(
-                top_variants_toanno,
-                id     =snp_col,
-                chrom  =chr_col,
-                pos    =pos_col,
-                log    =Log(),
-                build  ='38',
-                source ="refseq",
-                verbose=False,
-                gtf_path=gtf_path
-            ).rename(columns={"GENE":"GENENAME"})
-
-        # get gane names for bottom plot
-        if (bottom_variants_toanno.empty is not True):
-            bottom_variants_toanno = annogene(
-                bottom_variants_toanno,
-                id     =snp_col,
-                chrom  =chr_col,
-                pos    =pos_col,
-                log    =Log(),
-                build  ='38',
-                source ="refseq",
-                verbose=False,
-                gtf_path=gtf_path
-            ).rename(columns={"GENE":"GENENAME"})
+            # get gene names for upper plot
+            if (top_variants_toanno.empty is not True):
+                top_variants_toanno = annogene(
+                    top_variants_toanno,
+                    id     =snp_col,
+                    chrom  =chr_col,
+                    pos    =pos_col,
+                    log    =Log(),
+                    build  ='38',
+                    source ="refseq",
+                    verbose=False,
+                    gtf_path=gtf_path
+                ).rename(columns={"GENE":"GENENAME"})
 
         # annotate upper plot
         ax_upper, texts_upper = manhattan_type_annotate(
@@ -851,6 +841,48 @@ def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col
             genome_line    =genome_line
         )
 
+    if bottom_annotations.shape[0]>0:
+
+        if bottom_gen_col is not None:
+
+            bottom_variants_toanno = plot_data['lower'][plot_data['lower'][snp_col].isin(bottom_annotations[snp_col])]\
+                .reset_index(drop=True)
+            bottom_variants_toanno = bottom_variants_toanno.merge(bottom_annotations, on=snp_col, how='left')
+            bottom_variants_toanno = bottom_variants_toanno.rename(columns={bottom_gen_col:"GENENAME"})
+        
+        else:
+            if gtf_path is None:
+                gtf_url = 'https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.40_GRCh38.p14/GCF_000001405.40_GRCh38.p14_genomic.gtf.gz'
+                path_to_gz = os.path.join(os.path.abspath('..'), 'GCF_000001405.40_GRCh38.p14_genomic.gtf.gz')
+                path_to_gtf= os.path.join(os.path.abspath('..'), 'GCF_000001405.40_GRCh38.p14_genomic.gtf')
+
+                if os.path.exists(path_to_gz) is not True or os.path.exists(path_to_gtf) is not True:
+
+                    download_file(gtf_url, path_to_gz)
+
+                    with gzip.open(path_to_gz, 'rb') as f_in:
+                         with open(path_to_gtf, 'wb') as f_out:
+                            shutil.copyfileobj(f_in, f_out)
+                gtf_path = path_to_gtf
+
+            bottom_variants_toanno = plot_data['lower'][plot_data['lower'][snp_col].isin(bottom_annotations[snp_col])]\
+            .reset_index(drop=True)
+
+            # get gane names for bottom plot
+            if (bottom_variants_toanno.empty is not True):
+                bottom_variants_toanno = annogene(
+                    bottom_variants_toanno,
+                    id     =snp_col,
+                    chrom  =chr_col,
+                    pos    =pos_col,
+                    log    =Log(),
+                    build  ='38',
+                    source ="refseq",
+                    verbose=False,
+                    gtf_path=gtf_path
+                ).rename(columns={"GENE":"GENENAME"})
+
+        
         # annotate lower plot
         ax_lower, texts_lower = manhattan_type_annotate(
             axes           =ax_lower, 
