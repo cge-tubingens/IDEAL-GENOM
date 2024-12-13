@@ -21,6 +21,8 @@ from pyensembl import Genome
 
 from ideal_genom.api_client import VEPEnsemblRestClient
 
+from ideal_genom.Helpers import shell_do
+
 def filter_sumstats(data_df:pd.DataFrame, lead_snp:str, snp_col:str, p_col:str, pos_col:str, chr_col:str, pval_threshold:float=5e-8, radius:int=10e6) -> pd.DataFrame:
     """
     Filter the summary statistics data frame to only include SNPs with p-value less than the threshold
