@@ -148,3 +148,52 @@ def get_gene_information(genes:list, gtf_path:str=None, build:str=38)->pd.DataFr
             gene_info['length'].append(None)
 
     return pd.DataFrame(gene_info)
+
+def get_ld_matrix(data_df:pd.DataFrame, snp_col:str, pos_col:str, bfile_folder:str, bfile_name:str, output_path:str)->dict:
+
+    if os.path.exists(output_path) is not True:
+        raise FileNotFoundError(f"File {output_path} not found.")
+    if os.path.isdir(bfile_folder) is not True:
+        raise FileNotFoundError(f"File {bfile_folder} not found.")
+    if os.path.exists(os.path.join(bfile_folder, f"{bfile_name}.bim")) is not True:
+        raise FileNotFoundError(f"File {bfile_name}.bim not found in {bfile_folder}.")
+    if os.path.exists(os.path.join(bfile_folder, f"{bfile_name}.bed")) is not True:
+        raise FileNotFoundError(f"File {bfile_name}.bed not found in {bfile_folder}.")
+    if os.path.exists(os.path.join(bfile_folder, f"{bfile_name}.fam")) is not True:
+        raise FileNotFoundError(f"File {bfile_name}.fam not found in {bfile_folder}.")
+    
+    if snp_col not in data_df.columns:
+        raise ValueError(f"Column {snp_col} not found in the data frame.")
+    if pos_col not in data_df.columns:
+        raise ValueError(f"Column {pos_col} not found in the data frame.")
+
+    sorted_data = data_df.sort_values(by=[pos_col], ascending=True).reset_index(drop=True)
+    sorted_data[[snp_col]].to_csv(
+        os.path.join(bfile_folder, f"{bfile_name}-snplist.txt"),
+        header=False,
+        index=False,
+        sep='\t'
+    )
+
+    # plink command
+    plink_cmd = f"plink --bfile {os.path.join(bfile_folder, bfile_name)} --extract {os.path.join(bfile_folder, f'{bfile_name}-snplist.txt')} --r2 square  --out {os.path.join(bfile_folder, 'matrix-ld')}"
+
+    # execute PLINK command
+    shell_do(plink_cmd, log=True)
+
+
+
+    # report
+    process_complete = True
+
+    outfiles_dict = {
+        'plink_out': bfile_folder
+    }
+
+    out_dict = {
+        'pass': process_complete,
+        # 'step': step,
+        'output': outfiles_dict
+    }
+        
+    return out_dict
