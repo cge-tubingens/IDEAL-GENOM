@@ -246,3 +246,233 @@ def get_ld_matrix(data_df:pd.DataFrame, snp_col:str, pos_col:str, bfile_folder:s
     }
         
     return out_dict
+
+def get_zoomed_data(data_df:pd.DataFrame, lead_snp:str, snp_col:str, p_col:str, pos_col:str, chr_col:str, output_folder:str,pval_threshold:float=5e-6, radius:int=1e6, build='38', batch_size:int=100, request_persec:int=15)->pd.DataFrame:
+
+    if not isinstance(data_df, pd.DataFrame):
+        raise TypeError("data_df must be a pandas DataFrame.")
+    if not isinstance(lead_snp, str):
+        raise TypeError("lead_snp must be a string.")
+    if not isinstance(snp_col, str):
+        raise TypeError("snp_col must be a string.")
+    if not isinstance(p_col, str):
+        raise TypeError("p_col must be a string.")
+    if not isinstance(pos_col, str):
+        raise TypeError("pos_col must be a string.")
+    if not isinstance(chr_col, str):
+        raise TypeError("chr_col must be a string.")
+    if not isinstance(pval_threshold, float):
+        raise TypeError("pval_threshold must be a float.")
+    if not isinstance(radius, int):
+        raise TypeError("radius must be an integer.")
+    
+    if os.path.isdir(output_folder) is not True:
+        raise FileNotFoundError(f"Folder {output_folder} not found.")
+    
+    # filter significant SNPs in the specified region
+    filtered_df = filter_sumstats(
+        data_df       =data_df, 
+        lead_snp      =lead_snp, 
+        snp_col       =snp_col, 
+        p_col         =p_col, 
+        pos_col       =pos_col, 
+        chr_col       =chr_col, 
+        pval_threshold=pval_threshold, 
+        radius        =radius
+    )
+
+    if filtered_df.empty:
+        raise ValueError("No significant SNPs found in the specified region.")
+    
+    # annotate the SNPs with gene names and functional consequences
+    annotated = snp_annotations(
+        data_df=filtered_df, 
+        snp_col=snp_col, 
+        chr_col=chr_col, 
+        pos_col=pos_col,
+        build=build,
+        batch_size=batch_size,
+        request_persec=request_persec
+    )
+
+    # scale the position to Mbp
+    annotated['Mbp'] = annotated['POS'] / 1e6
+
+    return annotated.drop_duplicates(keep='first').reset_index(drop=True)
+
+def draw_zoomed_heatmap(data_df:pd.DataFrame, lead_snp:str, snp_col:str, p_col:str, pos_col:str, chr_col:str, output_folder:str, pval_threshold:float=5e-6, radius:int=1e6, build='38', gtf_path:str=None, batch_size:int=100, bfile_folder:str=None, bfile_name:str=None, effect_dict:dict={}, extension:str='jpeg', request_persec:int=15)->None:
+
+    annotated = get_zoomed_data(
+        data_df       =data_df,
+        lead_snp      =lead_snp, 
+        snp_col       =snp_col, 
+        p_col         =p_col, 
+        pos_col       =pos_col, 
+        chr_col       =chr_col,
+        output_folder =output_folder,
+        pval_threshold=pval_threshold, 
+        radius        =radius,
+        batch_size=batch_size,
+        request_persec=request_persec
+    )
+
+    annotated['GENENAME'] = annotated['GENENAME'].apply(lambda x: x.split(',')[0])
+
+    effects = annotated['Functional_Consequence'].value_counts(dropna=False).reset_index()
+
+    region = (annotated['Mbp'].min() - 0.05, annotated['Mbp'].max() + 0.05)
+
+    print('\n')
+    print(effects)
+    print('\n')
+
+    genes = get_gene_information(
+        genes=annotated['GENENAME'].unique().tolist(),
+        gtf_path=None,
+        build='38'
+    )
+    genes['start_esc'] = genes['start']/1e6
+    genes['end_esc']   = genes['end']/1e6
+
+    genes['start_esc'] = genes['start_esc'].apply(lambda x: max(x, region[0]))
+    genes['end_esc'] = genes['end_esc'].apply(lambda x: min(x, region[1]))
+    
+    genes['length_esc']= genes['end_esc'] - genes['start_esc']
+
+    annotated = annotated.merge(genes, left_on='GENENAME', right_on='gene', how='left')
+    annotated.to_csv(os.path.join(output_folder, f'zoom_plot_data_for_{lead_snp}.csv'), index=False, sep='\t')
+
+    get_ld_matrix(
+        data_df     =annotated,
+        snp_col     =snp_col,
+        pos_col     =pos_col,
+        bfile_folder=bfile_folder,
+        bfile_name  =bfile_name,
+        output_path =output_folder,
+    )
+
+    df_LD = pd.read_csv(
+        os.path.join(output_folder, 'matrix-ld.ld'),
+        sep=r'\s+',
+        header=None,
+        index_col=None,
+        engine='python'
+    )
+    ld = df_LD.values
+
+    # plot the heatmap
+
+    N=ld.shape[0]
+    ld = np.tril(ld, k=0)
+    ldm = np.ma.masked_where(ld==0, ld)
+
+    plt.figure(figsize=(10, 10))
+
+    # Define the overall grid size (9 rows, 1 column)
+    ax1 = plt.subplot2grid((9, 1), (0, 0), rowspan=4)  # Top plot (4 rows)
+    ax2 = plt.subplot2grid((9, 1), (4, 0), rowspan=1)  # Middle plot (1 row)
+    ax3 = plt.subplot2grid((9, 1), (5, 0), rowspan=4)  # Bottom plot (4 rows)
+
+    # Define custom colors
+    colors = [
+        "#1f77b4",  # Blue
+        "#ff7f0e",  # Orange
+        "#2ca02c",  # Green
+        "#9467bd",  # Purple
+        "#8c564b",  # Brown
+        "#17becf",  # Cyan
+        "#bcbd22",  # Yellow
+        "#e377c2"   # Pink
+    ]
+
+    # Plot for ax1
+
+    annotated['Hue'] = 'other'
+
+    if len(effect_dict) == 0:
+
+        main_effects = effects['Functional_Consequence'].values[:4]
+
+        for effect in main_effects:
+
+            annotated.loc[annotated['Functional_Consequence'] == effect, 'Hue'] = effect
+    else:
+
+        for effect in effect_dict.keys():
+
+            annotated.loc[annotated['Functional_Consequence'] == effect, 'Hue'] = effect_dict[effect]
+
+    # plot other SNPs
+    others = annotated[annotated['Hue'] == 'other']
+    ax1.scatter(others['Mbp'], others['log10p'], s=15, color='grey', label='', edgecolors='none')
+
+    # plot main effects
+    main = annotated[(annotated['Hue'] != 'other') & (annotated['Hue'] != 'Lead Variant')]
+
+    annotated_lead = False
+    
+    for k, effect in enumerate(main['Hue'].unique()):
+        subset = main[main['Hue'] == effect]
+        ax1.scatter(subset['Mbp'], subset['log10p'], s=15, color=colors[k], label=effect)
+        if lead_snp in subset[snp_col].values: # plot lead SNP
+            annotated_lead = True
+            lead = subset[subset[snp_col] == lead_snp]
+            ax1.scatter(lead['Mbp'], lead['log10p'], s=30, color=colors[k], label='Lead SNP', marker='d')
+    
+    if annotated_lead is False:
+        lead = annotated[annotated[snp_col] == lead_snp]
+        ax1.scatter(lead['Mbp'], lead['log10p'], s=30, color='red', label='Lead SNP'+f'{lead["Functional_Consequence"].values[0]}', marker='d')
+   
+    chr = lead[chr_col].values[0]
+
+    ax1.set_xlim(region)
+    ax1.xaxis.set_ticks_position('top')
+    ax1.legend(loc='best')
+    ax1.set_title(f"Zoom of {lead_snp}", fontsize=12, loc='left')
+    ax1.set_ylabel('log10(P)', fontsize=12)
+    ax1.xaxis.set_label_position('top')
+    ax1.set_xlabel(f'Position on Chr {chr} [Mb]', fontsize=12)
+
+    # Plot for ax2
+    ys = cycle([0.1, 0.4, 0.7, 1])
+
+    for i in genes.index:
+        symbol, strand = genes.loc[i, 'gene'], genes.loc[i, 'strand']
+        start, end, length = genes.loc[i, 'start_esc'], genes.loc[i, 'end_esc'], genes.loc[i, 'length_esc']
+        y = next(ys)
+
+        if symbol == lead['GENENAME'].values[0]:
+            color = 'red'
+        else:
+            color = 'black'
+
+        if strand == '+':
+            arrow = FancyArrow(start, y, length, 0, width=0.001, head_width=0.03, head_length=0.01, color=color)
+            ax2.add_patch(arrow)
+            ax2.text(start + 0.5 * length, y + 0.05, symbol, ha='center', size=9)
+        elif strand == '-':
+            arrow_neg = FancyArrow(end, y, -length, 0, width=0.001, head_width=0.03, head_length=0.01, color=color)
+            ax2.add_patch(arrow_neg)
+            ax2.text(start + 0.5 * length, y + 0.05, symbol, ha='center', size=9)
+
+    ax2.set_ylim(0, 1.2)
+    ax2.set_xlim(region)
+    ax2.axis('off')
+
+    base = ax3.transData # to rotate triangle
+    rotation = transforms.Affine2D().rotate_deg(180+90+45)
+    cmap=matplotlib.cm.Reds
+    im=ax3.imshow(ldm, cmap=cmap, transform=rotation+base,aspect='auto')
+    ax3.set_xlim([2, 1.41*N])
+    ax3.set_ylim([1*N, 2])
+    ax3.axis('off')
+
+    # Add a colorbar as the legend
+    cbar = plt.colorbar(im, ax=ax3, orientation='horizontal', fraction=0.05, pad=0.2)
+    cbar.set_label('LD Value', fontsize=10)  # Adjust label as needed
+
+    plt.tight_layout()
+    plt.savefig(os.path.join(output_folder, f'Zoom for {lead_snp}.{extension}'), dpi=500)
+    plt.show()
+
+    return True
