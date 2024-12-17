@@ -53,6 +53,7 @@ class VEPEnsemblRestClient:
 
     def post_vep_request(self, ids):
         """Specific method to perform the VEP POST request"""
+        
         endpoint = "/vep/human/id"
         headers = {
             "Content-Type": "application/json", 
