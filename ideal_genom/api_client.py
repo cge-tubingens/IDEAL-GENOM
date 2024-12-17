@@ -61,7 +61,9 @@ class VEPEnsemblRestClient:
         data = {
             "ids": ids,
             "InAct": False,  # Add InAct parameter and set it to false
-            "mutfunc": False
+            "mutfunc": False,
+            "per_gene": True,
+            "pick": True
         }
         return self.perform_rest_action('POST', endpoint, headers=headers, data=data)
 
