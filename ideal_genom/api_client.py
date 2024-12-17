@@ -33,9 +33,9 @@ class VEPEnsemblRestClient:
         
         try:
             if method == 'GET':
-                response = requests.get(url, headers=headers, params=params, timeout=10)
+                response = requests.get(url, headers=headers, params=params, timeout=50)
             elif method == 'POST':
-                response = requests.post(url, headers=headers, json=data, timeout=10)
+                response = requests.post(url, headers=headers, json=data, timeout=50)
             response.raise_for_status()  # Will raise HTTPError for bad responses (4xx, 5xx)
             self.req_count += 1
             return response.json()
