@@ -227,7 +227,7 @@ def get_ld_matrix(data_df:pd.DataFrame, snp_col:str, pos_col:str, bfile_folder:s
     )
 
     # plink command
-    plink_cmd = f"plink --bfile {os.path.join(bfile_folder, bfile_name)} --extract {os.path.join(bfile_folder, f'{bfile_name}-snplist.txt')} --r2 square  --out {os.path.join(bfile_folder, 'matrix-ld')}"
+    plink_cmd = f"plink --bfile {os.path.join(bfile_folder, bfile_name)} --extract {os.path.join(bfile_folder, f'{bfile_name}-snplist.txt')} --r2 square  --out {os.path.join(output_path, 'matrix-ld')}"
 
     # execute PLINK command
     shell_do(plink_cmd, log=True)
