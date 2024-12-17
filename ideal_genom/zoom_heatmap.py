@@ -2,15 +2,18 @@ import gzip
 import os
 import shutil
 import warnings
+import time
+import matplotlib
 
 import matplotlib.pyplot as plt
+from matplotlib import transforms
 import numpy as np
 import pandas as pd
 import seaborn as sns
 import textalloc as ta
 
-from matplotlib.axes import Axes
-from matplotlib.backend_bases import RendererBase
+from matplotlib.colors import ListedColormap
+from matplotlib.patches import FancyArrow
 
 from gwaslab.bd_download import download_file
 from gwaslab.bd_common_data import gtf_to_all_gene
@@ -18,6 +21,8 @@ from gwaslab.g_Log import Log
 from gwaslab.util_in_get_sig import annogene
 
 from pyensembl import Genome
+
+from itertools import cycle
 
 from ideal_genom.api_client import VEPEnsemblRestClient
 
