@@ -900,15 +900,15 @@ def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col
     if len(both)>0:
 
         custom_dots = [
-            Line2D([0], [0], marker='o', color='w', markerfacecolor="#7B68EE", markersize=5, label='Top Hits on Both'),
-            Line2D([0], [0], marker='o', color='w', markerfacecolor="#008080", markersize=5, label=f'Top Hits on {legend_top}'),
-            Line2D([0], [0], marker='o', color='w', markerfacecolor="#FF1493", markersize=5, label=f'Top Hits on {legend_bottom}'),
+            Line2D([0], [0], marker='o', color='w', markerfacecolor="#7B68EE", markersize=5, label='Top Hits both'),
+            Line2D([0], [0], marker='o', color='w', markerfacecolor="#008080", markersize=5, label=f'Top Hits {legend_top}'),
+            Line2D([0], [0], marker='o', color='w', markerfacecolor="#FF1493", markersize=5, label=f'Top Hits {legend_bottom}'),
         ]
 
     else:
         custom_dots = [
-            Line2D([0], [0], marker='o', color='w', markerfacecolor="#008080", markersize=5, label=f'Top Hits on {legend_top}'),
-            Line2D([0], [0], marker='o', color='w', markerfacecolor="#FF1493", markersize=5, label=f'Top Hits on {legend_bottom}'),
+            Line2D([0], [0], marker='o', color='w', markerfacecolor="#008080", markersize=5, label=f'Top Hits {legend_top}'),
+            Line2D([0], [0], marker='o', color='w', markerfacecolor="#FF1493", markersize=5, label=f'Top Hits {legend_bottom}'),
         ]
 
     # Add custom legend
