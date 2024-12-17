@@ -215,6 +215,8 @@ def get_ld_matrix(data_df:pd.DataFrame, snp_col:str, pos_col:str, bfile_folder:s
         raise ValueError(f"Column {snp_col} not found in the data frame.")
     if pos_col not in data_df.columns:
         raise ValueError(f"Column {pos_col} not found in the data frame.")
+    
+    step='get_ld_matrix'
 
     sorted_data = data_df.sort_values(by=[pos_col], ascending=True).reset_index(drop=True)
     sorted_data[[snp_col]].to_csv(
