@@ -54,7 +54,7 @@ def filter_sumstats(data_df:pd.DataFrame, lead_snp:str, snp_col:str, p_col:str, 
 
     return df_filtered
 
-def snp_annotations(data_df:pd.DataFrame, snp_col:str, pos_col:str, chr_col:str, build:str='38', gtf_path:str=None) -> pd.DataFrame:
+def snp_annotations(data_df:pd.DataFrame, snp_col:str, pos_col:str, chr_col:str, build:str='38', gtf_path:str=None, batch_size:int=100, request_persec:int=15) -> pd.DataFrame:
     
     if gtf_path is None:
         gtf_url = 'https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.40_GRCh38.p14/GCF_000001405.40_GRCh38.p14_genomic.gtf.gz'
