@@ -82,22 +82,65 @@ def snp_annotations(data_df:pd.DataFrame, snp_col:str, pos_col:str, chr_col:str,
             gtf_path=gtf_path
         ).rename(columns={"GENE":"GENENAME"})
     
-    vep_client = VEPEnsemblRestClient()
+    if build == '38':
+    
+        # initialize VEP client
+        vep_client = VEPEnsemblRestClient(server='https://rest.ensembl.org', reqs_per_sec=request_persec)
 
-    # Example list of IDs for the POST request
-    snps = variants_toanno[snp_col].to_list()
+        # list of IDs for the POST request
+        snps = variants_toanno[snp_col].to_list()
 
-    response = vep_client.post_vep_request(snps)
+        # empty DataFrame to store the VEP results
+        df_vep = pd.DataFrame()
 
-    if response:
-        df_vep = pd.DataFrame({
-            snp_col: [ res['id'] for res in response ],
-            'consequence': [ res['most_severe_consequence'] for res in response ]
-        })
+        # iterate through the list of IDs in batches
+        for i in range(0, len(snps), batch_size):
 
-        variants_toanno = variants_toanno.merge(df_vep, on=snp_col, how='left')
-    else:
-        print("Failed to get response.")
+            batch = snps[i:min(i + batch_size, len(snps))]
+
+            response = vep_client.post_vep_request(batch)
+
+            if response:
+                batch_df = pd.DataFrame({
+                    snp_col: [res['id'] for res in response],
+                    'Functional_Consequence': [res['most_severe_consequence'] for res in response]
+                })
+                df_vep = pd.concat([df_vep, batch_df], ignore_index=True)
+            else:
+                print("Failed to get response.")
+
+            time.sleep(5)
+
+    elif build == '19' or build == '37':
+
+        # initialize VEP client
+        vep_client = VEPEnsemblRestClient(server='https://grch37.rest.ensembl.org', reqs_per_sec=15)
+
+        # list of IDs for the POST request
+        snps = variants_toanno[snp_col].to_list()
+
+        # empty DataFrame to store the VEP results
+        df_vep = pd.DataFrame()
+
+        # iterate through the list of IDs in batches
+        for i in range(0, len(snps), batch_size):
+
+            batch = snps[i:min(i + batch_size, len(snps))]
+
+            response = vep_client.post_vep_request(batch)
+
+            if response:
+                batch_df = pd.DataFrame({
+                    snp_col: [res['id'] for res in response],
+                    'Functional_Consequence': [res['most_severe_consequence'] for res in response]
+                })
+                df_vep = pd.concat([df_vep, batch_df], ignore_index=True)
+            else:
+                print("Failed to get response.")
+
+            time.sleep(5)
+
+    variants_toanno = variants_toanno.merge(df_vep, on=snp_col, how='left')
     
     return variants_toanno.drop(columns=['LOCATION'], inplace=False)
 
