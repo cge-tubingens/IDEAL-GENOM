@@ -52,15 +52,16 @@ class VEPEnsemblRestClient:
         return None
 
     def post_vep_request(self, ids):
-        """Specific method to perform the VEP POST request"""
-        
+        """Specific method to perform the VEP POST request with InAct parameter set to false."""
         endpoint = "/vep/human/id"
         headers = {
             "Content-Type": "application/json", 
             "Accept": "application/json"
         }
         data = {
-            "ids": ids
+            "ids": ids,
+            "InAct": False,  # Add InAct parameter and set it to false
+            "mutfunc": False
         }
         return self.perform_rest_action('POST', endpoint, headers=headers, data=data)
 
