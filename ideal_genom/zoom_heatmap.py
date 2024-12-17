@@ -236,12 +236,12 @@ def get_ld_matrix(data_df:pd.DataFrame, snp_col:str, pos_col:str, bfile_folder:s
     process_complete = True
 
     outfiles_dict = {
-        'plink_out': bfile_folder
+        'plink_out': output_path
     }
 
     out_dict = {
         'pass': process_complete,
-        # 'step': step,
+        'step': step,
         'output': outfiles_dict
     }
         
