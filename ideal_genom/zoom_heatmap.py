@@ -300,7 +300,11 @@ def get_zoomed_data(data_df:pd.DataFrame, lead_snp:str, snp_col:str, p_col:str, 
     # scale the position to Mbp
     annotated['Mbp'] = annotated['POS'] / 1e6
 
-    return annotated.drop_duplicates(keep='first').reset_index(drop=True)
+    annotated = annotated.drop_duplicates(keep='first').reset_index(drop=True)
+
+    annotated = annotated.drop_duplicates(subset=[snp_col], keep='first').reset_index(drop=True)
+
+    return annotated
 
 def draw_zoomed_heatmap(data_df:pd.DataFrame, lead_snp:str, snp_col:str, p_col:str, pos_col:str, chr_col:str, output_folder:str, pval_threshold:float=5e-6, radius:int=1e6, build='38', gtf_path:str=None, batch_size:int=100, bfile_folder:str=None, bfile_name:str=None, effect_dict:dict={}, extension:str='jpeg', request_persec:int=15)->None:
 
