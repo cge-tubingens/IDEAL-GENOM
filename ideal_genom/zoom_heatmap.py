@@ -169,11 +169,12 @@ def get_gene_information(genes:list, gtf_path:str=None, build:str=38)->pd.DataFr
             gtf_path_or_url=gtf_path
         )
     elif build == '19':
-        data = Genome(
-            reference_name='GRCh37',
-            annotation_name='Refseq',
-            gtf_path_or_url=gtf_path
-        )
+        # data = Genome(
+        #     reference_name='GRCh37',
+        #     annotation_name='Refseq',
+        #     gtf_path_or_url=gtf_path
+        # )
+        warnings.warn("Build 19 not supported. Using build 38 instead.")
 
     gene_info = {
         'gene':genes,
