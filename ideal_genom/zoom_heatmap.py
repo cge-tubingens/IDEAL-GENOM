@@ -12,6 +12,8 @@ import pandas as pd
 import seaborn as sns
 import textalloc as ta
 
+from matplotlib.axes import Axes
+from matplotlib.backend_bases import RendererBase
 from matplotlib.colors import ListedColormap
 from matplotlib.patches import FancyArrow
 
