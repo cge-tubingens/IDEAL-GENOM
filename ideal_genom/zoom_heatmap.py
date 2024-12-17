@@ -232,8 +232,6 @@ def get_ld_matrix(data_df:pd.DataFrame, snp_col:str, pos_col:str, bfile_folder:s
     # execute PLINK command
     shell_do(plink_cmd, log=True)
 
-
-
     # report
     process_complete = True
 
