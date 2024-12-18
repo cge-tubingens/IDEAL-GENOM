@@ -170,7 +170,7 @@ def manhattan_process_data(data_df:pd.DataFrame, chr_col:str='CHR', pos_col:str=
 
     return manhattan_data
 
-def manhattan_draw(data_df:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, p_col:str, plot_dir:str, to_highlight:list=[], to_annotate:pd.DataFrame=None, gen_col:str=None, build:str='38', gtf_path:str=None, save_name:str='manhattan_plot.jpeg')->bool:
+def manhattan_draw(data_df:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, p_col:str, plot_dir:str, to_highlight:pd.DataFrame=pd.DataFrame(), highlight_hue:str='hue', to_annotate:pd.DataFrame=pd.DataFrame(), gen_col:str=None, build:str='38', gtf_path:str=None, save_name:str='manhattan_plot.jpeg')->bool:
 
     """
     Draws a Manhattan plot for visualizing GWAS results.
