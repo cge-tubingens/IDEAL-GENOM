@@ -60,7 +60,7 @@ class VEPEnsemblRestClient:
         }
         data = {
             "ids": ids,
-            "InAct": False,  # Add InAct parameter and set it to false
+            "InAct": False,
             "mutfunc": False,
             "per_gene": True,
             "pick": True
