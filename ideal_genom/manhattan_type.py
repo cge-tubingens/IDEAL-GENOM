@@ -215,16 +215,12 @@ def manhattan_draw(data_df:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, 
     if p_col not in data_df.columns:
         raise ValueError(f"Column '{p_col}' not found in the input DataFrame.")
     
-    if not isinstance(to_highlight, list):
-        raise TypeError("to_highlight must be a list of SNP identifiers.")
-    for val in to_highlight:
-        if not isinstance(val, str):
+    if to_highlight is not None:
+        if not isinstance(to_highlight, pd.DataFrame):
             raise TypeError("to_highlight must be a list of SNP identifiers.")
-    if not isinstance(to_annotate, pd.DataFrame):
-        raise TypeError("to_annotate must be a data frame of SNP identifiers.")
-    for val in to_annotate:
-        if not isinstance(val, str):
-            raise TypeError("to_annotate must be a list of SNP identifiers.")
+    if to_annotate is not None:
+        if not isinstance(to_annotate, pd.DataFrame):
+            raise TypeError("to_annotate must be a data frame of SNP identifiers.")
     
     if snp_col not in data_df.columns:
         raise ValueError(f"Column '{snp_col}' not found in the input DataFrame.")
