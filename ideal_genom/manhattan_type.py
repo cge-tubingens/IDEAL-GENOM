@@ -309,22 +309,35 @@ def manhattan_draw(data_df:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, 
     # highlight SNPs
     if to_highlight is not None:            
 
-        plot_data['data']["HUE"] = pd.NA
-        plot_data['data']["HUE"] = plot_data['data']["HUE"].astype("Int64")
-        plot_data['data'].loc[plot_data['data'][snp_col].isin(to_highlight), "HUE"] = 0
+        df_subset = plot_data['data'].merge(to_highlight, on=snp_col, how='inner')
 
-        ax = sns.scatterplot(
-                data     =plot_data['data'][plot_data['data']["HUE"]==0].reset_index(drop=True), 
-                x        ='rel_pos',
-                y        ='log10p',
-                s        =10,
-                ax       =ax,
-                edgecolor="black",
-                color   ='#CB132D',
-            )
+        if df_subset.empty is not True:
+
+            if highlight_hue in df_subset.columns:
+                ax = sns.scatterplot(
+                    data     =df_subset, 
+                    x        ='rel_pos',
+                    y        ='log10p',
+                    s        =10,
+                    ax       =ax,
+                    edgecolor="black",
+                    hue      =highlight_hue,
+                    palette='Set1'
+                )
+                ax.legend(loc='best', fontsize=7, title=None)
+            else:
+                ax = sns.scatterplot(
+                        data     =df_subset, 
+                        x        ='rel_pos',
+                        y        ='log10p',
+                        s        =10,
+                        ax       =ax,
+                        edgecolor="black",
+                        hue      ='#CB132D',
+                    )
 
     # annotate SNPs   
-    if to_annotate is not None:
+    if to_annotate is not None and to_annotate.empty is not True:
 
         if gen_col is not None:
 
