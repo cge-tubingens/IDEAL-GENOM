@@ -318,23 +318,24 @@ def manhattan_draw(data_df:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, 
                     data     =df_subset, 
                     x        ='rel_pos',
                     y        ='log10p',
-                    s        =10,
+                    s        =20,
                     ax       =ax,
                     edgecolor="black",
                     hue      =highlight_hue,
-                    palette='Set1'
+                    palette='Set1',
                 )
-                ax.legend(loc='best', fontsize=7, title=None)
+                ax.legend(loc='best', fontsize=9, title=None)
             else:
                 ax = sns.scatterplot(
                         data     =df_subset, 
                         x        ='rel_pos',
                         y        ='log10p',
-                        s        =10,
+                        s        =20,
                         ax       =ax,
-                        edgecolor="black",
-                        hue      ='#CB132D',
+                        edgecolor="black"
                     )
+                
+    plt.tight_layout()
 
     # annotate SNPs   
     if to_annotate is not None and to_annotate.empty is not True:
