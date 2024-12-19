@@ -389,19 +389,7 @@ def manhattan_draw(data_df:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, 
         )
 
 
-    plt.tight_layout()
-
-    r = fig.canvas.get_renderer()
-    fig.canvas.draw()
-
-    if len(to_annotate)>0:
-
-        ax= miami_draw_anno_lines(
-            renderer       =r, 
-            axes           =ax, 
-            texts          =texts, 
-            variants_toanno=variants_toanno
-        )
+    # save the plot
 
     plt.savefig(
         os.path.join(plot_dir, save_name), dpi=600
