@@ -253,7 +253,7 @@ def manhattan_draw(data_df:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, 
     max_x_axis = plot_data['data']['rel_pos'].max()
 
     # Create the figure
-    fig= plt.figure(figsize=(15, 9.2))
+    fig= plt.figure(figsize=(15, 10))
     ax = fig.add_subplot(111)
 
     # Suppress warnings about the number of chromosomes and just two colors
