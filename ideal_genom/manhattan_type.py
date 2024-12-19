@@ -522,7 +522,8 @@ def manhattan_type_annotate(axes:Axes, data:pd.DataFrame, variants_toanno:pd.Dat
             margin      =0.01,
             rotation    =90,
             nbr_candidates=300,
-            priority_strategy=42
+            priority_strategy=42,
+            plot_kwargs=dict(linestyle=':')
         )
 
     text_objs = allocate[2]
