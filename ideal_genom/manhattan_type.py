@@ -527,10 +527,6 @@ def manhattan_type_annotate(axes:Axes, data:pd.DataFrame, variants_toanno:pd.Dat
         )
 
     text_objs = allocate[2]
-
-    # remove the lines connecting the annotations to the SNPs (bounding boxes dimensions can change)
-    for line in allocate[3]:
-        line.remove()
         
     return axes, text_objs
 
