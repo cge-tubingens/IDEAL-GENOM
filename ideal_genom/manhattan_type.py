@@ -508,8 +508,8 @@ def manhattan_type_annotate(axes:Axes, data:pd.DataFrame, variants_toanno:pd.Dat
             x        =x,     # x-coordinates of the data point to annotate
             y        =y,     # y-coordinates of the data point to annotate
             text_list=texts, # list of text to annotate
-            #x_scatter=data['rel_pos'], # all scatter points x-coordinates
-            #y_scatter=data['log10p'],  # all scatter points y-coordinates
+            x_scatter=data['rel_pos'], # all scatter points x-coordinates
+            y_scatter=data['log10p'],  # all scatter points y-coordinates
             linecolor='black',                      # color of the line connecting the text to the data point
             textsize =8,                            # size of the text (Default to Nature standard)
             bbox     =dict(boxstyle='round,pad=0.3', edgecolor='black', facecolor='#f0f0f0', alpha=0.5),
