@@ -151,7 +151,7 @@ class AfterImputation:
 
             # bcftools command
             command = [
-                "bcftools", "view", "-Oz", "-i", "R2>0.3",
+                "bcftools", "view", "-Oz", "-i", f"R2>{r2_threshold}",
                 input_file, "-o", output_file
             ]
             try:
