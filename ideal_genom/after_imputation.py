@@ -199,7 +199,6 @@ class AfterImputation:
         results_dir = self.results_dir
         dependables = self.dependables
 
-        # Loop through chromosomes 1 to 22
         for chr_number in range(1, 23):
             # Input and output file paths
             input_file = os.path.join(results_dir, f"chr{chr_number}_R2_0.3.dose.vcf.gz")
