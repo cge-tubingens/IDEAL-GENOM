@@ -147,9 +147,9 @@ class AfterImputation:
             """
 
             input_file = os.path.join(input_folder, f"chr{chr_number}.dose.vcf.gz")
-            output_file = os.path.join(output_folder, f"chr{chr_number}_R2_0.3.dose.vcf.gz")
+            output_file = os.path.join(output_folder, f"filtered_chr{chr_number}.dose.vcf.gz")
 
-            # Run the bcftools command
+            # bcftools command
             command = [
                 "bcftools", "view", "-Oz", "-i", "R2>0.3",
                 input_file, "-o", output_file
