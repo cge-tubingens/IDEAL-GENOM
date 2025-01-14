@@ -376,18 +376,18 @@ class AfterImputation:
 
         input_vcf = os.path.join(results_dir, "annotated_normalized_combined_1_22.vcf.gz")
 
-        # Build the plink2 command
+        # plink2 command
         command = [
             "plink2",
             "--vcf", input_vcf,
-            "--snps-only", "just-acgt",  # Only keep SNPs with ACGT alleles
-            "--make-bed",  # Create binary PLINK files
+            "--snps-only", "just-acgt",
+            "--make-bed",
             "--out", os.path.join(results_dir, output_prefix),
             "--threads", str(threads),
             "--memory", str(memory)
         ]
 
-        # Execute the command
+        # execute plink2 command
         try:
             subprocess.run(command, check=True)
             print(f"PLINK2 command executed successfully. Output files saved with prefix: {output_prefix}")
