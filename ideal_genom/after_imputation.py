@@ -200,10 +200,10 @@ class AfterImputation:
         dependables = self.dependables
 
         for chr_number in range(1, 23):
-            # Input and output file paths
-            input_file = os.path.join(results_dir, f"chr{chr_number}_R2_0.3.dose.vcf.gz")
-            temp_file = os.path.join(results_dir, f"uncompressed_chr{chr_number}_R2_0.3.dose.vcf.gz")
-            output_file = os.path.join(results_dir, f"normalized_chr{chr_number}_R2_0.3.dose.vcf.gz")
+
+            input_file = os.path.join(results_dir, f"filtered_chr{chr_number}.dose.vcf.gz")
+            temp_file = os.path.join(results_dir, f"uncompressed_chr{chr_number}.dose.vcf.gz")
+            output_file = os.path.join(results_dir, f"normalized_chr{chr_number}.dose.vcf.gz")
             reference_file = os.path.join(dependables, reference_genome)
 
             # Step 1: Normalize with `bcftools norm -Ou -m -any`
