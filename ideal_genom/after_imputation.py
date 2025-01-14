@@ -124,10 +124,27 @@ class AfterImputation:
         elif not isinstance(max_workers, int):
             raise ValueError("Max workers should be a positive integer")
 
-        input_path = self.input_path
-        resuts_dir = self.results_dir
+        results_dir = self.results_dir
 
-        def process_chromosome(chr_number, input_folder, output_folder):
+        def process_chromosome(chr_number:int, input_folder:str, output_folder:str, r2_threshold:float):
+            """
+            Processes a chromosome VCF file by filtering variants with R2 > r2_threshold using bcftools.
+
+            Parameters:
+            -----------
+                chr_number (int): The chromosome number to process.
+                input_folder (str): The folder containing the input VCF files.
+                output_folder (str): The folder where the filtered VCF files will be saved.
+                r2_threshold (float): The R2 threshold for filtering variants.
+
+            Raises:
+            -------
+                subprocess.CalledProcessError: If the bcftools command fails.
+                FileNotFoundError: If the input file is not found.
+
+            Prints:
+                A message indicating whether the processing of the chromosome was completed or failed.
+            """
 
             input_file = os.path.join(input_folder, f"chr{chr_number}.dose.vcf.gz")
             output_file = os.path.join(output_folder, f"chr{chr_number}_R2_0.3.dose.vcf.gz")
