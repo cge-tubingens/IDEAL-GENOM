@@ -58,6 +58,39 @@ class AfterImputation:
 
         pass
 
+    def unzip_chromosome_files(self)->None:
+        """
+        Unzips chr*.zip files (chr1.zip to chr22.zip) from the input folder and extracts them into the output folder.
+
+        Returns:
+        --------
+            None
+        """
+
+        input_folder = self.input_path
+        results_dir  = self.results_dir
+
+        # Loop through chromosomes 1 to 22
+        for chr_num in range(1, 23):
+            zip_file = os.path.join(input_folder, f"chr{chr_num}.zip")  # Path to the ZIP file
+
+            # Check if the ZIP file exists
+            if not os.path.isfile(zip_file):
+                print(f"File not found: {zip_file}")
+                continue
+            
+            # Extract the ZIP file
+            try:
+                with zipfile.ZipFile(zip_file, 'r') as zf:
+                    zf.extractall(results_dir)
+                    print(f"Successfully extracted: {zip_file} to {results_dir}")
+            except zipfile.BadZipFile:
+                print(f"Error: {zip_file} is not a valid ZIP file.")
+            except Exception as e:
+                print(f"Error extracting {zip_file}: {e}")
+
+        pass
+
     def filter_variants(self, r2_threshold:float, max_workers:int)->None:
 
         if r2_threshold is None:
