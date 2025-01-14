@@ -184,9 +184,16 @@ class AfterImputation:
         2. Normalize with a reference genome and output to a new file.
 
         Parameters:
-        - input_folder (str): Path to the input folder containing VCF files (chr*_R2_0.3.dose.vcf.gz).
-        - output_folder (str): Path to the output folder for storing normalized VCF files.
-        - reference_genome (str): Path to the reference genome file (e.g., GRCh38).
+        -----------
+            reference_genome (str): The filename of the reference genome to use for normalization.
+
+        Raises:
+        -------
+            Exception: If there is an error during the normalization process for any chromosome.
+        
+        Returns:
+        --------
+            None
         """
 
         results_dir = self.results_dir
