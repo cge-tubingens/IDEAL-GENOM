@@ -278,10 +278,20 @@ class AfterImputation:
     def index_vcf_files(self)->None:
 
         """
-        Indexes VCF files using bcftools index.
+        Index VCF files for chromosomes 1 to 22 using bcftools.
 
-        Parameters:
-        - input_vcf_pattern: str, pattern for input VCF files (e.g., 'annotated_normalized_chr*_R2_0.3.dose.vcf.gz').
+        This method loops over chromosome numbers from 1 to 22, constructs the 
+        corresponding VCF file name, and uses the bcftools index command to index each VCF file. If the indexing is successful, a success message is printed. 
+        
+        If an error occurs during indexing, an error message is printed.
+        
+        Raises:
+        -------
+            subprocess.CalledProcessError: If the bcftools index command fails.
+
+        Returns:
+        --------
+            None
         """
 
         results_dir = self.results_dir
