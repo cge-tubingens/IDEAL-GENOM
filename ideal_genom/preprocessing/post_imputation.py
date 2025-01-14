@@ -69,7 +69,7 @@ class PostImputation:
 
         pass
 
-    def unzip_chromosome_files(self)->None:
+    def execute_unzip_chromosome_files(self)->None:
         """
         Unzips chr*.zip files (chr1.zip to chr22.zip) from the input folder and extracts them into the output folder.
 
@@ -102,7 +102,7 @@ class PostImputation:
 
         pass
 
-    def filter_variants(self, r2_threshold:float, max_workers:int)->None:
+    def execute_filter_variants(self, r2_threshold:float, max_workers:int)->None:
         
         """
         Filters genetic variants based on the R2 threshold and processes chromosomes in parallel.
@@ -184,7 +184,7 @@ class PostImputation:
         print("All processes completed successfully.")
         pass
 
-    def normalize_vcf(self, reference_genome:str)->None:
+    def execute_normalize_vcf(self, reference_genome:str)->None:
         
         """
         Normalize VCF files for each chromosome using bcftools.
@@ -245,7 +245,7 @@ class PostImputation:
 
         pass
 
-    def annotate_vcf_files(self, annotations_file:str)->None:
+    def execute_annotate_vcf(self, annotations_file:str)->None:
         """
         Annotates VCF files with dbSNP IDs from the given annotation file.
 
@@ -286,7 +286,7 @@ class PostImputation:
                 print(f"Error annotating {input_vcf}: {e}")
         pass
 
-    def index_vcf_files(self)->None:
+    def execute_index_vcf(self)->None:
 
         """
         Index VCF files for chromosomes 1 to 22 using bcftools.
@@ -325,7 +325,7 @@ class PostImputation:
 
         pass
     
-    def concat_vcf_files(self):
+    def execute_concat_vcf(self):
 
         results_dir = self.results_dir
 
@@ -352,7 +352,7 @@ class PostImputation:
         except subprocess.CalledProcessError as e:
             print(f"Error concatenating VCF files: {e}")
 
-    def generate_plink_files(self, threads:int=None, memory:int=None)->None:
+    def get_plink_files(self, threads:int=None, memory:int=None)->None:
         """
         Runs the PLINK2 command to process a VCF file and generate binary files.
 
