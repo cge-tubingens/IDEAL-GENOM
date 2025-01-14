@@ -155,12 +155,14 @@ class AfterImputation:
                 input_file, "-o", output_file
             ]
             try:
+                # execute bcftools command
                 subprocess.run(command, check=True)
                 print(f"Chromosome {chr_number}: Completed")
             except subprocess.CalledProcessError as e:
                 print(f"Chromosome {chr_number}: Failed with error {e}")
             except FileNotFoundError:
                 print(f"Chromosome {chr_number}: Input file not found")
+            pass
 
         chromosomes = range(1, 23)
 
