@@ -10,21 +10,44 @@ from ideal_genom.gwas.gwas_random import GWASrandom
 
 def analysis_pipe(params_dict:dict, data_dict:dict, steps_dict:dict)->None:
 
+    if steps_dict['post_imp']:
+        # instantiate the PostImputation class
+        post_imp = PostImputation(
+            input_path = data_dict['input_directory'],
+            output_path= data_dict['output_directory'],
+            output_name= data_dict['output_prefix'],
+        )
+
+        # pipeline steps
+        post_imp_steps = {
+            'unzip_chrom' : post_imp.execute_unzip_chromosome_files,
+            'filter_by_R2': post_imp.execute_filter_variants,
+            'normalize'   : post_imp.execute_normalize_vcf,
+            'annotate'    : post_imp.execute_annotate_vcf,
+            'index'       : post_imp.execute_index_vcf,
+            'concatenate' : post_imp.execute_concat_vcf,
+            'get_plink'   : post_imp.get_plink_files,
+        }
+
+        for step in post_imp_steps.keys():
+            post_imp_steps[step]()
+
+        print("\033[1mPost-imputation steps completed.\033[0m")
+
     if steps_dict['prep_ds']:
         # instantiate the PrepDS class
-        prep = PrepDS(
+        prep = Preparatory(
             input_path      =data_dict['input_directory'],
             input_name      =data_dict['input_prefix'],
             output_path     =data_dict['output_directory'],
             output_name     =data_dict['output_prefix'],
-            config_dict     =params_dict,
             dependables_path=data_dict['dependables_directory'],
         )
 
         # pipeline steps
         prep_steps = {
-            'ld_prune': prep.exclude_high_ld_hla,
-            'pca'     : prep.pca_decomposition
+            'ld_prune': prep.execute_ld_prunning,
+            'pca'     : prep.execute_pc_decomposition
         }
 
         for step in prep_steps.keys():
