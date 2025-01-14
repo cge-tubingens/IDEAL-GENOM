@@ -13,13 +13,13 @@ import os
 
 from ideal_genom.Helpers import shell_do, delete_temp_files
 
-class PrepDS:
+class Preparatory:
 
     """
     Class designed to perform data preparation for downstream analysis.
     """
 
-    def __init__(self, input_path:str, input_name:str, output_path:str, output_name:str, config_dict:str, dependables_path:str, recompute:bool=True) -> None:
+    def __init__(self, input_path:str, input_name:str, output_path:str, output_name:str, dependables_path:str) -> None:
 
         """
         Initialize the PrepDS class.
@@ -68,31 +68,12 @@ class PrepDS:
             raise FileNotFoundError(f"PLINK bim file was not found: {os.path.join(input_path, input_name+'.bim')}")
         if not os.path.exists(os.path.join(input_path, input_name+'.fam')):
             raise FileNotFoundError(f"PLINK fam file was not found: {os.path.join(input_path, input_name+'.fam')}")
-        
-        # check if config_dict is set and give a default value
-        if config_dict is None:
-            config_dict = {
-                'maf': 0.05,
-                'geno': 0.1,
-                'mind': 0.1,
-                'hwe': 0.00000005,
-                'indep-pairwise': [50, 5, 0.2],
-                'pca': 10
-            }
-
-        if not isinstance(config_dict, dict):
-            raise TypeError("config_dict should be of type dict.")
-        
-        if not isinstance(recompute, bool):
-            raise TypeError("recompute should be of type bool.")
 
         self.input_path  = input_path
         self.output_path = output_path
         self.input_name  = input_name
         self.output_name = output_name
         self.dependables = dependables_path
-        self.config_dict = config_dict
-        self.recompute   = recompute
         
         self.files_to_keep = []
 
@@ -103,7 +84,7 @@ class PrepDS:
 
         pass
 
-    def exclude_high_ld_hla(self)->dict:
+    def execute_ld_prunning(self, maf:float=0.05, geno:float=0.1, mind:float=0.1, hwe:float=5e-8, ind_pair:list=[50, 5, 0.2])->dict:
 
         """
         Method to exclude high LD regions and perform LD pruning.
@@ -119,13 +100,6 @@ class PrepDS:
         results_dir      = self.results_dir
         output_name      = self.output_name
         dependables_path = self.dependables
-        recompute        = self.recompute
-
-        maf      = self.config_dict['maf']
-        geno     = self.config_dict['geno']
-        mind     = self.config_dict['mind']
-        hwe      = self.config_dict['hwe']
-        ind_pair = self.config_dict['indep-pairwise']
 
         # Check type of maf
         if not isinstance(maf, float):
@@ -172,21 +146,20 @@ class PrepDS:
         else:
             max_threads = 10
 
-        if recompute:
-            # plink command to exclude high LD regions
-            plink_cmd1 = f"plink --bfile {os.path.join(input_path, input_name)} --chr 1-22 --maf {maf} --geno {geno}  --hwe {hwe} --exclude {high_ld_regions_file} --range --indep-pairwise {ind_pair[0]} {ind_pair[1]} {ind_pair[2]} --threads {max_threads} --make-bed --out {os.path.join(results_dir, output_name+'_prunning')}"
+        # plink command to exclude high LD regions
+        plink_cmd1 = f"plink --bfile {os.path.join(input_path, input_name)} --chr 1-22 --maf {maf} --geno {geno}  --hwe {hwe} --exclude {high_ld_regions_file} --range --indep-pairwise {ind_pair[0]} {ind_pair[1]} {ind_pair[2]} --threads {max_threads} --make-bed --out {os.path.join(results_dir, output_name+'_prunning')}"
 
-            # plink command to perform LD pruning
-            plink_cmd2 = f"plink2 --bfile {os.path.join(results_dir, output_name+'_prunning')} --extract {os.path.join(results_dir, output_name+'_prunning.prune.in')} --make-bed --out {os.path.join(results_dir, output_name+'_LDpruned')} --threads {max_threads}"
+        # plink command to perform LD pruning
+        plink_cmd2 = f"plink2 --bfile {os.path.join(results_dir, output_name+'_prunning')} --extract {os.path.join(results_dir, output_name+'_prunning.prune.in')} --make-bed --out {os.path.join(results_dir, output_name+'_LDpruned')} --threads {max_threads}"
 
-            # execute plink commands
-            cmds = [plink_cmd1, plink_cmd2]
-            for cmd in cmds:
-                shell_do(cmd, log=True)
+        # execute plink commands
+        cmds = [plink_cmd1, plink_cmd2]
+        for cmd in cmds:
+            shell_do(cmd, log=True)
 
-        self.files_to_keep.append(output_name+'_LDpruned.bed')
-        self.files_to_keep.append(output_name+'_LDpruned.bim')
-        self.files_to_keep.append(output_name+'_LDpruned.fam')
+        # self.files_to_keep.append(output_name+'_LDpruned.bed')
+        # self.files_to_keep.append(output_name+'_LDpruned.bim')
+        # self.files_to_keep.append(output_name+'_LDpruned.fam')
 
         # report
         process_complete = True
@@ -203,7 +176,7 @@ class PrepDS:
 
         return out_dict
     
-    def pca_decomposition(self)->dict:
+    def execute_pc_decomposition(self, pca:int=10)->dict:
 
         """
         Method to perform PCA decomposition.
@@ -216,9 +189,6 @@ class PrepDS:
 
         results_dir = self.results_dir
         output_name = self.output_name
-        recompute   = self.recompute
-
-        pca = self.config_dict['pca']
 
         # Check type of pca and range
         if not isinstance(pca, int):
@@ -234,15 +204,14 @@ class PrepDS:
         else:
             max_threads = 10
 
-        if recompute:
-            if not os.path.exists(os.path.join(results_dir, output_name+'_LDpruned.bed')):
-                raise FileNotFoundError(f"File with pruned data was not found: {os.path.join(results_dir, output_name+'_LDpruned')}")
+        if not os.path.exists(os.path.join(results_dir, output_name+'_LDpruned.bed')):
+            raise FileNotFoundError(f"File with pruned data was not found: {os.path.join(results_dir, output_name+'_LDpruned')}")
 
-            # plink command to perform PCA decomposition
-            plink_cmd = f"plink --bfile {os.path.join(results_dir, output_name+'_LDpruned')} --pca {pca} --threads {max_threads} --out {os.path.join(results_dir, output_name+'_pca')}"
+        # plink command to perform PCA decomposition
+        plink_cmd = f"plink --bfile {os.path.join(results_dir, output_name+'_LDpruned')} --pca {pca} --threads {max_threads} --out {os.path.join(results_dir, output_name+'_pca')}"
 
-            # execute plink command
-            shell_do(plink_cmd, log=True)
+        # execute plink command
+        shell_do(plink_cmd, log=True)
 
         self.files_to_keep.append(output_name+'_pca.eigenvec')
 
