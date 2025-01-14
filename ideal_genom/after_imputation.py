@@ -250,15 +250,15 @@ class AfterImputation:
 
         for chr_num in range(1, 23):  # Loop over chromosomes 1 to 22
 
-            input_vcf = f"normalized_chr{chr_num}_R2_0.3.dose.vcf.gz"
-            output_vcf = f"annotated_normalized_chr{chr_num}_R2_0.3.dose.vcf.gz"
+            input_vcf = f"normalized_chr{chr_num}.dose.vcf.gz"
+            output_vcf= f"annotated_normalized_chr{chr_num}.dose.vcf.gz"
 
             input_file = os.path.join(results_dir, input_vcf)
-            output_file = os.path.join(results_dir, output_vcf)
+            output_file= os.path.join(results_dir, output_vcf)
 
             annotations = os.path.join(dependables, annotations_file)
 
-            # Build the bcftools command
+            # bcftools command
             command = [
                 "bcftools", "annotate",
                 "--annotations", annotations,
@@ -267,12 +267,13 @@ class AfterImputation:
                 input_file
             ]
 
-            # Execute the command
+            # execute bcftools command
             try:
                 subprocess.run(command, check=True)
                 print(f"Successfully annotated: {output_vcf}")
             except subprocess.CalledProcessError as e:
                 print(f"Error annotating {input_vcf}: {e}")
+        pass
 
     def index_vcf_files(self):
         """
