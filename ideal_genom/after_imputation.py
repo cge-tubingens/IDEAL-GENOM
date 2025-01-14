@@ -173,9 +173,15 @@ class AfterImputation:
         print("All processes completed successfully.")
         pass
 
-    def normalize_vcf(self, reference_genome):
+    def normalize_vcf(self, reference_genome:str)->None:
+        
         """
-        This function normalizes VCF files for chromosomes 1 to 22 using `bcftools`.
+        Normalize VCF files for each chromosome using bcftools.
+
+        This method normalizes VCF files for chromosomes 1 through 22 using the bcftools tool.
+        It performs two normalization steps for each chromosome:
+        1. Normalize with `bcftools norm -Ou -m -any`.
+        2. Normalize with a reference genome and output to a new file.
 
         Parameters:
         - input_folder (str): Path to the input folder containing VCF files (chr*_R2_0.3.dose.vcf.gz).
