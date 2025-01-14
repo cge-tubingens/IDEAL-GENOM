@@ -341,7 +341,7 @@ class AfterImputation:
         except subprocess.CalledProcessError as e:
             print(f"Error concatenating VCF files: {e}")
 
-    def run_plink2(self, output_prefix:str, threads=28, memory=500000):
+    def run_plink2(self, output_prefix:str, threads:int=None, memory:int=None)->None:
         """
         Runs plink2 with the specified parameters to process a VCF file and create binary PLINK files.
 
