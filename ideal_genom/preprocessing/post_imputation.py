@@ -6,7 +6,7 @@ import zipfile
 from concurrent.futures import ThreadPoolExecutor
 from ideal_genom.Helpers import shell_do
 
-class AfterImputation:
+class PostImputation:
 
     def __init__(self, input_path:str, output_path:str, output_name:str, dependables:str)->None:
         
