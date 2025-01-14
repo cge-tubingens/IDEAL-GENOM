@@ -50,7 +50,7 @@ class AfterImputation:
         
         self.input_path = input_path
         self.output_path= output_path
-        self.dependables = dependables
+        self.dependables= dependables
 
         self.results_dir = os.path.join(output_path, 'post_imputation')
         if not os.path.exists(self.results_dir):
