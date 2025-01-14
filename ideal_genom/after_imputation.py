@@ -92,6 +92,23 @@ class AfterImputation:
         pass
 
     def filter_variants(self, r2_threshold:float, max_workers:int)->None:
+        
+        """
+        Filters genetic variants based on the R2 threshold and processes chromosomes in parallel.
+
+        Parameters:
+        -----------
+            r2_threshold (float): The R2 threshold for filtering variants. Must be between 0 and 1.
+            max_workers (int): The maximum number of worker threads to use for parallel processing. If None, defaults to the number of CPU cores minus 2.
+
+        Raises:
+        -------
+            ValueError: If r2_threshold is not provided, not a float, or not between 0 and 1. If max_workers is not a positive integer.
+        
+        Returns:
+        --------
+            None
+        """
 
         if r2_threshold is None:
             raise ValueError("R2 threshold is not provided")
