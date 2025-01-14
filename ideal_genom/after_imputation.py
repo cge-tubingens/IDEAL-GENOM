@@ -234,7 +234,7 @@ class AfterImputation:
 
         pass
 
-    def annotate_vcf_files(self, annotations_file:str):
+    def annotate_vcf_files(self, annotations_file:str)->None:
         """
         Annotates VCF files with dbSNP IDs from the given annotation file.
 
