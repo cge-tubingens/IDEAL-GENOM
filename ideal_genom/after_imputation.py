@@ -275,7 +275,8 @@ class AfterImputation:
                 print(f"Error annotating {input_vcf}: {e}")
         pass
 
-    def index_vcf_files(self):
+    def index_vcf_files(self)->None:
+
         """
         Indexes VCF files using bcftools index.
 
