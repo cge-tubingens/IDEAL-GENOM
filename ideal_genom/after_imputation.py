@@ -239,9 +239,10 @@ class AfterImputation:
         Annotates VCF files with dbSNP IDs from the given annotation file.
 
         Parameters:
-        - annotations_file: str, path to the annotations VCF file (e.g., dbSNP file).
-        - input_vcf_pattern: str, pattern for input VCF files (e.g., 'normalized_chr*_R2_0.3.dose.vcf.gz').
-        - output_vcf_pattern: str, pattern for output VCF files (e.g., 'annotated_normalized_chr*_R2_0.3.dose.vcf.gz').
+        ----------
+            annotations_file (str): path to the annotations VCF file (e.g., dbSNP file).
+            input_vcf_pattern (str): pattern for input VCF files (e.g., 'normalized_chr*.dose.vcf.gz').
+            output_vcf_pattern (str): pattern for output VCF files (e.g., 'annotated_normalized_chr*.dose.vcf.gz').
         """
 
         results_dir = self.results_dir
