@@ -8,6 +8,27 @@ from concurrent.futures import ThreadPoolExecutor
 class AfterImputation:
 
     def __init__(self, input_path:str, output_path:str, dependables:str)->None:
+        
+        """
+        Initializes the AfterImputation class with the given input, output, and dependables directories.
+
+        The goal of this class is to provide a set of functions to process VCF files after imputation and prepare them for downstream analyses. The final output will be binary PLINK files that can be used for association studies.
+
+        Parameters:
+        -----------
+            input_path (str): The path to the input directory.
+            output_path (str): The path to the output directory.
+            dependables (str): The path to the dependables directory.
+
+        Raises:
+        -------
+            ValueError: If input_path is None or not a string.
+            ValueError: If output_path is None or not a string.
+            ValueError: If dependables is not a string.
+            ValueError: If input_path does not exist.
+            ValueError: If output_path does not exist.
+            ValueError: If dependables does not exist.
+        """
 
         if input_path is None:
             raise ValueError("Input directory is not provided")
