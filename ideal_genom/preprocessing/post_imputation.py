@@ -4,7 +4,6 @@ import psutil
 import zipfile
 
 from concurrent.futures import ThreadPoolExecutor
-from ideal_genom.Helpers import shell_do
 
 class PostImputation:
 
