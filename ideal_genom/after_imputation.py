@@ -166,8 +166,9 @@ class AfterImputation:
 
         chromosomes = range(1, 23)
 
-        with ThreadPoolExecutor(max_workers=os.cpu_count()-2) as executor:  # Adjust `max_workers` for parallelism
-            executor.map(lambda chr: process_chromosome(chr, input_path, resuts_dir), chromosomes)
+        # Adjust `max_workers` for parallelism
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:  
+            executor.map(lambda chr: process_chromosome(chr, results_dir, results_dir, r2_threshold), chromosomes)
 
         print("All processes completed successfully.")
         pass
