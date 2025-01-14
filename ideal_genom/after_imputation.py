@@ -298,7 +298,7 @@ class AfterImputation:
 
         for chr_num in range(1, 23):  # Loop over chromosomes 1 to 22
             
-            input_vcf = f"annotated_normalized_chr{chr_num}_R2_0.3.dose.vcf.gz"
+            input_vcf = f"annotated_normalized_chr{chr_num}.dose.vcf.gz"
 
             input_file = os.path.join(results_dir, input_vcf)
 
