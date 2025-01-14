@@ -362,6 +362,18 @@ class AfterImputation:
 
         results_dir = self.results_dir
 
+        if threads is None:
+            if os.cpu_count() is not None:
+                threads = os.cpu_count() - 2
+            else:
+                threads = 10
+
+        if memory is None:
+            # get virtual memory details
+            memory_info = psutil.virtual_memory()
+            available_memory_mb = memory_info.available / (1024 * 1024)
+            memory = round(2*available_memory_mb/3,0)
+
         input_vcf = os.path.join(results_dir, "annotated_normalized_combined_1_22.vcf.gz")
 
         # Build the plink2 command
