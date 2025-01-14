@@ -319,22 +319,22 @@ class AfterImputation:
         results_dir = self.results_dir
 
         # Create a list of input files (chr1 to chr22)
-        input_files = [f"annotated_normalized_chr{chr_num}_R2_0.3.dose.vcf.gz" for chr_num in range(1, 23)]
+        input_files = [f"annotated_normalized_chr{chr_num}.dose.vcf.gz" for chr_num in range(1, 23)]
 
         output_file = os.path.join(results_dir, "annotated_normalized_combined_1_22.vcf.gz")
 
         max_threads = os.cpu_count() - 4
 
-        # Build the bcftools concat command
+        # bcftools command
         command = [
             "bcftools", "concat",
             *input_files,  # List of input files
             "--threads", str(max_threads),
-            "-Oz",  # Output in compressed VCF format
-            "-o", output_file  # Output file
+            "-Oz",
+            "-o", output_file
         ]
 
-        # Execute the command
+        # execute the command
         try:
             subprocess.run(command, check=True)
             print(f"Successfully concatenated and outputted to: {output_file}")
