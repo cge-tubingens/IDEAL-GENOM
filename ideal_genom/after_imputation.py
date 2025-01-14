@@ -315,14 +315,6 @@ class AfterImputation:
         pass
     
     def concat_vcf_files(self):
-        """
-        Concatenates multiple VCF files using bcftools concat.
-
-        Parameters:
-        - input_vcf_pattern: str, pattern for input VCF files (e.g., 'annotated_normalized_chr1_R2_0.3.dose.vcf.gz').
-        - output_vcf: str, output file for the concatenated VCF (e.g., 'annotated_normalized_combined_1_22.vcf.gz').
-        - threads: int, number of threads to use (default is 28).
-        """
 
         results_dir = self.results_dir
 
