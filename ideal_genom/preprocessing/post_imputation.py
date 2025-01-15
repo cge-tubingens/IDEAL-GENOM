@@ -69,7 +69,7 @@ class PostImputation:
 
         pass
 
-    def execute_unzip_chromosome_files(self)->None:
+    def execute_unzip_chromosome_files(self, password:str)->None:
         """
         Unzips chr*.zip files (chr1.zip to chr22.zip) from the input folder and extracts them into the output folder.
 
@@ -80,6 +80,8 @@ class PostImputation:
 
         input_folder = self.input_path
         results_dir  = self.results_dir
+
+        password_bytes = password.encode('utf-8')
 
         # Loop through chromosomes 1 to 22
         for chr_num in range(1, 23):
@@ -93,16 +95,22 @@ class PostImputation:
             # Extract the ZIP file
             try:
                 with zipfile.ZipFile(zip_file, 'r') as zf:
-                    zf.extractall(results_dir)
-                    print(f"Successfully extracted: {zip_file} to {results_dir}")
+                    # Check if the ZIP file is encrypted
+                    if zf.pwd is None and zf.testzip() is None:
+                        zf.extractall(results_dir, pwd=password_bytes)
+                        print(f"Successfully extracted: {zip_file} to {results_dir}")
+                    else:
+                        print(f"Error: {zip_file} appears to require a different password.")
             except zipfile.BadZipFile:
                 print(f"Error: {zip_file} is not a valid ZIP file.")
+            except RuntimeError as e:
+                print(f"RuntimeError extracting {zip_file}: {e}")
             except Exception as e:
                 print(f"Error extracting {zip_file}: {e}")
 
         pass
 
-    def execute_filter_variants(self, r2_threshold:float, max_workers:int)->None:
+    def execute_filter_variants(self, r2_threshold:float, max_workers:int=None)->None:
         
         """
         Filters genetic variants based on the R2 threshold and processes chromosomes in parallel.
