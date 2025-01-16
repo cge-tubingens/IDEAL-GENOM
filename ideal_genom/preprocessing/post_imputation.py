@@ -81,7 +81,11 @@ class PostImputation:
         input_folder = self.input_path
         results_dir  = self.results_dir
 
-        password_bytes = password.encode('utf-8')
+        # Loop through chromosomes 1 to 22
+        os.makedirs(results_dir, exist_ok=True)
+
+        # Convert the password to bytes
+        password_bytes = bytes(password, 'utf-8')
 
         # Loop through chromosomes 1 to 22
         for chr_num in range(1, 23):
