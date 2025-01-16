@@ -95,12 +95,13 @@ class PostImputation:
             # Extract the ZIP file
             try:
                 with zipfile.ZipFile(zip_file, 'r') as zf:
-                    # Check if the ZIP file is encrypted
-                    if zf.pwd is None and zf.testzip() is None:
-                        zf.extractall(results_dir, pwd=password_bytes)
+                    try:
+                        zf.setpassword(password_bytes)
+                        zf.extractall(results_dir)
                         print(f"Successfully extracted: {zip_file} to {results_dir}")
-                    else:
-                        print(f"Error: {zip_file} appears to require a different password.")
+                    except RuntimeError:
+                        print(f"Wrong password for: {zip_file}")
+
             except zipfile.BadZipFile:
                 print(f"Error: {zip_file} is not a valid ZIP file.")
             except RuntimeError as e:
