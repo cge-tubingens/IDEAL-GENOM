@@ -16,6 +16,7 @@ def analysis_pipe(params_dict:dict, data_dict:dict, steps_dict:dict)->None:
             input_path = data_dict['input_directory'],
             output_path= data_dict['output_directory'],
             output_name= data_dict['output_prefix'],
+            dependables= data_dict['dependables'],
         )
 
         # pipeline steps
