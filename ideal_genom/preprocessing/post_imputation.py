@@ -2,6 +2,7 @@ import os
 import subprocess
 import psutil
 import zipfile
+import shutil
 
 from concurrent.futures import ThreadPoolExecutor
 
