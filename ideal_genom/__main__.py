@@ -20,17 +20,28 @@ def analysis_pipe(params_dict:dict, data_dict:dict, steps_dict:dict)->None:
 
         # pipeline steps
         post_imp_steps = {
-            'unzip_chrom' : post_imp.execute_unzip_chromosome_files,
-            'filter_by_R2': post_imp.execute_filter_variants,
-            'normalize'   : post_imp.execute_normalize_vcf,
-            'annotate'    : post_imp.execute_annotate_vcf,
-            'index'       : post_imp.execute_index_vcf,
-            'concatenate' : post_imp.execute_concat_vcf,
-            'get_plink'   : post_imp.get_plink_files,
+            'unzip_chrom' : (post_imp.execute_unzip_chromosome_files, ()),
+            'filter_by_R2': (post_imp.execute_filter_variants, ()),
+            'normalize'   : (post_imp.execute_normalize_vcf, ()),
+            'annotate'    : (post_imp.execute_annotate_vcf, ()),
+            'index'       : (post_imp.execute_index_vcf, ()),
+            'concatenate' : (post_imp.execute_concat_vcf, ()),
+            'get_plink'   : (post_imp.get_plink_files, ()),
         }
 
-        for step in post_imp_steps.keys():
-            post_imp_steps[step]()
+        step_description = {
+            'unzip_chrom' : 'Unzip chromosome files',
+            'filter_by_R2': 'Filter imputed variants by R2',
+            'normalize'   : 'Normalize VCF files',
+            'annotate'    : 'Annotate VCF files',
+            'index'       : 'Index VCF files',
+            'concatenate' : 'Concatenate VCF files',
+            'get_plink'   :  'Get PLINK files',
+        }
+
+        for name, (func, params) in post_imp_steps.items():
+            print(f"\033[1m{step_description[name]}.\033[0m")
+            func(*params)
 
         print("\033[1mPost-imputation steps completed.\033[0m")
 
