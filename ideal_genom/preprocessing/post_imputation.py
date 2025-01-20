@@ -353,16 +353,10 @@ class PostImputation:
         results_dir = self.results_dir
         dependables = self.dependables
 
-        # check if the annotations file is indexed
-        if not os.path.isfile(os.path.join(dependables, f"{annotations_file}.tbi")) and not os.path.isfile(os.path.join(dependables, f"{annotations_file}.csi")):
-            print(f"Indexing {annotations_file}...")
-            try:
-                subprocess.run(["bcftools", "index", os.path.join(dependables, annotations_file)], check=True)
-                print(f"Indexing of {annotations_file} successful.")
-            except subprocess.CalledProcessError as e:
-                print(f"Error indexing {annotations_file}: {e}")
+        annotations = os.path.join(dependables, annotations_file)
 
-        
+        if not os.path.exists(annotations+'.tbi') or not os.path.exists(annotations+'.csi'):
+            subprocess.run(["bcftools", "index", annotations], check=True)
 
         for chr_num in range(1, 23):  # Loop over chromosomes 1 to 22
 
