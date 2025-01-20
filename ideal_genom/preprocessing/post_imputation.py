@@ -285,6 +285,50 @@ class PostImputation:
 
         pass
 
+    def execute_index_vcf(self)->None:
+
+        """
+        Executes the indexing of VCF files for chromosomes 1 to 22 using bcftools.
+        
+        This method checks for the existence of index files (.csi or .tbi) for each chromosome's VCF file. If an index file already exists, it skips the indexing for that chromosome. Otherwise, it builds and executes the bcftools index command to create the index file.
+        
+        Parameters:
+        -----------
+            None
+        
+        Returns:
+        --------
+            None
+
+        Raises:
+        -------
+            subprocess.CalledProcessError: If the bcftools index command fails.
+        """
+
+        results_dir = self.results_dir
+
+        for chr_num in range(1, 23):
+            
+            input_vcf = f"normalized_chr{chr_num}.dose.vcf.gz"
+
+            input_file = os.path.join(results_dir, input_vcf)
+
+            if os.path.isfile(input_file+'.csi') or os.path.isfile(input_file+'.tbi'):
+                print(f"Index file for {input_vcf} already exists.")
+                continue
+
+            # Build the bcftools index command
+            command = ["bcftools", "index", input_file]
+
+            # Execute the command
+            try:
+                subprocess.run(command, check=True)
+                print(f"Successfully indexed: {input_vcf}")
+            except subprocess.CalledProcessError as e:
+                print(f"Error indexing {input_vcf}: {e}")
+
+        pass
+
     def execute_annotate_vcf(self, annotations_file:str)->None:
         """
         Annotates VCF files with dbSNP IDs from the given annotation file.
