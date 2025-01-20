@@ -412,7 +412,9 @@ class PostImputation:
         results_dir = self.results_dir
 
         # Create a list of input files (chr1 to chr22)
-        input_files = [f"annotated_normalized_chr{chr_num}.dose.vcf.gz" for chr_num in range(1, 23)]
+        input_files = [
+            os.path.join(results_dir, f"annotated_normalized_chr{chr_num}.dose.vcf.gz") for chr_num in range(1, 23)
+        ]
 
         output_file = os.path.join(results_dir, "annotated_normalized_combined_1_22.vcf.gz")
 
