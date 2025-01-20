@@ -331,14 +331,24 @@ class PostImputation:
 
     def execute_annotate_vcf(self, annotations_file:str)->None:
         """
-        Annotates VCF files with dbSNP IDs from the given annotation file.
+        Annotates VCF files for chromosomes 1 to 22 using bcftools.
+
+        This method loops over chromosomes 1 to 22 and annotates the corresponding VCF files
+        using the provided annotations file. The annotated VCF files are saved in the results directory.
 
         Parameters:
-        ----------
-            annotations_file (str): path to the annotations VCF file (e.g., dbSNP file).
-            input_vcf_pattern (str): pattern for input VCF files (e.g., 'normalized_chr*.dose.vcf.gz').
-            output_vcf_pattern (str): pattern for output VCF files (e.g., 'annotated_normalized_chr*.dose.vcf.gz').
+        -----------
+            annotations_file (str): The path to the annotations file to be used for annotating the VCF files. it is assumed that the annotations file is in the dependables directory and has the format .vcf.gz. If the file it is not indexed, it will be indexed before annotation.
+
+        Returns:
+        --------
+            None
+
+        Raises:
+        -------
+            subprocess.CalledProcessError: If the bcftools command fails for any chromosome.
         """
+
 
         results_dir = self.results_dir
         dependables = self.dependables
