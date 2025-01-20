@@ -383,10 +383,10 @@ class PostImputation:
                 print(f"Error annotating {input_vcf}: {e}")
         pass
 
-    def execute_index_vcf(self)->None:
-
+    
+    def execute_concat_vcf(self):
         """
-        Index VCF files for chromosomes 1 to 22 using bcftools.
+        Concatenates VCF files from chromosome 1 to 22 into a single VCF file.
 
         This method generates a list of input VCF files for chromosomes 1 through 22,
         then uses the `bcftools concat` command to concatenate them into a single
