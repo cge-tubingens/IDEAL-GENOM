@@ -366,17 +366,6 @@ class PostImputation:
             input_file = os.path.join(results_dir, input_vcf)
             output_file= os.path.join(results_dir, output_vcf)
 
-            # check if input files are indexed
-            if not os.path.isfile(input_file+".tbi") and not os.path.isfile(input_file+".csi"):
-                print(f"Indexing {input_vcf}...")
-                try:
-                    subprocess.run(["bcftools", "index", input_file], check=True)
-                    print(f"Indexing of {input_vcf} successful.")
-                except subprocess.CalledProcessError as e:
-                    print(f"Error indexing {input_vcf}: {e}")
-
-            annotations = os.path.join(dependables, annotations_file)
-
             # bcftools command
             command = [
                 "bcftools", "annotate",
