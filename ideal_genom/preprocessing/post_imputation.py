@@ -438,21 +438,23 @@ class PostImputation:
 
     def get_plink_files(self, threads:int=None, memory:int=None)->None:
         """
-        Runs the PLINK2 command to process a VCF file and generate binary files.
+        Generates PLINK binary files from a VCF file using PLINK2.
+
+        This method constructs and executes a PLINK2 command to convert a VCF file into PLINK binary files (.bed, .bim, .fam). The number of threads and the amount of memory to be used by PLINK2 can be specified. If not provided, the method will use default values based on the system's available resources.
 
         Parameters:
         -----------
-            threads (int, optional): The number of threads to use for PLINK2.
-            memory (int, optional): The amount of memory (in MB) to allocate for PLINK2.
-
+        threads (int, optional): The number of threads to use for PLINK2. If not provided,
+                     defaults to the number of CPU cores minus two, or 10 if
+                     the number of CPU cores cannot be determined.
+        memory (int, optional): The amount of memory (in MB) to allocate for PLINK2. If not
+                    provided, defaults to two-thirds of the available system memory.
+        
         Returns:
         --------
             None
-
-        Raises:
-        -------
-            subprocess.CalledProcessError: If the PLINK2 command fails.
         """
+        
 
         results_dir = self.results_dir
         output_name = self.output_name
