@@ -388,41 +388,26 @@ class PostImputation:
         """
         Index VCF files for chromosomes 1 to 22 using bcftools.
 
-        This method loops over chromosome numbers from 1 to 22, constructs the 
-        corresponding VCF file name, and uses the bcftools index command to index each VCF file. If the indexing is successful, a success message is printed. 
-        
-        If an error occurs during indexing, an error message is printed.
-        
-        Raises:
-        -------
-            subprocess.CalledProcessError: If the bcftools index command fails.
+        This method generates a list of input VCF files for chromosomes 1 through 22,
+        then uses the `bcftools concat` command to concatenate them into a single
+        output VCF file. The output file is saved in the results directory specified
+        by `self.results_dir`.
+
+        The method utilizes multiple threads for the concatenation process, with the
+        number of threads being the total CPU count minus four.
+
+        Parameters:
+        -----------
+            None
 
         Returns:
         --------
             None
+
+        Raises:
+        -------
+            subprocess.CalledProcessError: If the `bcftools concat` command fails.
         """
-
-        results_dir = self.results_dir
-
-        for chr_num in range(1, 23):  # Loop over chromosomes 1 to 22
-            
-            input_vcf = f"annotated_normalized_chr{chr_num}.dose.vcf.gz"
-
-            input_file = os.path.join(results_dir, input_vcf)
-
-            # Build the bcftools index command
-            command = ["bcftools", "index", input_file]
-
-            # Execute the command
-            try:
-                subprocess.run(command, check=True)
-                print(f"Successfully indexed: {input_vcf}")
-            except subprocess.CalledProcessError as e:
-                print(f"Error indexing {input_vcf}: {e}")
-
-        pass
-    
-    def execute_concat_vcf(self):
 
         results_dir = self.results_dir
 
