@@ -64,7 +64,7 @@ class PostImputation:
         if not os.path.exists(self.results_dir):
             os.mkdir(self.results_dir)
 
-        self.ready_dir = os.path.join(output_path, 'analysis_ready')
+        self.ready_dir = os.path.join(self.results_dir, 'analysis_ready')
         if not os.path.exists(self.ready_dir):
             os.mkdir(self.ready_dir)
 
