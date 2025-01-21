@@ -188,6 +188,8 @@ class Preparatory:
         """
 
         results_dir = self.results_dir
+        input_name = self.input_name
+        input_path = self.input_path
         output_name = self.output_name
 
         # Check type of pca and range
@@ -204,19 +206,16 @@ class Preparatory:
         else:
             max_threads = 10
 
-        if not os.path.exists(os.path.join(results_dir, output_name+'_LDpruned.bed')):
-            raise FileNotFoundError(f"File with pruned data was not found: {os.path.join(results_dir, output_name+'_LDpruned')}")
+        if not os.path.exists(os.path.join(results_dir, output_name+'.bed')) or not os.path.exists(os.path.join(results_dir, output_name+'.bim')) or not os.path.exists(os.path.join(results_dir, output_name+'.fam')):
+            raise FileNotFoundError(f"File with pruned data was not found: {os.path.join(results_dir, output_name)}")
 
         # plink command to perform PCA decomposition
-        plink_cmd = f"plink --bfile {os.path.join(results_dir, output_name+'_LDpruned')} --pca {pca} --threads {max_threads} --out {os.path.join(results_dir, output_name+'_pca')}"
+        plink_cmd = f"plink --bfile {os.path.join(results_dir, output_name)} --pca {pca} --threads {max_threads} --out {os.path.join(input_path, input_name)}"
 
         # execute plink command
         shell_do(plink_cmd, log=True)
 
-        self.files_to_keep.append(output_name+'_pca.eigenvec')
-
-        # delete temporary files
-        delete_temp_files(self.files_to_keep, results_dir)
+        self.files_to_keep.append(output_name+'.eigenvec')
 
         # report
         process_complete = True
