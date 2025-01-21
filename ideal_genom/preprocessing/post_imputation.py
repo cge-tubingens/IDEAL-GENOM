@@ -132,33 +132,41 @@ class PostImputation:
             except zipfile.BadZipFile:
                 return f"Invalid ZIP file: {zip_file}"
             except Exception as e:
-                print(f"Error extracting {zip_file}: {e}")
+                return f"Unexpected error with {zip_file}: {e}"
+            
+        # Unzip files in parallel
+            # Create a ThreadPoolExecutor to process files in parallel
+        with ThreadPoolExecutor() as executor:
+            futures = {executor.submit(unzip_file, chr_num, recompute): chr_num for chr_num in range(1, 23)}
 
-        def move_files_to_parent_and_remove_folders(parent_folder):
-            """
-            Moves all files from subfolders in the parent folder to the parent folder itself, 
-            then removes the now-empty subfolders.
+            for future in as_completed(futures):
+                result = future.result()                
 
-            Parameters:
-            - parent_folder: str, the path to the folder containing the subfolders.
-            """
-            # Loop through all items in the parent folder
-            for subfolder in os.listdir(parent_folder):
-                subfolder_path = os.path.join(parent_folder, subfolder)
-
-                # Check if it's a directory
-                if os.path.isdir(subfolder_path):
-                    # Move all files from the subfolder to the parent folder
-                    for file_name in os.listdir(subfolder_path):
-                        file_path = os.path.join(subfolder_path, file_name)
-                        if os.path.isfile(file_path):  # Only move files, skip directories
-                            shutil.move(file_path, os.path.join(parent_folder, file_name))
-
-                    # Remove the now-empty subfolder
-                    os.rmdir(subfolder_path)
-                    print(f"Removed folder: {subfolder_path}")
-        
-        move_files_to_parent_and_remove_folders(results_dir)
+#        def move_files_to_parent_and_remove_folders(parent_folder):
+#            """
+#            Moves all files from subfolders in the parent folder to the parent folder itself, 
+#            then removes the now-empty subfolders.
+#
+#            Parameters:
+#            - parent_folder: str, the path to the folder containing the subfolders.
+#            """
+#            # Loop through all items in the parent folder
+#            for subfolder in os.listdir(parent_folder):
+#                subfolder_path = os.path.join(parent_folder, subfolder)
+#
+#                # Check if it's a directory
+#                if os.path.isdir(subfolder_path):
+#                    # Move all files from the subfolder to the parent folder
+#                    for file_name in os.listdir(subfolder_path):
+#                        file_path = os.path.join(subfolder_path, file_name)
+#                        if os.path.isfile(file_path):  # Only move files, skip directories
+#                            shutil.move(file_path, os.path.join(parent_folder, file_name))
+#
+#                    # Remove the now-empty subfolder
+#                    os.rmdir(subfolder_path)
+#                    print(f"Removed folder: {subfolder_path}")
+#        
+#        move_files_to_parent_and_remove_folders(results_dir)
 
         pass
 
