@@ -85,7 +85,7 @@ class GWASfixed:
 
         pass
 
-    def fixed_model_association_analysis(self)->dict:
+    def fixed_model_association_analysis(self, maf:float, mind:float, hwe:float, ci:float)->dict:
 
         """
         Perform association analysis using a fixed model with PLINK 2.0.
@@ -95,13 +95,7 @@ class GWASfixed:
         input_path = self.input_path
         input_name = self.input_name
         results_dir= self.results_dir
-        preps_dir  = self.preps_path
         recompute  = self.recompute
-
-        maf = self.config_dict['maf']
-        mind= self.config_dict['mind']
-        hwe = self.config_dict['hwe']
-        ci  = self.config_dict['ci']
 
         step = "association_analysis"
 
@@ -138,8 +132,8 @@ class GWASfixed:
             raise ValueError("ci should be between 0 and 1")
         
         # check if the PCA file exists
-        if not os.path.exists(os.path.join(preps_dir, output_name+'_pca.eigenvec')):
-            raise FileNotFoundError(f"PCA file was not found: {os.path.join(preps_dir, output_name+'_pca.eigenvec')}")
+        if not os.path.exists(os.path.join(input_path, input_name+'.eigenvec')):
+            raise FileNotFoundError(f"PCA file was not found: {os.path.join(input_path, input_name+'.eigenvec')}")
 
         # compute the number of threads to use
         if os.cpu_count() is not None:
@@ -150,7 +144,7 @@ class GWASfixed:
         if recompute:
 
             # plink2 command to perform association analysis
-            plink2_cmd = f"plink2 --bfile {os.path.join(input_path, input_name)} --adjust --ci {ci} --maf {maf} --mind {mind} --hwe {hwe} --covar {os.path.join(preps_dir, output_name+'_pca.eigenvec')} --glm hide-covar omit-ref sex cols=+a1freq,+beta --out {os.path.join(results_dir, output_name+'_glm')} --threads {max_threads}"
+            plink2_cmd = f"plink2 --bfile {os.path.join(input_path, input_name)} --adjust --ci {ci} --maf {maf} --mind {mind} --hwe {hwe} --covar {os.path.join(input_path, input_name+'.eigenvec')} --glm hide-covar omit-ref sex cols=+a1freq,+beta --out {os.path.join(results_dir, output_name+'_glm')} --threads {max_threads}"
 
             # execute plink command
             shell_do(plink2_cmd, log=True)
@@ -173,7 +167,7 @@ class GWASfixed:
 
         return out_dict
 
-    def get_top_hits(self)->dict:
+    def get_top_hits(self, maf:float)->dict:
 
         """
         Get the top hits from the association analysis with GCTA.
@@ -184,8 +178,6 @@ class GWASfixed:
         input_path  = self.input_path
         output_name = self.output_name
         recompute   = self.recompute
-
-        maf = self.config_dict['maf']
 
         # check type and range of maf
         if not isinstance(maf, float):
