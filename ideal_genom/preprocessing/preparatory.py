@@ -19,7 +19,7 @@ class Preparatory:
     Class designed to perform data preparation for downstream analysis.
     """
 
-    def __init__(self, input_path:str, input_name:str, output_path:str, output_name:str, dependables_path:str) -> None:
+    def __init__(self, input_path:str, input_name:str, output_path:str, output_name:str, dependables:str) -> None:
 
         """
         Initialize the PrepDS class.
@@ -45,13 +45,13 @@ class Preparatory:
         """
         
         # check if paths are set
-        if input_path is None or output_path is None or dependables_path is None:
+        if input_path is None or output_path is None or dependables is None:
             raise ValueError("Values for input_path, output_path and dependables_path must be set upon initialization.")
         
         if not os.path.exists(input_path):
             raise FileNotFoundError(f"Input path does not exist: {input_path}")
-        if not os.path.exists(dependables_path):
-            raise FileNotFoundError(f"Dependables path does not exist: {dependables_path}")
+        if not os.path.exists(dependables):
+            raise FileNotFoundError(f"Dependables path does not exist: {dependables}")
         if not os.path.exists(output_path):
             raise FileNotFoundError(f"Output path does not exist: {output_path}")
         
@@ -73,7 +73,7 @@ class Preparatory:
         self.output_path = output_path
         self.input_name  = input_name
         self.output_name = output_name
-        self.dependables = dependables_path
+        self.dependables = dependables
         
         self.files_to_keep = []
 
