@@ -84,9 +84,6 @@ class PostImputation:
 
         os.makedirs(results_dir, exist_ok=True)
 
-        # Convert the password to bytes
-        password_bytes = bytes(password, 'utf-8')
-
         def is_already_unzipped(chr_num: int) -> bool:
             """
             Checks if the contents of a ZIP file for the given chromosome are already extracted.
@@ -97,10 +94,14 @@ class PostImputation:
             return os.path.isfile(expected_file)
 
         
-        def unzip_file(chr_num: int, recompute:bool) -> str:
+        def unzip_file(input_folder:str, chr_num: int, recompute:bool, password:str) -> str:
             """
             Worker function to unzip a single file.
             """
+
+            # Convert the password to bytes
+            password_bytes = bytes(password, 'utf-8')
+
             zip_file = os.path.join(input_folder, f"chr{chr_num}.zip")
 
             if not os.path.isfile(zip_file):
@@ -117,6 +118,8 @@ class PostImputation:
                         # Verify contents before extraction
                         if zf.testzip() is not None:
                             return f"Corrupted ZIP file: {zip_file}"
+                        else:
+                            print(f"Extracting: {zip_file}")
 
                         # Extract files directly into results_dir
                         for member in zf.namelist():
@@ -137,7 +140,7 @@ class PostImputation:
         # Unzip files in parallel
             # Create a ThreadPoolExecutor to process files in parallel
         with ThreadPoolExecutor() as executor:
-            futures = {executor.submit(unzip_file, chr_num, recompute): chr_num for chr_num in range(1, 23)}
+            futures = {executor.submit(unzip_file, input_folder, chr_num, recompute, password): chr_num for chr_num in range(1, 23)}
 
             for future in as_completed(futures):
                 result = future.result()                
