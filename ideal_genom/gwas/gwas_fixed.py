@@ -8,7 +8,7 @@ import shutil
 
 import pandas as pd
 
-from ideal_genom.Helpers import shell_do, delete_temp_files
+from ideal_genom.Helpers import shell_do
 
 from gwaslab.bd_download import download_file
 from gwaslab.util_in_get_sig import annogene
