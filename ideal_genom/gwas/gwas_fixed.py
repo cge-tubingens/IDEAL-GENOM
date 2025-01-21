@@ -16,7 +16,7 @@ from gwaslab.g_Log import Log
 
 class GWASfixed:
 
-    def __init__(self, input_path:str, input_name:str, output_path:str, output_name:str, config_dict:str, preps_path:str, dependables_path:str, recompute:bool=True) -> None:
+    def __init__(self, input_path:str, input_name:str, output_path:str, output_name:str, dependables_path:str, recompute:bool=True) -> None:
 
         """
         Initialize the GWASfixed class.
@@ -31,10 +31,6 @@ class GWASfixed:
             Path to the output data.
         output_name : str
             Name of the output data.
-        config_dict : dict
-            Dictionary containing the configuration parameters.
-        preps_path : str
-            Path to the preparatory data.
 
         Returns:
         --------
@@ -66,8 +62,6 @@ class GWASfixed:
         if not os.path.exists(os.path.join(input_path, input_name+'.fam')):
             raise FileNotFoundError(f"PLINK fam file was not found: {os.path.join(input_path, input_name+'.fam')}")
         
-        if not isinstance(config_dict, dict):
-            raise TypeError("config_dict should be of type dict.")
         if not isinstance(recompute, bool):
             raise TypeError("recompute should be of type bool.")
 
@@ -75,8 +69,6 @@ class GWASfixed:
         self.output_path = output_path
         self.input_name  = input_name
         self.output_name = output_name
-        self.config_dict = config_dict
-        self.preps_path  = preps_path
         self.dependables = dependables_path
         self.recompute   = recompute
 
