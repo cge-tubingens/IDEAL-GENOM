@@ -4,7 +4,7 @@ import psutil
 import zipfile
 import shutil
 
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 class PostImputation:
 
@@ -70,7 +70,7 @@ class PostImputation:
 
         pass
 
-    def execute_unzip_chromosome_files(self, password:str)->None:
+    def execute_unzip_chromosome_files(self, password:str, recompute: bool = True)->None:
         """
         Unzips chr*.zip files (chr1.zip to chr22.zip) from the input folder and extracts them into the output folder.
 
@@ -82,35 +82,55 @@ class PostImputation:
         input_folder = self.input_path
         results_dir  = self.results_dir
 
-        # Loop through chromosomes 1 to 22
         os.makedirs(results_dir, exist_ok=True)
 
         # Convert the password to bytes
         password_bytes = bytes(password, 'utf-8')
 
-        # Loop through chromosomes 1 to 22
-        for chr_num in range(1, 23):
-            zip_file = os.path.join(input_folder, f"chr{chr_num}.zip")  # Path to the ZIP file
+        def is_already_unzipped(chr_num: int) -> bool:
+            """
+            Checks if the contents of a ZIP file for the given chromosome are already extracted.
+            """
+            # Adjust this check based on your expected unzipped files
+            expected_file = os.path.join(results_dir, f"chr{chr_num}.vcf")
 
-            # Check if the ZIP file exists
+            return os.path.isfile(expected_file)
+
+        
+        def unzip_file(chr_num: int, recompute:bool) -> str:
+            """
+            Worker function to unzip a single file.
+            """
+            zip_file = os.path.join(input_folder, f"chr{chr_num}.zip")
+
             if not os.path.isfile(zip_file):
-                print(f"File not found: {zip_file}")
-                continue
+                return f"File not found: {zip_file}"
             
-            # Extract the ZIP file
+            if not recompute and is_already_unzipped(chr_num):
+                return f"Already unzipped: {zip_file}"
+
             try:
                 with zipfile.ZipFile(zip_file, 'r') as zf:
                     try:
                         zf.setpassword(password_bytes)
-                        zf.extractall(results_dir)
-                        print(f"Successfully extracted: {zip_file} to {results_dir}")
-                    except RuntimeError:
-                        print(f"Wrong password for: {zip_file}")
 
+                        # Verify contents before extraction
+                        if zf.testzip() is not None:
+                            return f"Corrupted ZIP file: {zip_file}"
+
+                        # Extract files directly into results_dir
+                        for member in zf.namelist():
+                            # Strip any leading directory components from the file name
+                            member_name = os.path.basename(member)
+                            if member_name:  # Skip directories
+                                target_path = os.path.join(results_dir, member_name)
+                                with zf.open(member) as source, open(target_path, 'wb') as target:
+                                    target.write(source.read())
+                        return f"Successfully extracted: {zip_file} to {results_dir}"
+                    except RuntimeError:
+                        return f"Wrong password for: {zip_file}"
             except zipfile.BadZipFile:
-                print(f"Error: {zip_file} is not a valid ZIP file.")
-            except RuntimeError as e:
-                print(f"RuntimeError extracting {zip_file}: {e}")
+                return f"Invalid ZIP file: {zip_file}"
             except Exception as e:
                 print(f"Error extracting {zip_file}: {e}")
 
