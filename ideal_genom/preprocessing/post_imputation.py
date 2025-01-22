@@ -73,107 +73,44 @@ class PostImputation:
 
         pass
 
-    def execute_unzip_chromosome_files(self, password:str, recompute: bool = True)->None:
+    def execute_unzip_chromosome_files(self, password:str, max_workers:int=None)->None:
         """
         Unzips chr*.zip files (chr1.zip to chr22.zip) from the input folder and extracts them into the output folder.
+
+        Parameters:
+        -----------
+            password (str): The password to unzip the files.
+            max_workers (int, optional): The maximum number of worker threads to use for parallel processing. Defaults to None.
 
         Returns:
         --------
             None
+
+        Raises:
+        -------
+            ValueError: If password is not provided or is not a string.
         """
 
         input_folder = self.input_path
         results_dir  = self.results_dir
 
-        os.makedirs(results_dir, exist_ok=True)
+        if password is None:
+            raise ValueError("Password is not provided")
+        if not isinstance(password, str):
+            raise ValueError("Password should be a string")
+        if password == "":
+            raise ValueError("Password cannot be an empty string")
 
-        def is_already_unzipped(chr_num: int) -> bool:
-            """
-            Checks if the contents of a ZIP file for the given chromosome are already extracted.
-            """
-            # Adjust this check based on your expected unzipped files
-            expected_file = os.path.join(results_dir, f"chr{chr_num}.vcf")
+        # List of chromosome zip files
+        zip_files = [os.path.join(input_folder, f"chr{chr_num}.zip") for chr_num in range(20, 23)]
 
-            return os.path.isfile(expected_file)
-
+        self.parallel_unzip_with_password(
+            zip_files    =zip_files,
+            output_folder=results_dir,
+            password     =password,
+            max_workers =max_workers
+        )
         
-        def unzip_file(input_folder:str, chr_num: int, recompute:bool, password:str) -> str:
-            """
-            Worker function to unzip a single file.
-            """
-
-            # Convert the password to bytes
-            password_bytes = bytes(password, 'utf-8')
-
-            zip_file = os.path.join(input_folder, f"chr{chr_num}.zip")
-
-            if not os.path.isfile(zip_file):
-                return f"File not found: {zip_file}"
-            
-            if not recompute and is_already_unzipped(chr_num):
-                return f"Already unzipped: {zip_file}"
-
-            try:
-                with zipfile.ZipFile(zip_file, 'r') as zf:
-                    try:
-                        zf.setpassword(password_bytes)
-
-                        # Verify contents before extraction
-                        if zf.testzip() is not None:
-                            return f"Corrupted ZIP file: {zip_file}"
-                        else:
-                            print(f"Extracting: {zip_file}")
-
-                        # Extract files directly into results_dir
-                        for member in zf.namelist():
-                            # Strip any leading directory components from the file name
-                            member_name = os.path.basename(member)
-                            if member_name:  # Skip directories
-                                target_path = os.path.join(results_dir, member_name)
-                                with zf.open(member) as source, open(target_path, 'wb') as target:
-                                    target.write(source.read())
-                        return f"Successfully extracted: {zip_file} to {results_dir}"
-                    except RuntimeError:
-                        return f"Wrong password for: {zip_file}"
-            except zipfile.BadZipFile:
-                return f"Invalid ZIP file: {zip_file}"
-            except Exception as e:
-                return f"Unexpected error with {zip_file}: {e}"
-            
-        # Unzip files in parallel
-            # Create a ThreadPoolExecutor to process files in parallel
-        with ThreadPoolExecutor() as executor:
-            futures = {executor.submit(unzip_file, input_folder, chr_num, recompute, password): chr_num for chr_num in range(1, 23)}
-
-            for future in as_completed(futures):
-                result = future.result()                
-
-#        def move_files_to_parent_and_remove_folders(parent_folder):
-#            """
-#            Moves all files from subfolders in the parent folder to the parent folder itself, 
-#            then removes the now-empty subfolders.
-#
-#            Parameters:
-#            - parent_folder: str, the path to the folder containing the subfolders.
-#            """
-#            # Loop through all items in the parent folder
-#            for subfolder in os.listdir(parent_folder):
-#                subfolder_path = os.path.join(parent_folder, subfolder)
-#
-#                # Check if it's a directory
-#                if os.path.isdir(subfolder_path):
-#                    # Move all files from the subfolder to the parent folder
-#                    for file_name in os.listdir(subfolder_path):
-#                        file_path = os.path.join(subfolder_path, file_name)
-#                        if os.path.isfile(file_path):  # Only move files, skip directories
-#                            shutil.move(file_path, os.path.join(parent_folder, file_name))
-#
-#                    # Remove the now-empty subfolder
-#                    os.rmdir(subfolder_path)
-#                    print(f"Removed folder: {subfolder_path}")
-#        
-#        move_files_to_parent_and_remove_folders(results_dir)
-
         pass
 
     def execute_filter_variants(self, r2_threshold:float, max_workers:int=None)->None:
@@ -201,121 +138,52 @@ class PostImputation:
             raise ValueError("R2 threshold should be a float")
         if r2_threshold < 0 or r2_threshold > 1:
             raise ValueError("R2 threshold should be between 0 and 1")
-        
-        if max_workers is None:
-            max_workers = os.cpu_count()-2
-        if isinstance(max_workers, float):
-            max_workers = max(round(max_workers,0),1)
-        elif not isinstance(max_workers, int):
-            raise ValueError("Max workers should be a positive integer")
 
         results_dir = self.results_dir
 
-        def process_chromosome(chr_number:int, input_folder:str, output_folder:str, r2_threshold:float):
-            """
-            Processes a chromosome VCF file by filtering variants with R2 > r2_threshold using bcftools.
+        # List of chromosome files
+        chr_files = [os.path.join(results_dir, f"chr{chr_num}.dose.vcf.gz") for chr_num in range(20, 23)]
 
-            Parameters:
-            -----------
-                chr_number (int): The chromosome number to process.
-                input_folder (str): The folder containing the input VCF files.
-                output_folder (str): The folder where the filtered VCF files will be saved.
-                r2_threshold (float): The R2 threshold for filtering variants.
+        self.parallel_filter_chromosome(
+            chr_files    =chr_files,
+            output_folder=results_dir,
+            r2_threshold =r2_threshold,
+            max_workers  =max_workers
+        )
 
-            Raises:
-            -------
-                subprocess.CalledProcessError: If the bcftools command fails.
-                FileNotFoundError: If the input file is not found.
-
-            Prints:
-                A message indicating whether the processing of the chromosome was completed or failed.
-            """
-
-            input_file = os.path.join(input_folder, f"chr{chr_number}.dose.vcf.gz")
-            output_file = os.path.join(output_folder, f"filtered_chr{chr_number}.dose.vcf.gz")
-
-            # bcftools command
-            command = [
-                "bcftools", "view", "-Oz", "-i", f"R2>{r2_threshold}",
-                input_file, "-o", output_file
-            ]
-            try:
-                # execute bcftools command
-                subprocess.run(command, check=True)
-                print(f"Chromosome {chr_number}: Completed")
-            except subprocess.CalledProcessError as e:
-                print(f"Chromosome {chr_number}: Failed with error {e}")
-            except FileNotFoundError:
-                print(f"Chromosome {chr_number}: Input file not found")
-            pass
-
-        chromosomes = range(1, 23)
-
-        # Adjust `max_workers` for parallelism
-        with ThreadPoolExecutor(max_workers=max_workers) as executor:  
-            executor.map(lambda chr: process_chromosome(chr, results_dir, results_dir, r2_threshold), chromosomes)
-
-        print("All processes completed successfully.")
         pass
 
-    def execute_normalize_vcf(self, reference_genome:str)->None:
-        
-        """
-        Normalize VCF files for each chromosome using bcftools.
+    def execute_normalize_vcf(self, max_workers:int=None)->None:
 
-        This method normalizes VCF files for chromosomes 1 through 22 using the bcftools tool.
-        It performs two normalization steps for each chromosome:
-        1. Normalize with `bcftools norm -Ou -m -any`.
-        2. Normalize with a reference genome and output to a new file.
+        results_dir = self.results_dir
 
-        Parameters:
-        -----------
-            reference_genome (str): The filename of the reference genome to use for normalization.
+        chr_files = [
+            os.path.join(results_dir, f"filtered_chr{chr_num}.dose.vcf.gz") for chr_num in range(20, 23)
+        ]
 
-        Raises:
-        -------
-            Exception: If there is an error during the normalization process for any chromosome.
-        
-        Returns:
-        --------
-            None
-        """
+        self.parallel_normalize_chromosome(
+            chr_files    =chr_files,
+            output_folder=results_dir,
+            max_workers  =max_workers
+        )
+
+        pass
+
+    def execute_normalize_with_reference(self, reference_genome:str, max_workers:int)->None:
 
         results_dir = self.results_dir
         dependables = self.dependables
 
-        for chr_number in range(1, 23):
+        chr_files = [
+            os.path.join(results_dir, f"uncompressed_chr{chr_num}.dose.vcf.gz") for chr_num in range(20, 23)
+        ]
 
-            input_file = os.path.join(results_dir, f"filtered_chr{chr_number}.dose.vcf.gz")
-            temp_file = os.path.join(results_dir, f"uncompressed_chr{chr_number}.dose.vcf.gz")
-            output_file = os.path.join(results_dir, f"normalized_chr{chr_number}.dose.vcf.gz")
-            reference_file = os.path.join(dependables, reference_genome)
-
-            # Step 1: Normalize with `bcftools norm -Ou -m -any`
-            norm_command_1 = [
-                "bcftools", "norm", "-Ou", "-o", temp_file,"-m", "-any", input_file
-            ]
-
-            # Step 2: Normalize with reference genome and output to a new file
-            norm_command_2 = [
-                "bcftools", "norm", "-Oz", "-f", reference_file, "-o", output_file, temp_file
-            ]
-
-            try:
-                # Step 1: Run bcftools norm -Ou -m -any
-                norm_proc_1 = subprocess.Popen(norm_command_1, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                norm_proc_1.wait()  # Wait for this process to finish
-
-                # Check for errors in Step 1
-                if norm_proc_1.returncode != 0:
-                    raise Exception(f"Error in normalizing chromosome {chr_number} (Step 1): {norm_proc_1.stderr.read().decode()}")
-
-                # Step 2: Run bcftools norm -Oz with the reference genome
-                subprocess.run(norm_command_2, check=True)
-                print(f"Chromosome {chr_number}: Normalized successfully")
-
-            except subprocess.CalledProcessError as e:
-                print(f"Chromosome {chr_number}: Error during processing: {e}")
+        self.parallel_normalize_chromosome_with_reference(
+            chr_files    =chr_files,
+            output_folder=results_dir,
+            reference_file=os.path.join(dependables, reference_genome),
+            max_workers  =max_workers
+        )
 
         pass
 
@@ -526,4 +394,265 @@ class PostImputation:
         except subprocess.CalledProcessError as e:
             print(f"Error running PLINK2: {e}")
 
+        pass
+
+    @staticmethod
+    def unzip_file_with_password(zip_path: str, output_folder: str, password: str) -> None:
+        """
+        Unzips a password-protected zip file into a specified output folder.
+        Parameters:
+        -----------
+            zip_path (str): Path to the zip file
+            output_folder (str): Folder where files will be extracted
+            password (str): Password to decrypt the zip file
+        Raises:
+        -------
+            zipfile.BadZipFile: If zip file is corrupted
+            RuntimeError: If password is incorrect
+        """
+        
+        password_bytes = bytes(password, 'utf-8')
+        
+        with zipfile.ZipFile(zip_path, 'r') as zf:
+
+            zf.setpassword(password_bytes)
+            
+            if zf.testzip() is not None:
+                print(f"Corrupted ZIP file: {zip_path}")
+                return
+            else:
+                print(f"Extracting {zip_path}...")
+            
+            for member in zf.namelist():
+                
+                if zf.getinfo(member).is_dir():
+                    continue
+                
+                target_path = os.path.join(output_folder, os.path.basename(member))
+                
+                with zf.open(member) as source, open(target_path, 'wb') as target:
+                    target.write(source.read())
+
+        pass
+
+    @staticmethod
+    def parallel_unzip_with_password(zip_files: list, output_folder: str, password: str, max_workers: int = None) -> None:
+        """
+        Unzips multiple password-protected zip files in parallel.
+
+        Parameters:
+        -----------
+            zip_files (list): List of paths to zip files
+            output_folder (str): Folder where files will be extracted
+            password (str): Password to decrypt the zip files
+            max_workers (int): Maximum number of parallel workers. Defaults to min(8, CPU cores)
+        """
+
+        if max_workers is None:
+            max_workers = min(8, os.cpu_count())
+
+        start_time = time.time()
+
+        print(f"Active threads before: {threading.active_count()}")
+
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = {
+                executor.submit(
+                    PostImputation.unzip_file_with_password, 
+                    zip_file, 
+                    output_folder, 
+                    password
+                ): zip_file for zip_file in zip_files
+            }
+            print(f"Active threads after submission: {threading.active_count()}")
+
+            with tqdm(total=len(futures), desc="Extracting files") as pbar:
+
+                for future in as_completed(futures):
+
+                    zip_file = futures[future]
+                    
+                    pbar.update(1)
+                    pbar.set_description(f"🔄 Active jobs: {len(futures) - pbar.n}")
+                    
+                    try:
+                        future.result()
+                    except Exception as e:
+                        print(f"Error with {zip_file}: {str(e)}")
+
+        total_time = time.time() - start_time
+        print(f"\nTotal execution time: {total_time:.2f}s")
+
+        pass
+
+    @staticmethod
+    def filter_chromosome(input_chr_file:str, output_chr_file:str, r2_threshold:float):
+        
+        if not os.path.isfile(input_chr_file):
+            raise FileExistsError(f"Input file {input_chr_file} does not exist")
+
+        # bcftools command
+        bcf_cmd = [
+            "bcftools", "view", "-Oz", "-i", f"R2>{r2_threshold}",
+            input_chr_file, "-o", output_chr_file
+        ]
+        chr_number = os.path.basename(input_chr_file)
+        try:
+            # execute bcftools command
+            subprocess.run(bcf_cmd, check=True)
+            print(f"Chromosome {chr_number}: Completed")
+        except subprocess.CalledProcessError as e:
+            print(f"Chromosome {chr_number}: Failed with error {e}")
+        except FileNotFoundError:
+            print(f"Chromosome {chr_number}: Input file not found")
+        pass
+
+    @staticmethod
+    def parallel_filter_chromosome(chr_files:list, output_folder:str, r2_threshold:float, max_workers:int=None)->None:
+
+        if max_workers is None:
+            max_workers = min(8, os.cpu_count())
+
+        start_time = time.time()
+
+        print(f"Active threads before: {threading.active_count()}")
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = {
+                executor.submit(
+                    PostImputation.filter_chromosome, 
+                    chr_file, 
+                    os.path.join(output_folder, f"filtered_{os.path.basename(chr_file)}"),
+                    r2_threshold
+                ): chr_file for chr_file in chr_files
+            }
+            print(f"Active threads after submission: {threading.active_count()}")
+
+            with tqdm(total=len(futures), desc="Filtering chromosomes") as pbar:
+
+                for future in as_completed(futures):
+                    chr_file = futures[future]
+                    pbar.update(1)
+                    pbar.set_description(f"🔄 Active jobs: {len(futures) - pbar.n}")
+                    try:
+                        future.result()
+                    except Exception as e:
+                        print(f"Error with {chr_file}: {str(e)}")
+
+        total_time = time.time() - start_time
+        print(f"\nTotal execution time: {total_time:.2f}s")
+        pass
+
+    @staticmethod
+    def normalize_chromosome(input_chr_file:str, output_chr_file:str)->None:
+
+        if not os.path.isfile(input_chr_file):
+            raise FileExistsError(f"Input file {input_chr_file} does not exist")
+        
+        # Normalize with `bcftools norm -Ou -m -any`
+        bcf_cmd = [
+            "bcftools", "norm", "-Ou", "-o", output_chr_file,"-m", "-any", input_chr_file
+        ]
+
+        chr_number = os.path.basename(input_chr_file)
+        try:
+            # execute bcftools command
+            subprocess.run(bcf_cmd, check=True)
+            print(f"Chromosome {chr_number}: Completed")
+        except subprocess.CalledProcessError as e:
+            print(f"Chromosome {chr_number}: Failed with error {e}")
+        except FileNotFoundError:
+            print(f"Chromosome {chr_number}: Input file not found")
+        pass
+
+    @staticmethod
+    def parallel_normalize_chromosome(chr_files:list, output_folder:str, max_workers:int)->None:
+
+        if max_workers is None:
+            max_workers = min(8, os.cpu_count())
+
+        start_time = time.time()
+
+        print(f"Active threads before: {threading.active_count()}")
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = {
+                executor.submit(
+                    PostImputation.normalize_chromosome, 
+                    chr_file, 
+                    os.path.join(output_folder, f"uncompressed_{os.path.basename(chr_file)}")
+                ): chr_file for chr_file in chr_files
+            }
+            print(f"Active threads after submission: {threading.active_count()}")
+
+            with tqdm(total=len(futures), desc="Filtering chromosomes") as pbar:
+
+                for future in as_completed(futures):
+                    chr_file = futures[future]
+                    pbar.update(1)
+                    pbar.set_description(f"🔄 Active jobs: {len(pbar.n)}")
+                    try:
+                        future.result()
+                    except Exception as e:
+                        print(f"Error with {chr_file}: {str(e)}")
+
+        total_time = time.time() - start_time
+        print(f"\nTotal execution time: {total_time:.2f}s")
+        pass
+
+    @staticmethod
+    def normalize_chromosome_with_reference(input_chr_file:str, output_chr_file:str, reference_file:str)->None:
+        
+        if not os.path.isfile(input_chr_file):
+            raise FileExistsError(f"Input file {input_chr_file} does not exist")
+        if not os.path.isfile(reference_file):
+            raise FileExistsError(f"Reference file {reference_file} does not exist")
+        
+        # Normalize with reference genome and output to a new file
+        bcf_cmd = [
+            "bcftools", "norm", "-Oz", "-f", reference_file, "-o", output_chr_file, input_chr_file
+        ]
+
+        chr_number = os.path.basename(input_chr_file)
+        try:
+            # execute bcftools command
+            subprocess.run(bcf_cmd, check=True)
+            print(f"Chromosome {chr_number}: Completed")
+        except subprocess.CalledProcessError as e:
+            print(f"Chromosome {chr_number}: Failed with error {e}")
+        except FileNotFoundError:
+            print(f"Chromosome {chr_number}: Input file not found")
+        pass
+
+    @staticmethod
+    def parallel_normalize_chromosome_with_reference(chr_files:list, output_folder:str, reference_file:str, max_workers:int=None)->None:
+
+        if max_workers is None:
+            max_workers = min(8, os.cpu_count())
+
+        start_time = time.time()
+
+        print(f"Active threads before: {threading.active_count()}")
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = {
+                executor.submit(
+                    PostImputation.normalize_chromosome_with_reference, 
+                    chr_file, 
+                    os.path.join(output_folder, f"normalized_{os.path.basename(chr_file)}"),
+                    reference_file
+                ): chr_file for chr_file in chr_files
+            }
+            print(f"Active threads after submission: {threading.active_count()}")
+
+            with tqdm(total=len(futures), desc="Filtering chromosomes") as pbar:
+
+                for future in as_completed(futures):
+                    chr_file = futures[future]
+                    pbar.update(1)
+                    pbar.set_description(f"🔄 Active jobs: {len(futures) - pbar.n}")
+                    try:
+                        future.result()
+                    except Exception as e:
+                        print(f"Error with {chr_file}: {str(e)}")
+
+        total_time = time.time() - start_time
+        print(f"\nTotal execution time: {total_time:.2f}s")
         pass
