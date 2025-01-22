@@ -102,7 +102,7 @@ class PostImputation:
             raise ValueError("Password cannot be an empty string")
 
         # List of chromosome zip files
-        zip_files = [os.path.join(input_folder, f"chr{chr_num}.zip") for chr_num in range(20, 23)]
+        zip_files = [os.path.join(input_folder, f"chr{chr_num}.zip") for chr_num in range(1, 23)]
 
         self.parallel_unzip_with_password(
             zip_files    =zip_files,
@@ -142,7 +142,7 @@ class PostImputation:
         results_dir = self.results_dir
 
         # List of chromosome files
-        chr_files = [os.path.join(results_dir, f"chr{chr_num}.dose.vcf.gz") for chr_num in range(20, 23)]
+        chr_files = [os.path.join(results_dir, f"chr{chr_num}.dose.vcf.gz") for chr_num in range(1, 23)]
 
         self.parallel_filter_chromosome(
             chr_files    =chr_files,
@@ -158,7 +158,7 @@ class PostImputation:
         results_dir = self.results_dir
 
         chr_files = [
-            os.path.join(results_dir, f"filtered_chr{chr_num}.dose.vcf.gz") for chr_num in range(20, 23)
+            os.path.join(results_dir, f"filtered_chr{chr_num}.dose.vcf.gz") for chr_num in range(1, 23)
         ]
 
         self.parallel_normalize_chromosome(
@@ -169,13 +169,13 @@ class PostImputation:
 
         pass
 
-    def execute_normalize_with_reference(self, reference_genome:str, max_workers:int)->None:
+    def execute_normalize_with_reference(self, reference_genome:str, max_workers:int=None)->None:
 
         results_dir = self.results_dir
         dependables = self.dependables
 
         chr_files = [
-            os.path.join(results_dir, f"uncompressed_chr{chr_num}.dose.vcf.gz") for chr_num in range(20, 23)
+            os.path.join(results_dir, f"uncompressed_chr{chr_num}.dose.vcf.gz") for chr_num in range(1, 23)
         ]
 
         self.parallel_normalize_chromosome_with_reference(
@@ -189,45 +189,15 @@ class PostImputation:
 
     def execute_index_vcf(self)->None:
 
-        """
-        Executes the indexing of VCF files for chromosomes 1 to 22 using bcftools.
-        
-        This method checks for the existence of index files (.csi or .tbi) for each chromosome's VCF file. If an index file already exists, it skips the indexing for that chromosome. Otherwise, it builds and executes the bcftools index command to create the index file.
-        
-        Parameters:
-        -----------
-            None
-        
-        Returns:
-        --------
-            None
-
-        Raises:
-        -------
-            subprocess.CalledProcessError: If the bcftools index command fails.
-        """
-
         results_dir = self.results_dir
 
-        for chr_num in range(1, 23):
-            
-            input_vcf = f"normalized_chr{chr_num}.dose.vcf.gz"
+        chr_files = [
+            os.path.join(results_dir, f"normalized_chr{chr_num}.dose.vcf.gz") for chr_num in range(1, 23)
+        ]
 
-            input_file = os.path.join(results_dir, input_vcf)
-
-            if os.path.isfile(input_file+'.csi') or os.path.isfile(input_file+'.tbi'):
-                print(f"Index file for {input_vcf} already exists.")
-                continue
-
-            # Build the bcftools index command
-            command = ["bcftools", "index", input_file]
-
-            # Execute the command
-            try:
-                subprocess.run(command, check=True)
-                print(f"Successfully indexed: {input_vcf}")
-            except subprocess.CalledProcessError as e:
-                print(f"Error indexing {input_vcf}: {e}")
+        self.parallel_index_chromosome(
+            chr_files    =chr_files
+        )
 
         pass
 
@@ -257,34 +227,21 @@ class PostImputation:
 
         annotations = os.path.join(dependables, annotations_file)
 
-        if not os.path.exists(annotations+'.tbi') or not os.path.exists(annotations+'.csi'):
-            subprocess.run(["bcftools", "index", annotations], check=True)
+        if not os.path.isfile(annotations):
+            raise FileNotFoundError(f"Annotations file {annotations} not found")
 
-        for chr_num in range(1, 23):  # Loop over chromosomes 1 to 22
 
-            input_vcf = f"normalized_chr{chr_num}.dose.vcf.gz"
-            output_vcf= f"annotated_normalized_chr{chr_num}.dose.vcf.gz"
+        chr_files = [
+            os.path.join(results_dir, f"normalized_chr{chr_num}.dose.vcf.gz") for chr_num in range(1, 23)
+        ]
 
-            input_file = os.path.join(results_dir, input_vcf)
-            output_file= os.path.join(results_dir, output_vcf)
+        self.parallel_annotate_chromosome(
+            chr_files    =chr_files,
+            output_folder=results_dir,
+            annotations_file=annotations
+        )
 
-            # bcftools command
-            command = [
-                "bcftools", "annotate",
-                "--annotations", annotations,
-                "--columns", "ID",
-                "--output", output_file,
-                input_file
-            ]
-
-            # execute bcftools command
-            try:
-                subprocess.run(command, check=True)
-                print(f"Successfully annotated: {output_vcf}")
-            except subprocess.CalledProcessError as e:
-                print(f"Error annotating {input_vcf}: {e}")
         pass
-
     
     def execute_concat_vcf(self):
         """
@@ -315,10 +272,10 @@ class PostImputation:
 
         # Create a list of input files (chr1 to chr22)
         input_files = [
-            os.path.join(results_dir, f"annotated_normalized_chr{chr_num}.dose.vcf.gz") for chr_num in range(1, 23)
+            os.path.join(results_dir, f"annotated_chr{chr_num}.dose.vcf.gz") for chr_num in range(1, 23)
         ]
 
-        output_file = os.path.join(results_dir, "annotated_normalized_combined_1_22.vcf.gz")
+        output_file = os.path.join(results_dir, "combined_1_22.vcf.gz")
 
         max_threads = os.cpu_count() - 4
 
@@ -337,6 +294,7 @@ class PostImputation:
             print(f"Successfully concatenated and outputted to: {output_file}")
         except subprocess.CalledProcessError as e:
             print(f"Error concatenating VCF files: {e}")
+        pass
 
     def get_plink_files(self, threads:int=None, memory:int=None)->None:
         """
@@ -357,7 +315,6 @@ class PostImputation:
             None
         """
         
-
         results_dir = self.results_dir
         output_name = self.output_name
         ready_dir   = self.ready_dir
@@ -374,7 +331,7 @@ class PostImputation:
             available_memory_mb = memory_info.available / (1024 * 1024)
             memory = round(2*available_memory_mb/3,0)
 
-        input_vcf = os.path.join(results_dir, "annotated_normalized_combined_1_22.vcf.gz")
+        input_vcf = os.path.join(results_dir, "combined_1_22.vcf.gz")
 
         # plink2 command
         command = [
@@ -393,6 +350,22 @@ class PostImputation:
             print(f"PLINK2 command executed successfully. Output files saved with prefix: {output_name}")
         except subprocess.CalledProcessError as e:
             print(f"Error running PLINK2: {e}")
+
+        # Get all files with these extensions in the results directory
+        files_to_delete = []
+        for ext in ['.gz', '.info', '.csi', '.tbi']:
+            files_to_delete.extend(
+                [os.path.join(root, f) for root, _, files in os.walk(self.results_dir) 
+                 for f in files if f.endswith(ext)]
+            )
+
+        # Delete each file
+        for file in files_to_delete:
+            try:
+                os.remove(file)
+                print(f"Deleted: {file}")
+            except OSError as e:
+                print(f"Error deleting {file}: {e}")
 
         pass
 
@@ -565,7 +538,7 @@ class PostImputation:
         pass
 
     @staticmethod
-    def parallel_normalize_chromosome(chr_files:list, output_folder:str, max_workers:int)->None:
+    def parallel_normalize_chromosome(chr_files:list, output_folder:str, max_workers:int=None)->None:
 
         if max_workers is None:
             max_workers = min(8, os.cpu_count())
@@ -578,7 +551,7 @@ class PostImputation:
                 executor.submit(
                     PostImputation.normalize_chromosome, 
                     chr_file, 
-                    os.path.join(output_folder, f"uncompressed_{os.path.basename(chr_file)}")
+                    os.path.join(output_folder, f"uncompressed_{os.path.basename(chr_file).split('_')[-1]}"),
                 ): chr_file for chr_file in chr_files
             }
             print(f"Active threads after submission: {threading.active_count()}")
@@ -588,7 +561,7 @@ class PostImputation:
                 for future in as_completed(futures):
                     chr_file = futures[future]
                     pbar.update(1)
-                    pbar.set_description(f"🔄 Active jobs: {len(pbar.n)}")
+                    pbar.set_description(f"🔄 Active jobs: {len(futures) - pbar.n}")
                     try:
                         future.result()
                     except Exception as e:
@@ -636,8 +609,118 @@ class PostImputation:
                 executor.submit(
                     PostImputation.normalize_chromosome_with_reference, 
                     chr_file, 
-                    os.path.join(output_folder, f"normalized_{os.path.basename(chr_file)}"),
+                    os.path.join(output_folder, f"normalized_{os.path.basename(chr_file).split('_')[-1]}"),
                     reference_file
+                ): chr_file for chr_file in chr_files
+            }
+            print(f"Active threads after submission: {threading.active_count()}")
+
+            with tqdm(total=len(futures), desc="Filtering chromosomes") as pbar:
+
+                for future in as_completed(futures):
+                    chr_file = futures[future]
+                    pbar.update(1)
+                    pbar.set_description(f"🔄 Active jobs: {len(futures) - pbar.n}")
+                    try:
+                        future.result()
+                    except Exception as e:
+                        print(f"Error with {chr_file}: {str(e)}")
+
+        total_time = time.time() - start_time
+        print(f"\nTotal execution time: {total_time:.2f}s")
+        pass
+
+    @staticmethod
+    def index_chromosome(input_chr_file:str)->None:
+        
+        if not os.path.isfile(input_chr_file):
+            raise FileExistsError(f"Input file {input_chr_file} does not exist")
+
+        # Build the bcftools index command
+        command = ["bcftools", "index", input_chr_file]
+
+        # Execute the command
+        try:
+            subprocess.run(command, check=True)
+            print(f"Successfully indexed: {input_chr_file}")
+        except subprocess.CalledProcessError as e:
+            print(f"Error indexing {input_chr_file}: {e}")
+
+        pass
+
+    @staticmethod
+    def parallel_index_chromosome(chr_files:list, max_workers:int=None)->None:
+
+        if max_workers is None:
+            max_workers = min(8, os.cpu_count())
+
+        start_time = time.time()
+
+        print(f"Active threads before: {threading.active_count()}")
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = {
+                executor.submit(
+                    PostImputation.index_chromosome, 
+                    chr_file
+                ): chr_file for chr_file in chr_files
+            }
+            print(f"Active threads after submission: {threading.active_count()}")
+
+            with tqdm(total=len(futures), desc="Indexing chromosomes") as pbar:
+
+                for future in as_completed(futures):
+                    chr_file = futures[future]
+                    pbar.update(1)
+                    pbar.set_description(f"🔄 Active jobs: {len(futures) - pbar.n}")
+                    try:
+                        future.result()
+                    except Exception as e:
+                        print(f"Error with {chr_file}: {str(e)}")
+
+        total_time = time.time() - start_time
+        print(f"\nTotal execution time: {total_time:.2f}s")
+        pass
+
+    @staticmethod
+    def annotate_chromosomes(input_chr_file:str, output_chr_file:str, annotations_file:str)->None:
+
+        if not os.path.isfile(input_chr_file):
+            raise FileExistsError(f"Input file {input_chr_file} does not exist")
+        
+        # bcftools command
+        bcf_cmd = [
+            "bcftools", "annotate",
+            "--annotations", annotations_file,
+            "--columns", "ID",
+            "--output", output_chr_file,
+            input_chr_file
+        ]
+
+        chr_number = os.path.basename(input_chr_file)
+        try:
+            # execute bcftools command
+            subprocess.run(bcf_cmd, check=True)
+            print(f"Chromosome {chr_number}: Completed")
+        except subprocess.CalledProcessError as e:
+            print(f"Chromosome {chr_number}: Failed with error {e}")
+        pass
+
+    @staticmethod
+    def parallel_annotate_chromosome(chr_files:list, output_folder:str, annotations_file:str, max_workers:int=None)->None:
+
+        if max_workers is None:
+            max_workers = min(8, os.cpu_count())
+
+        start_time = time.time()
+
+        print(f"Active threads before: {threading.active_count()}")
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = {
+                executor.submit(
+                    PostImputation.annotate_chromosomes, 
+                    chr_file, 
+                    os.path.join(output_folder, f"annotated_{os.path.basename(chr_file).split('_')[-1]}"),
+                    annotations_file
                 ): chr_file for chr_file in chr_files
             }
             print(f"Active threads after submission: {threading.active_count()}")
