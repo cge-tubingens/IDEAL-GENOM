@@ -38,14 +38,25 @@ The `parameters.JSON` file contains values for the different parameters used alo
 
 ```
 {
-    "maf" : 0.05,
-    "geno": 0.1,
-    "mind": 0.1,
-    "hwe" : 0.00000005,
-    "indep-pairwise": [50, 5, 0.2],
-    "pca": 10,
-    "ci": 0.95,
-    "annotate": true
+    "post_imp": {
+        "pwd": "<zip_files_password>",
+        "r2_thres": 0.3,
+        "ref_genome": "<fasta_filename.fa>",
+        "annot_vcf": "<annotation_ref.vcf.gz>",
+    },
+    "preps":{
+        "maf": 0.01,
+        "geno": 0.1,
+        "hwe": 5e-6,
+        "ind_pair":[50, 5, 0.2],
+        "pca": 10 
+    },
+    "gwas_fix": {
+        "maf": 0.01,
+        "mind": 0.1,
+        "hwe": 5e-8,
+        "ci": 0.95
+    }
 }
 ```
 
@@ -73,9 +84,10 @@ The `steps.JSON` file has the following structure:
 
 ```
 {
-    "prep_ds"   : true,
-    "gwas_fixed" : true,
-    "gwas_random": true
+    "post_imp"  : true
+    "preps"    : true,
+    "gwas_fix" : true,
+    "gwas_rand": true
 }
 ```
 
@@ -83,9 +95,10 @@ With the above configuration, all three steps will run seamlessly, which is the 
 
 ```
 {
-    "preps_ds"   : false,
-    "gwas_fixed" : true,
-    "gwas_random": false
+    "post_imp" : false
+    "preps"    : false,
+    "gwas_fix" : true,
+    "gwas_rand": false
 }
 ```
 
