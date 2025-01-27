@@ -10,6 +10,7 @@ PrepDS
 """
 
 import os
+import psutil
 
 from ideal_genom.Helpers import shell_do, delete_temp_files
 
@@ -84,7 +85,7 @@ class Preparatory:
 
         pass
 
-    def execute_ld_prunning(self, maf:float=0.05, geno:float=0.1, mind:float=0.1, hwe:float=5e-8, ind_pair:list=[50, 5, 0.2])->dict:
+    def execute_ld_prunning(self, maf:float=0.01, geno:float=0.1, hwe:float=5e-6, ind_pair:list=[50, 5, 0.2], memory:int=None)->dict:
 
         """
         Method to exclude high LD regions and perform LD pruning.
@@ -108,10 +109,6 @@ class Preparatory:
         # Check type of geno
         if not isinstance(geno, float):
             raise TypeError("geno should be of type float.")
-
-        # Check type of mind
-        if not isinstance(mind, float):
-            raise TypeError("mind should be of type float.")
         
         # Check type of hwe
         if not isinstance(hwe, float):
@@ -124,10 +121,6 @@ class Preparatory:
         # Check if geno is in range
         if geno < 0 or geno > 1:
             raise ValueError("geno should be between 0 and 1")
-        
-        # Check if mind is in range
-        if mind < 0 or mind > 1:
-            raise ValueError("mind should be between 0 and 1")
         
         # Check if hwe is in range
         if hwe < 0 or hwe > 1:
@@ -145,6 +138,12 @@ class Preparatory:
             max_threads = os.cpu_count()-2
         else:
             max_threads = 10
+
+        if memory is None:
+            # get virtual memory details
+            memory_info = psutil.virtual_memory()
+            available_memory_mb = memory_info.available / (1024 * 1024)
+            memory = round(2*available_memory_mb/3,0)
 
         # plink command to exclude high LD regions
         plink_cmd1 = f"plink --bfile {os.path.join(input_path, input_name)} --chr 1-22 --maf {maf} --geno {geno}  --hwe {hwe} --exclude {high_ld_regions_file} --range --indep-pairwise {ind_pair[0]} {ind_pair[1]} {ind_pair[2]} --threads {max_threads} --make-bed --out {os.path.join(results_dir, output_name+'_prunning')}"
