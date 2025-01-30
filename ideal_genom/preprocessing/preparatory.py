@@ -202,10 +202,6 @@ class Preparatory:
         for cmd in cmds:
             shell_do(cmd, log=True)
 
-        # self.files_to_keep.append(output_name.bed)
-        # self.files_to_keep.append(output_name.bim)
-        # self.files_to_keep.append(output_name.fam)
-
         # report
         process_complete = True
 
