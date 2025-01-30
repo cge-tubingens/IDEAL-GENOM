@@ -86,8 +86,6 @@ def qqplot_draw(df_gwas:pd.DataFrame, plots_dir:str, lambda_val:float=None, pval
     log_p = thin['pvalues'].values
     exp_x = thin['exp_x'].values
 
-    axis_range =  [float(min(log_p.min(), exp_x.min()))-0.5, float(max(log_p.max(), exp_x.max()))+1]
-
     fig, ax = plt.subplots(figsize=(10,10))
 
     # compute confidence intervals
@@ -104,11 +102,12 @@ def qqplot_draw(df_gwas:pd.DataFrame, plots_dir:str, lambda_val:float=None, pval
     else:
         ax.scatter(exp_x, log_p, marker='o')
 
-    # Line y = x
-    ax.plot(axis_range, axis_range, color='red', linestyle='--', lw=1)
+    # Get axis limits
+    x_limits = ax.get_xlim()
+    x_range = np.linspace(x_limits[0], x_limits[1], 100)
 
-    ax.set_xlim(axis_range)
-    ax.set_ylim(axis_range)
+    # Draw y = x line
+    ax.plot(x_range, x_range, color='red', linestyle='--', label="y = x")
 
     ax.set_xlabel('Expected (-log10 p-value)')
     ax.set_ylabel('Observed (-log10 p-value)')
