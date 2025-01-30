@@ -192,9 +192,6 @@ class GWASfixed:
             # execute plink command
             shell_do(plink2_cmd, log=True)
 
-        self.files_to_keep.append(output_name+'_glm.PHENO1.glm.logistic.hybrid')
-        self.files_to_keep.append(output_name+'_glm.PHENO1.glm.logistic.hybrid.adjusted')
-
         # report
         process_complete = True
 
@@ -275,9 +272,6 @@ class GWASfixed:
             # execute gcta command
             shell_do(gcta_cmd, log=True)
 
-        self.files_to_keep.append('cojo_file.jma.cojo')
-        self.files_to_keep.append('cojo_file.ldr.cojo')
-
         # report
         process_complete = True
 
@@ -341,8 +335,6 @@ class GWASfixed:
             ).rename(columns={"GENE":"GENENAME"})
 
         df_hits.to_csv(os.path.join(results_dir, 'top_hits_annotated.tsv'), sep="\t", index=False)
-
-        self.files_to_keep.append('top_hits_annotated.tsv')
 
         # report
         process_complete = True
