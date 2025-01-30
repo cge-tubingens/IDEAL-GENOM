@@ -21,28 +21,52 @@ class Preparatory:
     """
 
     def __init__(self, input_path:str, input_name:str, output_path:str, output_name:str, dependables:str) -> None:
-
+        
         """
-        Initialize the PrepDS class.
-
+        Initializes the preparatory class with the given input and output paths, file names, and dependables path.
+        
         Parameters:
         -----------
-        input_path : str
-            Path to the input data.
-        input_name : str
-            Name of the input data.
-        output_path : str
-            Path to the output data.
-        output_name : str
-            Name of the output data.
-        config_dict : dict
-            Dictionary containing the configuration parameters.
-        dependables_path : str
-            Path to the dependables data.
-
-        Returns:
-        --------
-        None
+        input_path (str): 
+            The path to the input directory.
+        input_name (str): 
+            The name of the input file (without extension).
+        output_path (str): 
+            The path to the output directory.
+        output_name (str): 
+            The name of the output file (without extension).
+        dependables (str): 
+            The path to the dependables directory.
+        
+        Raises:
+        -------
+        ValueError: 
+            If any of input_path, output_path, or dependables is None.
+        FileNotFoundError: 
+            If input_path, output_path, or dependables does not exist.
+        ValueError: 
+            If input_name or output_name is None.
+        TypeError: 
+            If input_name or output_name is not a string.
+        FileNotFoundError: 
+            If any of the required PLINK files (.bed, .bim, .fam) are not found in the input_path.
+        
+        Attributes:
+        -----------
+        input_path (str): 
+            The path to the input directory.
+        output_path (str): 
+            The path to the output directory.
+        input_name (str): 
+            The name of the input file (without extension).
+        output_name (str): 
+            The name of the output file (without extension).
+        dependables (str): 
+            The path to the dependables directory.
+        files_to_keep (list): 
+            A list to keep track of files.
+        results_dir (str): 
+            The directory where results will be stored.
         """
         
         # check if paths are set
