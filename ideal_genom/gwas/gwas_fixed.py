@@ -62,13 +62,11 @@ class GWASfixed:
 
     
         # check if paths are set
-        if input_path is None or output_path is None or dependables_path is None:
+        if input_path is None or output_path is None:
             raise ValueError("Values for input_path, output_path and dependables_path must be set upon initialization.")
         
         if not os.path.exists(input_path):
             raise FileNotFoundError(f"Input path does not exist: {input_path}")
-        if not os.path.exists(dependables_path):
-            raise FileNotFoundError(f"Dependables path does not exist: {dependables_path}")
         if not os.path.exists(output_path):
             raise FileNotFoundError(f"Output path does not exist: {output_path}")
         
