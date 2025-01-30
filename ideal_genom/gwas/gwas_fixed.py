@@ -18,23 +18,48 @@ class GWASfixed:
 
     def __init__(self, input_path:str, input_name:str, output_path:str, output_name:str, recompute:bool=True) -> None:
         """
-        Initialize the GWASfixed class.
+        Initialize the GWAS fixed model analysis.
 
         Parameters:
         -----------
-        input_path : str
-            Path to the input data.
-        input_name : str
-            Name of the input data.
-        output_path : str
-            Path to the output data.
-        output_name : str
-            Name of the output data.
-
-        Returns:
-        --------
-        None
+        input_path (str): 
+            Path to the input directory containing PLINK files.
+        input_name (str): 
+            Base name of the input PLINK files (without extensions).
+        output_path (str): 
+            Path to the output directory where results will be saved.
+        output_name (str): 
+            Base name for the output files.
+        recompute (bool): 
+            Flag indicating whether to recompute the analysis if results already exist. Default is True.
+        
+        Raises:
+        -------
+        ValueError: 
+            If input_path, output_path, input_name, or output_name are not provided.
+        FileNotFoundError: 
+            If the specified input_path or output_path does not exist.
+        FileNotFoundError: 
+            If the required PLINK files (.bed, .bim, .fam) are not found in the input_path.
+        TypeError: 
+            If input_name or output_name are not strings, or if recompute is not a boolean.
+        
+        Attributes:
+        ------------
+        input_path (str): 
+            Path to the input directory.
+        output_path (str): 
+            Path to the output directory.
+        input_name (str): 
+            Base name of the input PLINK files.
+        output_name (str): 
+            Base name for the output files.
+        recompute (bool): 
+            Flag indicating whether to recompute the analysis.
+        results_dir (str): 
+            Directory where the results will be saved.
         """
+
     
         # check if paths are set
         if input_path is None or output_path is None or dependables_path is None:
