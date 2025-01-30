@@ -103,9 +103,35 @@ class GWASfixed:
         pass
 
     def fixed_model_association_analysis(self, maf:float, mind:float, hwe:float, ci:float)->dict:
-
         """
-        Perform association analysis using a fixed model with PLINK 2.0.
+        Perform fixed model association analysis using PLINK2.
+        
+        This method performs a fixed model association analysis on genomic data using PLINK2. It checks the validity of the input parameters, ensures necessary files exist, and executes the PLINK2 command to perform the analysis.
+
+        Parameters:
+        ------------
+        maf (float): 
+            Minor allele frequency threshold. Must be between 0 and 0.5.
+        mind (float): 
+            Individual missingness threshold. Must be between 0 and 1.
+        hwe (float): 
+            Hardy-Weinberg equilibrium threshold. Must be between 0 and 1.
+        ci (float): 
+            Confidence interval threshold. Must be between 0 and 1.
+        
+        Returns:
+        -------
+        dict: 
+            A dictionary containing the status of the process, the step name, and the output directory.
+        
+        Raises:
+        -------
+        TypeError: 
+            If any of the input parameters are not of type float.
+        ValueError: 
+            If any of the input parameters are out of their respective valid ranges.
+        FileNotFoundError: 
+            If the required PCA file is not found.
         """
 
         output_name= self.output_name
