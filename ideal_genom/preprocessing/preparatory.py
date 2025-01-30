@@ -108,14 +108,38 @@ class Preparatory:
         pass
 
     def execute_ld_prunning(self, maf:float=0.01, geno:float=0.1, hwe:float=5e-6, ind_pair:list=[50, 5, 0.2], memory:int=None)->dict:
-
+        
         """
-        Method to exclude high LD regions and perform LD pruning.
+        Executes LD pruning using PLINK.
+        
+        This function performs linkage disequilibrium (LD) pruning on genotype data using PLINK. It filters SNPs based on minor allele frequency (MAF), genotype missingness, and Hardy-Weinberg equilibrium (HWE). It also excludes high LD regions and performs LD pruning using the specified parameters.
+
+        Parameters:
+        -----------
+        maf : float, optional
+            Minor allele frequency threshold (default is 0.01).
+        geno : float, optional
+            Genotype missingness threshold (default is 0.1).
+        hwe : float, optional
+            Hardy-Weinberg equilibrium threshold (default is 5e-6).
+        ind_pair : list, optional
+            Parameters for the --indep-pairwise option in PLINK (default is [50, 5, 0.2]).
+        memory : int, optional
+            Amount of memory (in MB) to allocate for PLINK (default is None, which calculates 2/3 of available memory).
         
         Returns:
         --------
-        out_dict : dict
-            Dictionary containing a report of the process.
+        dict
+            A dictionary containing the status of the process, the step name, and the output directory.
+        
+        Raises:
+        -------
+        TypeError
+            If any of the parameters `maf`, `geno`, or `hwe` are not of type float.
+        ValueError
+            If any of the parameters `maf`, `geno`, or `hwe` are out of their respective valid ranges.
+        FileNotFoundError
+            If the file with high LD regions is not found.
         """
 
         input_path       = self.input_path
