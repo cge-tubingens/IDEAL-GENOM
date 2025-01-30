@@ -51,8 +51,12 @@ def qqplot_draw(df_gwas:pd.DataFrame, plots_dir:str, conf_color="lightgray", sav
     --------
     bool
     """
+
+    if lambda_val is None:
+        chi_sq = stats.chi2.isf(df_gwas[pval_col], df=1)
+        lambda_val = np.median(chi_sq) / stats.chi2.ppf(0.5, df=1)
     
-    pvalues = df_gwas['p'].values
+    pvalues = df_gwas[pval_col].values
     grp = None
     n = len(pvalues)
 
