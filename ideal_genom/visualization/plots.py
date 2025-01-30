@@ -27,6 +27,7 @@ import scipy.stats as stats
 import textalloc as ta
 
 from matplotlib.collections import LineCollection
+from scipy import stats
 
 from gwaslab.bd_download import download_file
 from gwaslab.g_Log import Log
