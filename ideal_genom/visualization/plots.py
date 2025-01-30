@@ -113,6 +113,10 @@ def qqplot_draw(df_gwas:pd.DataFrame, plots_dir:str, lambda_val:float=None, pval
     ax.set_ylabel('Observed (-log10 p-value)')
 
     plt.tight_layout()
+
+    ax.text(0.05, 0.95, f'λ = {lambda_val:.6f}', transform=ax.transAxes, fontsize=12, verticalalignment='top', 
+        bbox=dict(facecolor='white', alpha=0.5))
+
     plt.savefig(os.path.join(plots_dir, save_name), dpi=500)
     plt.show()
 
