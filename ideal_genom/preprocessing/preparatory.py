@@ -218,14 +218,29 @@ class Preparatory:
         return out_dict
     
     def execute_pc_decomposition(self, pca:int=10)->dict:
-
         """
-        Method to perform PCA decomposition.
+        Executes Principal Component Analysis (PCA) decomposition using PLINK.
+
+        This method performs PCA decomposition on pruned genetic data using the PLINK software. It checks for the existence of necessary input files, constructs the PLINK command, and executes it. The results are stored in the specified output directory.
+
+        Parameters:
+        -----------
+        pca (int, optional): 
+            The number of principal components to compute. Default is 10.
 
         Returns:
         --------
-        out_dict : dict
-            Dictionary containing a report of the process
+        dict: 
+            A dictionary containing the status of the process, the step name, and the output files.
+
+        Raises:
+        ------
+        TypeError: 
+            If `pca` is not of type int.
+        ValueError: 
+            If `pca` is less than 1.
+        FileNotFoundError: 
+            If the required pruned data files are not found.
         """
 
         results_dir = self.results_dir
