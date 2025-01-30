@@ -91,12 +91,7 @@ class GWASfixed:
         self.output_path = output_path
         self.input_name  = input_name
         self.output_name = output_name
-        self.dependables = dependables_path
         self.recompute   = recompute
-
-        self.files_to_keep = []
-        self.compare_gwas_fixed_file_name = None
-        self.compare_gwas_fixed_highlights= None
 
         # create results folder
         self.results_dir = os.path.join(output_path, 'gwas_fixed')
