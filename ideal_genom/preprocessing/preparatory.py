@@ -195,7 +195,7 @@ class Preparatory:
         plink_cmd1 = f"plink --bfile {os.path.join(input_path, input_name)} --chr 1-22 --maf {maf} --geno {geno}  --hwe {hwe} --exclude {high_ld_regions_file} --indep-pairwise {ind_pair[0]} {ind_pair[1]} {ind_pair[2]} --threads {max_threads} --memory {memory} --make-bed --out {os.path.join(results_dir, output_name+'_prunning')}"
 
         # plink command to perform LD pruning
-        plink_cmd2 = f"plink --bfile {os.path.join(results_dir, output_name+'_prunning')} --extract {os.path.join(results_dir, output_name+'_prunning.prune.in')} --make-bed --out {os.path.join(results_dir, output_name)} --threads {max_threads}"
+        plink_cmd2 = f"plink --bfile {os.path.join(results_dir, output_name+'_prunning')} --extract {os.path.join(results_dir, output_name+'_prunning.prune.in')} --make-bed --out {os.path.join(input_path, input_name+'-pruned')} --threads {max_threads}"
 
         # execute plink commands
         cmds = [plink_cmd1, plink_cmd2]
