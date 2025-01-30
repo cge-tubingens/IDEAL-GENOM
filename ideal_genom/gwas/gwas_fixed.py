@@ -16,8 +16,7 @@ from gwaslab.g_Log import Log
 
 class GWASfixed:
 
-    def __init__(self, input_path:str, input_name:str, output_path:str, output_name:str, dependables_path:str, recompute:bool=True) -> None:
-
+    def __init__(self, input_path:str, input_name:str, output_path:str, output_name:str, recompute:bool=True) -> None:
         """
         Initialize the GWASfixed class.
 
