@@ -262,11 +262,11 @@ class Preparatory:
         else:
             max_threads = 10
 
-        if not os.path.exists(os.path.join(results_dir, output_name+'.bed')) or not os.path.exists(os.path.join(results_dir, output_name+'.bim')) or not os.path.exists(os.path.join(results_dir, output_name+'.fam')):
-            raise FileNotFoundError(f"File with pruned data was not found: {os.path.join(results_dir, output_name)}")
+        if not os.path.exists(os.path.join(input_path, input_name+'-pruned.bed')) or not os.path.exists(os.path.join(input_path, input_name+'-pruned.bim')) or not os.path.exists(os.path.join(input_path, input_name+'-pruned.fam')):
+            raise FileNotFoundError(f"File with pruned data was not found: {os.path.join(input_path, input_name+'-pruned')}")
 
         # plink command to perform PCA decomposition
-        plink_cmd = f"plink --bfile {os.path.join(results_dir, output_name)} --pca {pca} --threads {max_threads} --out {os.path.join(input_path, input_name)}"
+        plink_cmd = f"plink --bfile {os.path.join(input_path, input_name+'-pruned')} --pca {pca} --threads {max_threads} --out {os.path.join(input_path, input_name)}"
 
         # execute plink command
         shell_do(plink_cmd, log=True)
