@@ -35,7 +35,7 @@ from gwaslab.util_in_get_sig import annogene
 from gwaslab.util_in_calculate_power import get_beta
 from gwaslab.util_in_calculate_power import get_beta_binary
 
-def qqplot_draw(df_gwas:pd.DataFrame, plots_dir:str, conf_color="lightgray", save_name:str='qq_plot.jpeg')->bool:
+def qqplot_draw(df_gwas:pd.DataFrame, plots_dir:str, lambda_val:float=None, pval_col:str='P', conf_color="lightgray", save_name:str='qq_plot.jpeg')->bool:
 
     """
     Function to draw a qq plot for GWAS data.
