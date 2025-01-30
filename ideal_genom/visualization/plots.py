@@ -111,8 +111,6 @@ def qqplot_draw(df_gwas:pd.DataFrame, plots_dir:str, lambda_val:float=None, pval
 
     ax.set_xlabel('Expected (-log10 p-value)')
     ax.set_ylabel('Observed (-log10 p-value)')
-    ax.set_aspect('equal')
-    ax.grid(True)
 
     plt.tight_layout()
     plt.savefig(os.path.join(plots_dir, save_name), dpi=500)
