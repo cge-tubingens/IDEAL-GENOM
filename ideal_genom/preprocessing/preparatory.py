@@ -99,8 +99,6 @@ class Preparatory:
         self.input_name  = input_name
         self.output_name = output_name
         self.dependables = dependables
-        
-        self.files_to_keep = []
 
         # create results folder
         self.results_dir = os.path.join(output_path, 'preparatory')
