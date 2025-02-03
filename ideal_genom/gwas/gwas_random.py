@@ -41,13 +41,11 @@ class GWASrandom:
 
         
        # check if paths are set
-        if input_path is None or output_path is None or preps_path is None:
+        if input_path is None or output_path is None:
             raise ValueError("Values for input_path, output_path and dependables_path must be set upon initialization.")
         
         if not os.path.exists(input_path):
             raise FileNotFoundError(f"Input path does not exist: {input_path}")
-        if not os.path.exists(preps_path):
-            raise FileNotFoundError(f"Dependables path does not exist: {preps_path}")
         if not os.path.exists(output_path):
             raise FileNotFoundError(f"Output path does not exist: {output_path}")
         
@@ -65,8 +63,6 @@ class GWASrandom:
         if not os.path.exists(os.path.join(input_path, input_name+'.fam')):
             raise FileNotFoundError(f"PLINK fam file was not found: {os.path.join(input_path, input_name+'.fam')}")
         
-        if not isinstance(config_dict, dict):
-            raise TypeError("config_dict should be of type dict.")
         if not isinstance(recompute, bool):
             raise TypeError("recompute should be of type bool.")
 
@@ -74,21 +70,12 @@ class GWASrandom:
         self.output_path = output_path
         self.input_name  = input_name
         self.output_name = output_name
-        self.config_dict = config_dict
-        self.preps_path  = preps_path
         self.recompute   = recompute
-
-        self.files_to_keep = []
 
         # create results folder
         self.results_dir = os.path.join(output_path, 'gwas_random')
         if not os.path.exists(self.results_dir):
             os.mkdir(self.results_dir)
-
-        # create figures folder
-        self.plots_dir = os.path.join(output_path, 'plots_random')
-        if not os.path.exists(self.plots_dir):
-            os.mkdir(self.plots_dir)
 
         print("\033[1;32mAnalysis of GWAS data using a random effect model initialized.\033[0m")
 
