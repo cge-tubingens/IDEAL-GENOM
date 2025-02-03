@@ -16,27 +16,29 @@ class GWASrandom:
     def __init__(self, input_path:str, input_name:str, output_path:str, output_name:str, config_dict:str, preps_path:str, recompute:str=True) -> None:
 
         """
-        Initialize the GWASrandom class.
-
+        Initializes the GWAS random effect model analysis.
+        
         Parameters:
         -----------
-        input_path : str
-            Path to the input data.
-        input_name : str
-            Name of the input data.
-        output_path : str
-            Path to the output data.
-        output_name : str
-            Name of the output data.
-        config_dict : dict
-            Dictionary containing the configuration parameters.
-        preps_path : str
-            Path to the preparatory data.
-
-        Returns:
-        --------
-        None
+        input_path (str): 
+            Path to the input directory containing PLINK files.
+        input_name (str): 
+            Base name of the input PLINK files (without extensions).
+        output_path (str): 
+            Path to the output directory where results will be saved.
+        output_name (str): 
+            Base name for the output files.
+        recompute (bool): 
+        Flag indicating whether to recompute the analysis if results already exist. Default is True.
+        
+        Raises:
+        -------
+        ValueError: If input_path, output_path, input_name, or output_name are not provided.
+        FileNotFoundError: If the specified input_path or output_path does not exist.
+        FileNotFoundError: If the required PLINK files (.bed, .bim, .fam) are not found in the input_path.
+        TypeError: If input_name or output_name are not strings, or if recompute is not a boolean.
         """
+
         
        # check if paths are set
         if input_path is None or output_path is None or preps_path is None:
