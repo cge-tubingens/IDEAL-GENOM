@@ -144,10 +144,24 @@ class GWASrandom:
 
         return out_dict
     
-    def compute_grm(self)->dict:
-
+    def compute_grm(self, max_threads:int=None)->dict:
+        
         """
-        Compute the genetic relationship matrix (GRM) for the GWAS analysis using GCTA.
+        Compute the Genetic Relationship Matrix (GRM) using GCTA software.
+
+        This method computes the GRM for the given input data using the GCTA software. It allows for multi-threaded execution and can optionally recompute the GRM if specified.
+
+        Parameters:
+        -----------
+        max_threads (int, optional): 
+            The maximum number of threads to use for computation. If not specified, it defaults to the number of available CPU cores minus two. If the number of CPU cores cannot be determined, it defaults to 10.
+
+        Returns:
+        --------
+            dict: A dictionary containing the following keys:
+            - 'pass' (bool): Indicates whether the process completed successfully.
+            - 'step' (str): The name of the step performed ('compute_grm').
+            - 'output' (dict): A dictionary containing the output file paths with the key 'gcta_out'.
         """
 
         results_dir= self.results_dir
