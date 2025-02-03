@@ -165,23 +165,24 @@ class GWASrandom:
         """
 
         results_dir= self.results_dir
-        prep_path  = self.preps_path
-        output_name= self.output_name
+        input_path = self.input_path
+        input_name = self.input_name
         recompute  = self.recompute
 
         step = "compute_grm"
 
         # compute the number of threads to use
-        if os.cpu_count() is not None:
-            max_threads = os.cpu_count()-2
-        else:
-            max_threads = 10
+        if max_threads is None:
+            if os.cpu_count() is not None:
+                max_threads = os.cpu_count()-2
+            else:
+                max_threads = 10
 
         if recompute:
             # gcta commands
-            gcta_cmd1 = f"gcta64 --bfile {os.path.join(prep_path, output_name+'_LDpruned')} --make-grm --thread-num {max_threads} --out {os.path.join(results_dir, output_name+'_grm')}"
+            gcta_cmd1 = f"gcta64 --bfile {os.path.join(input_path, input_name+'-pruned')} --make-grm --thread-num {max_threads} --out {os.path.join(results_dir, input_name+'_grm')}"
 
-            gcta_cmd2 = f"gcta64 --grm {os.path.join(results_dir, output_name+'_grm')} --make-bK-sparse 0.05 --out {os.path.join(results_dir, output_name+'_sparse')}"
+            gcta_cmd2 = f"gcta64 --grm {os.path.join(results_dir, input_name+'_grm')} --make-bK-sparse 0.05 --out {os.path.join(results_dir, input_name+'_sparse')}"
 
             # run gcta commands
             cmds = [gcta_cmd1, gcta_cmd2]
