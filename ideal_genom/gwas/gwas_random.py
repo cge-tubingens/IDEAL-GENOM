@@ -82,15 +82,21 @@ class GWASrandom:
         pass
 
     def prepare_aux_files(self)->dict:
-
-        """
-        Prepare auxiliary files for the GWAS analysis.
-        """
         
-        input_path  = self.input_path
-        input_name  = self.input_name
-        results_dir = self.results_dir
-        output_name = self.output_name
+        """
+        Prepares auxiliary files for GWAS analysis by processing phenotype and sex data.
+        
+        This function reads a .fam file, extracts and recodes phenotype and sex information, and writes the processed data to new files in the specified results directory.
+
+        Returns:
+        --------
+        dict: 
+            A dictionary containing the status of the process, the step name, and the output directory.
+        """
+
+        input_path = self.input_path
+        input_name = self.input_name
+        results_dir= self.results_dir
 
         step = "prepare_aux_files"
 
