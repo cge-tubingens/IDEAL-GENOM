@@ -303,8 +303,6 @@ class GWASrandom:
         output_name = self.output_name
         recompute   = self.recompute
 
-        maf = self.config_dict['maf']
-
         if not isinstance(maf, float):
             raise TypeError("maf should be of type float.")
         if maf < 0 or maf > 1:
@@ -319,7 +317,7 @@ class GWASrandom:
             max_threads = 10
 
         # load results of association analysis and rename columns according to GCTA requirements
-        df = pd.read_csv(os.path.join(results_dir, output_name+'_assocSparseCovar_pca_sex-mlm-binary--thread-num.fastGWA'), sep="\t")
+        df = pd.read_csv(os.path.join(results_dir, output_name+'_assocSparseCovar_pca_sex-mlm-binary.fastGWA'), sep="\t")
         rename = {
             'CHR'     :'CHR',	
             'SNP'     :'SNP',
