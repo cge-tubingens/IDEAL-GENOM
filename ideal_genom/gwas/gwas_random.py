@@ -350,9 +350,6 @@ class GWASrandom:
             # execute gcta command
             shell_do(gcta_cmd, log=True)
 
-        self.files_to_keep.append(output_name+'_assocSparseCovar_pca_sex-mlm-binary-cojo.jma.cojo')
-        self.files_to_keep.append(output_name+'_assocSparseCovar_pca_sex-mlm-binary-cojo.ldr.cojo')
-
         # report
         process_complete = True
 
