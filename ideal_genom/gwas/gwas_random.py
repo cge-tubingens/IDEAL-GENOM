@@ -204,10 +204,26 @@ class GWASrandom:
 
         return out_dict
     
-    def run_gwas_random(self)->dict:
-
+    def run_gwas_random(self, maf:float=0.01)->dict:
+        
         """
-        Method to run the GWAS analysis using a random effect model.
+        Runs a Genome-Wide Association Study (GWAS) using a random model with specified minor allele frequency (MAF).
+
+        Parameters:
+        -----------
+        maf (float): 
+            Minor allele frequency threshold for filtering SNPs. Default is 0.01.
+
+        Returns:
+        --------
+        dict: 
+            A dictionary containing the status of the process, the step name, and the output directory.
+
+        Raises:
+        -------
+            TypeError: If `maf` is not of type float.
+            ValueError: If `maf` is not between 0 and 1.
+            FileExistsError: If required input files are not found in the results directory.
         """
 
         results_dir = self.results_dir
