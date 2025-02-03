@@ -208,7 +208,7 @@ class GWASfixed:
         return out_dict
 
     def get_top_hits(self, maf:float)->dict:
-
+        
         """
         Get the top hits from the GWAS results.
 
