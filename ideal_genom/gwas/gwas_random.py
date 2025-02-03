@@ -13,8 +13,8 @@ from gwaslab.g_Log import Log
 
 class GWASrandom:
 
-    def __init__(self, input_path:str, input_name:str, output_path:str, output_name:str, config_dict:str, preps_path:str, recompute:str=True) -> None:
-
+    def __init__(self, input_path:str, input_name:str, output_path:str, output_name:str, recompute:str=True) -> None:
+        
         """
         Initializes the GWAS random effect model analysis.
         
