@@ -210,7 +210,30 @@ class GWASfixed:
     def get_top_hits(self, maf:float)->dict:
 
         """
-        Get the top hits from the association analysis with GCTA.
+        Get the top hits from the GWAS results.
+
+        Parameters:
+        -----------
+        maf (float): 
+            Minor allele frequency threshold. Must be a float between 0 and 0.5.
+
+        Returns:
+        --------
+        dict: 
+            A dictionary containing the process status, step name, and output directory.
+
+        Raises:
+        -------
+        TypeError: If maf is not of type float.
+        ValueError: If maf is not between 0 and 0.5.
+
+        The function performs the following steps:
+            1. Validates the type and range of the maf parameter.
+            2. Computes the number of threads to use based on the available CPU cores.
+            3. Loads the results of the association analysis and renames columns according to GCTA requirements.
+            4. Prepares a .ma file with the necessary columns.
+            5. If recompute is True, constructs and executes a GCTA command to perform conditional and joint analysis.
+            6. Returns a dictionary with the process status, step name, and output directory.
         """
 
         results_dir = self.results_dir
