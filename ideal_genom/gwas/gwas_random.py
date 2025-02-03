@@ -100,19 +100,34 @@ class GWASrandom:
 
         step = "prepare_aux_files"
 
-        df_fam = pd.read_csv(os.path.join(input_path, input_name+'.fam'), sep=' ', header=None)
+        df_fam = pd.read_csv(
+            os.path.join(input_path, input_name+'.fam'), 
+            sep   =r'\s+',
+            engine='python', 
+            header=None
+        )
 
         df_pheno = df_fam[[df_fam.columns[0], df_fam.columns[1], df_fam.columns[5]]].copy()
 
         # recode phenotype
         df_pheno[5] = df_pheno[5]-1
 
-        df_pheno.to_csv(os.path.join(results_dir, output_name+'_pheno.phen'), sep='\t', header=False, index=False)
+        df_pheno.to_csv(
+            os.path.join(results_dir, input_name+'_pheno.phen'), 
+            sep   ='\t', 
+            header=False, 
+            index =False
+        )
 
         # recode sex
         df_sex = df_fam[[0,1,4]].copy()
 
-        df_sex.to_csv(os.path.join(results_dir, output_name+'_sex.covar'), sep='\t', header=False, index=False)
+        df_sex.to_csv(
+            os.path.join(results_dir, input_name+'_sex.covar'), 
+            sep   ='\t', 
+            header=False, 
+            index =False
+        )
 
         # report
         process_complete = True
