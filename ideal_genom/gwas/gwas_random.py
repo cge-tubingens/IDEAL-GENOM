@@ -230,11 +230,6 @@ class GWASrandom:
         input_name  = self.input_name
         input_path  = self.input_path
         output_name = self.output_name
-        config_dict = self.config_dict
-        preps_path  = self.preps_path
-        recompute   = self.recompute
-
-        maf = config_dict['maf']
 
         if not isinstance(maf, float):
             raise TypeError("maf should be of type float.")
@@ -249,24 +244,20 @@ class GWASrandom:
         else:
             max_threads = 10
 
-        if recompute:
+        if not os.path.exists(os.path.join(results_dir, input_name+'_sparse.grm.id')):
+            raise FileExistsError(f"File {input_name+'_sparse.grm.id'} is not in the results directory.")
+        if not os.path.exists(os.path.join(results_dir, input_name+'_sparse.grm.sp')):
+            raise FileExistsError(f"File {input_name+'_sparse.grm.id'} is not in the results directory.")
+        if not os.path.exists(os.path.join(results_dir, input_name+'_sex.covar')):
+            raise FileExistsError(f"File {input_name+'sex.covar'} is not in the results directory.")
+        if not os.path.exists(os.path.join(results_dir, input_name+'_pheno.phen')):
+            raise FileExistsError(f"File {input_name+'_pheno.phen'} is not in the results directory.")
 
-            if not os.path.exists(os.path.join(results_dir, output_name+'_sparse')):
-                raise FileExistsError(f"File {output_name+'_sparse'} is not in the results directory.")
-            if not os.path.exists(os.path.join(preps_path, output_name+'_pca.eigenvec')):
-                raise FileExistsError(f"File {output_name+'_pca.eigenvec'} is not in the preparatory directory.")
-            if not os.path.exists(os.path.join(results_dir, output_name+'_sex.covar')):
-                raise FileExistsError(f"File {output_name+'sex.covar'} is not in the results directory.")
-            if not os.path.exists(os.path.join(results_dir, output_name+'_pheno.phen')):
-                raise FileExistsError(f"File {output_name+'_pheno.phen'} is not in the results directory.")
+        # gcta command
+        gcta_cmd = f"gcta64 --bfile {os.path.join(input_path, input_name)} --fastGWA-mlm-binary --maf {maf} --grm-sparse {os.path.join(results_dir, input_name+'_sparse')} --qcovar {os.path.join(input_path, input_name+'.eigenvec')} --covar {os.path.join(results_dir, input_name+'_sex.covar')} --pheno {os.path.join(results_dir, input_name+'_pheno.phen')} --out {os.path.join(results_dir, output_name+'_assocSparseCovar_pca_sex-mlm-binary')} --thread-num {max_threads}"
 
-            # gcta command
-            gcta_cmd = f"gcta64 --bfile {os.path.join(input_path, input_name)} --fastGWA-mlm-binary --maf {maf}  --grm-sparse {os.path.join(results_dir, output_name+'_sparse')} --qcovar {os.path.join(preps_path, output_name+'_pca.eigenvec')} --covar {os.path.join(results_dir, output_name+'_sex.covar')} --pheno {os.path.join(results_dir, output_name+'_pheno.phen')} --out {os.path.join(results_dir,output_name+'_assocSparseCovar_pca_sex-mlm-binary')}--thread-num {max_threads}"
-
-            # run gcta command
-            shell_do(gcta_cmd, log=True)
-
-        self.files_to_keep.append(output_name+'_assocSparseCovar_pca_sex-mlm-binary--thread-num.fastGWA')
+        # run gcta command
+        shell_do(gcta_cmd, log=True)
 
         # report
         process_complete = True
