@@ -274,10 +274,27 @@ class GWASrandom:
 
         return out_dict
     
-    def get_top_hits(self)->dict:
-
+    def get_top_hits(self, maf:float=0.01)->dict:
+        
         """
-        Method to extract the top hits from the GWAS analysis.
+        Get the top hits from the GWAS results.
+
+        This function processes the results of a genome-wide association study (GWAS) to identify the top hits based. It prepares the necessary files and optionally recomputes the results using GCTA.
+
+        Parameters:
+        -----------
+        maf (float, optional): 
+            Minor allele frequency threshold. Default is 0.01. Must be between 0 and 1.
+
+        Returns:
+        --------
+        dict: 
+            A dictionary containing the status of the process, the step name, and the output directory.
+
+        Raises:
+        -------
+            TypeError: If `maf` is not of type float.
+            ValueError: If `maf` is not between 0 and 1.
         """
 
         results_dir = self.results_dir
