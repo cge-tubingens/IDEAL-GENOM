@@ -207,7 +207,7 @@ class GWASrandom:
     def run_gwas_random(self, maf:float=0.01)->dict:
         
         """
-        Runs a Genome-Wide Association Study (GWAS) using a random model with specified minor allele frequency (MAF).
+        Runs a Genome-Wide Association Study (GWAS) using a generalized linear mixed model (GLMMM).
 
         Parameters:
         -----------
