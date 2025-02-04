@@ -63,8 +63,6 @@ class Preparatory:
             The name of the output file (without extension).
         dependables (str): 
             The path to the dependables directory.
-        files_to_keep (list): 
-            A list to keep track of files.
         results_dir (str): 
             The directory where results will be stored.
         """
@@ -270,8 +268,6 @@ class Preparatory:
 
         # execute plink command
         shell_do(plink_cmd, log=True)
-
-        self.files_to_keep.append(output_name+'.eigenvec')
 
         # report
         process_complete = True
