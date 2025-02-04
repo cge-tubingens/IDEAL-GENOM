@@ -416,8 +416,6 @@ class GWASrandom:
 
         df_hits.to_csv(os.path.join(results_dir, 'top_hits_annotated.tsv'), sep="\t", index=False)
 
-        self.files_to_keep.append('top_hits_annotated.tsv')
-
         # report
         process_complete = True
 
