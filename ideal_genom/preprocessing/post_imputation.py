@@ -346,7 +346,7 @@ class PostImputation:
         # execute plink2 command
         try:
             subprocess.run(plink2_cmd, check=True)
-            print(f"PLINK2 command executed successfully. Output files saved with prefix: {output_name+"_nosex"}")
+            print(f"PLINK2 command executed successfully. Output files saved with prefix: {output_name}+_nosex")
         except subprocess.CalledProcessError as e:
             print(f"Error running PLINK2: {e}")
 
@@ -388,7 +388,7 @@ class PostImputation:
         # execute plink2 command
         try:
             subprocess.run(plink2_cmd, check=True)
-            print(f"PLINK2 command executed successfully. Output files saved with prefix: {output_name+"_nosex"}")
+            print(f"PLINK2 command executed successfully. Output files saved with prefix: {output_name}_nosex")
         except subprocess.CalledProcessError as e:
             print(f"Error running PLINK2: {e}")
 
