@@ -4,7 +4,7 @@ This Python package is intended to perform a GWAS pipeline, that starts with the
 
 # Basic Requirements
 
-The GWAS pipeline rest on three tools: `PLINK 1.9`, `PLINK 2.0` and `GCTA`. The `luxgiant-dstream` serves as a wrapper fopr the various pipeline steps. To tun it the above programs must be installed on the system. it is important to remark that `GCTA` is memory intensive, so it is recommended to have a local or virtual machine with a large RAM available.
+The GWAS pipeline rest on three tools: `PLINK 1.9`, `PLINK 2.0`, `GCTA` and `bcftools`. The `IDEAL-GENOM` serves as a wrapper fopr the various pipeline steps. To tun it the above programs must be installed on the system. it is important to remark that `GCTA` is memory intensive, so it is recommended to have a local or virtual machine with a large RAM available.
 
 The pipeline is desgined to seamlessly run with minimal input and produce plots and summary statistics as result. To accomplish this, the following folder structure is expected:
 
@@ -38,24 +38,27 @@ The `parameters.JSON` file contains values for the different parameters used alo
 
 ```
 {
-    "post_imp": {
+    "post_imputation": {
         "pwd": "<zip_files_password>",
         "r2_thres": 0.3,
         "ref_genome": "<fasta_filename.fa>",
         "annot_vcf": "<annotation_ref.vcf.gz>",
     },
-    "preps":{
+    "preparatory":{
         "maf": 0.01,
         "geno": 0.1,
         "hwe": 5e-6,
         "ind_pair":[50, 5, 0.2],
         "pca": 10 
     },
-    "gwas_fix": {
+    "gwas_glm": {
         "maf": 0.01,
         "mind": 0.1,
         "hwe": 5e-8,
         "ci": 0.95
+    },
+    "gwas_glmm": {
+        "maf": 0.01
     }
 }
 ```
@@ -84,10 +87,10 @@ The `steps.JSON` file has the following structure:
 
 ```
 {
-    "post_imp"  : true
-    "preps"    : true,
-    "gwas_fix" : true,
-    "gwas_rand": true
+    "pos_imputation": true,
+    "preparatory"   : true,
+    "gwas_glm"      : true,
+    "gwas_glmm"     : true
 }
 ```
 
@@ -95,10 +98,10 @@ With the above configuration, all three steps will run seamlessly, which is the 
 
 ```
 {
-    "post_imp" : false
-    "preps"    : false,
-    "gwas_fix" : true,
-    "gwas_rand": false
+    "pos_imputation": false,
+    "preparatory"   : false,
+    "gwas_glm"      : true,
+    "gwas_glmm"     : true
 }
 ```
 
@@ -106,22 +109,67 @@ allows you to run only the GWAS with a fixed effect model. Note that an exceptio
 
 ## Dependable Files
 
-This folder should contain additional files to run the quality control pipeline. The structure inside the directory should be as follows:
+This folder should contain additional files to run the whole pipeline. The structure inside the directory should be as follows:
 
 ```
 dependables
     |
     |---high-LD-regions.txt
+    |---<annotations_file>.vcf.gz
+    |---<reference_genome>.fa
+    |---<reference_genome>.fa.fai
 ```
 
-## Usage
+The `high-LD-regions.txt` will be used to prune the raw data in the preparatory steps, while the `<annotations_file>.vcf.gz` (if it is not indexed the pipeline will do it) will be used to get the rsIDs of each SNP and the `<reference_genome>.fa` will be used to normalize the data coming out of imputation.
 
-The pipeline is easy to use. Once installed on the system or in a virtual enviroment one needs to run the following command:
+## Installation and usage
+
+The library can be installed by cloning the GitHub repository:
 
 ```
-python3 luxgiant-dstream --path_params <path to parameters.JSON> 
-                         --file_folders <path to paths.JSON> 
-                         --steps <path to steps.JSON>
+git clone https://github.com/cge-tubingens/IDEAL-GENOM.git
+```
+
+### Setting up the environment
+
+The virtual environment can be created using either `Poetry` or `pip`. Since this is a `Poetry`-based project, we recommend using `Poetry`. Once `Poetry` is installed on your system (refer to [`Poetry` documentation](https://python-poetry.org/docs/) for installation details), navigate to the cloned repository folder and run the following command:
+
+```
+poetry install
+```
+It is important to remark that currently the project has been updated to use `Poetry 2.0`.
+
+### Pipeline usage options
+
+#### 1. Inside a virtual environment
+
+After running the `poetry install` activate the virtual environment with 
+
+```
+poetry shell
+```
+
+ Once the environment is active, you can execute the pipeline with the following command:
+
+```
+python3 ideal_genom --path_params <path to parameters.JSON> 
+                    --file_folders <path to paths.JSON> 
+                    --steps <path to steps.JSON>
 ```
 
 The first three parameters are the path to the three configuration files.
+
+#### 2. Using `Poetry` directly
+
+One of the benefits of using `Poetry` s that it eliminates the need to activate a virtual environment. Run the pipeline directly with:
+
+```
+poetry run python3 ideal_genom --path_params <path to parameters.JSON> 
+                               --file_folders <path to paths.JSON> 
+                               --steps <path to steps.JSON>
+```
+#### 3. Jupyter Notebooks
+
+The package includes Jupyter notebooks located in the notebooks folder. Each notebook corresponds to a specific step of the pipeline. Simply provide the required parameters to execute the steps interactively.
+
+Using the notebooks is a great way to gain a deeper understanding of how the pipeline operates.
