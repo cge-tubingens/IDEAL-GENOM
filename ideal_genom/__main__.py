@@ -5,8 +5,8 @@ from ideal_genom.Helpers import arg_parser
 
 from ideal_genom.preprocessing.preparatory import Preparatory
 from ideal_genom.preprocessing.post_imputation import PostImputation
-from ideal_genom.gwas.gwas_fixed import GWASfixed
-from ideal_genom.gwas.gwas_random import GWASrandom
+from ideal_genom.gwas.gwas_glm import GWASfixed
+from ideal_genom.gwas.gwas_glmm import GWASrandom
 
 def analysis_pipe(params_dict:dict, data_dict:dict, steps_dict:dict)->None:
 
