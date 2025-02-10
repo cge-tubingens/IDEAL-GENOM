@@ -9,12 +9,7 @@ import matplotlib.pyplot as plt
 from matplotlib import transforms
 import numpy as np
 import pandas as pd
-import seaborn as sns
-import textalloc as ta
 
-from matplotlib.axes import Axes
-from matplotlib.backend_bases import RendererBase
-from matplotlib.colors import ListedColormap
 from matplotlib.patches import FancyArrow
 
 from gwaslab.bd_download import download_file
