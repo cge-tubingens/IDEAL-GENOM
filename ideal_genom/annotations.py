@@ -38,6 +38,10 @@ def get_closest_gene(x, data: Genome, chrom: str = "CHR", pos: str = "POS", max_
     tuple: 
         A tuple containing the distance to the closest gene and the gene name(s). If no gene is found, returns the distance and "intergenic".
     """
+
+    def clean_empty(gene):
+        # remove empty elements
+        return [x for x in gene if x!=""]    
     
     # from GWASlab
         
@@ -57,8 +61,10 @@ def get_closest_gene(x, data: Genome, chrom: str = "CHR", pos: str = "POS", max_
     position = int(x[pos])
         # query
     gene = data.gene_names_at_locus(contig=contig, position=position)
+
+
         
-    if len(gene)==0:
+    if len(clean_empty(gene))==0:
         # if not in any gene
         i=0
         while i<=max_iter:
@@ -70,7 +76,7 @@ def get_closest_gene(x, data: Genome, chrom: str = "CHR", pos: str = "POS", max_
             # downstream
             gene_d = data.gene_names_at_locus(contig=contig, position=position+distance)
             
-            if len(gene_u)>0 and len(gene_d)>0:
+            if len(clean_empty(gene_u))>0 and len(clean_empty(gene_d))>0:
                 # if found gene uptream and downstream at the same time 
                 # go back to last step
                 distance = (i-1)*step
@@ -78,23 +84,23 @@ def get_closest_gene(x, data: Genome, chrom: str = "CHR", pos: str = "POS", max_
                     # use small step to finemap                        
                     gene_u = data.gene_names_at_locus(contig=contig, position=position-distance-j)
                     gene_d = data.gene_names_at_locus(contig=contig, position=position+distance+j)
-                    if len(gene_u)>0:
+                    if len(clean_empty(gene_u))>0:
                         return -distance-j,",".join(gene_u).strip(",")
-                    elif len(gene_d)>0:
+                    elif len(clean_empty(gene_d))>0:
                         return distance+j,",".join(gene_d).strip(",")
-            elif len(gene_u)>0:                    
+            elif len(clean_empty(gene_u))>0:                    
                 # if found gene uptream
                 distance = (i-1)*step
                 for j in range(0,step,1):
                     gene_u2 = data.gene_names_at_locus(contig=contig, position=position-distance-j)
-                    if len(gene_u2)>0:
+                    if len(clean_empty(gene_u2))>0:
                         return -distance-j,",".join(gene_u).strip(",")
-            elif len(gene_d)>0:
+            elif len(clean_empty(gene_d))>0:
                 # if found gene downstream
                 distance = (i-1)*step
                 for j in range(0,step,1):
                     gene_d2 = data.gene_names_at_locus(contig=contig, position=position+distance+j)
-                    if len(gene_d2)>0:
+                    if len(clean_empty(gene_d2))>0:
                         return distance+j,",".join(gene_d).strip(",")
             i+=1
             # increase i by 1
@@ -263,7 +269,7 @@ def annotate_snp(insumstats: pd.DataFrame, chrom: str = "CHR", pos: str = "POS",
                 nsmbl38.unzip_latest()
                 nsmbl38.get_all_genes()
 
-                gtf_path = nsmbl38.protein_coding_path
+                gtf_path = nsmbl38.all_genes_path
 
             else:
                 print(" -Using user-provided gtf:{}".format(gtf_path))
