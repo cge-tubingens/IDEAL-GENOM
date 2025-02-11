@@ -18,6 +18,7 @@ dependencies = [
     "ipywidgets (>=8.1.5, <9.0.0)",
     "ipykernel (>=6.29.5,<7.0.0)",
     "gtfparse (>=2.5.0,<3.0.0)",
+    "pyensembl (==2.3.13)",
 ]
 
 [tool.poetry.group.dev.dependencies]
