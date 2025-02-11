@@ -22,9 +22,7 @@ import textalloc as ta
 from matplotlib.axes import Axes
 from matplotlib.backend_bases import RendererBase
 
-from gwaslab.bd_download import download_file
-from gwaslab.g_Log import Log
-from gwaslab.util_in_get_sig import annogene
+from ideal_genom.annotations import annotate_snp
 
 def compute_relative_pos(data:pd.DataFrame, chr_col:str='CHR', pos_col:str='POS', p_col:str='p')->pd.DataFrame:
     
@@ -170,7 +168,7 @@ def manhattan_process_data(data_df:pd.DataFrame, chr_col:str='CHR', pos_col:str=
 
     return manhattan_data
 
-def manhattan_draw(data_df:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, p_col:str, plot_dir:str, to_highlight:pd.DataFrame=pd.DataFrame(), highlight_hue:str='hue', to_annotate:pd.DataFrame=pd.DataFrame(), gen_col:str=None, build:str='38', gtf_path:str=None, save_name:str='manhattan_plot.jpeg')->bool:
+def manhattan_draw(data_df:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, p_col:str, plot_dir:str, to_highlight:pd.DataFrame=pd.DataFrame(), highlight_hue:str='hue', to_annotate:pd.DataFrame=pd.DataFrame(), gen_col:str=None, build:str='38', anno_source='ensembl', gtf_path:str=None, save_name:str='manhattan_plot.jpeg')->bool:
 
     """
     Draws a Manhattan plot for visualizing GWAS results.
@@ -349,34 +347,18 @@ def manhattan_draw(data_df:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, 
 
         else:
 
-            if gtf_path is None:
-                gtf_url = 'https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.40_GRCh38.p14/GCF_000001405.40_GRCh38.p14_genomic.gtf.gz'
-                path_to_gz = os.path.join(os.path.abspath('..'), 'GCF_000001405.40_GRCh38.p14_genomic.gtf.gz')
-                path_to_gtf= os.path.join(os.path.abspath('..'), 'GCF_000001405.40_GRCh38.p14_genomic.gtf')
-
-                if os.path.exists(path_to_gz) is not True or os.path.exists(path_to_gtf) is not True:
-
-                    download_file(gtf_url, path_to_gz)
-
-                    with gzip.open(path_to_gz, 'rb') as f_in:
-                         with open(path_to_gtf, 'wb') as f_out:
-                            shutil.copyfileobj(f_in, f_out)
-                gtf_path = path_to_gtf
-
             variants_toanno = plot_data['data'][plot_data['data'][snp_col].isin(to_annotate[snp_col])]\
                 .reset_index(drop=True)
-
+            
             if (variants_toanno.empty is not True):
-                variants_toanno = annogene(
-                    variants_toanno,
-                    id     =snp_col,
-                    chrom  =chr_col,
-                    pos    =pos_col,
-                    log    =Log(),
-                    build  =build,
-                    source ="refseq",
-                    verbose=True,
-                    gtf_path=gtf_path
+            
+                variants_toanno = annotate_snp(
+                    insumstats=variants_toanno,
+                    chrom     =chr_col,
+                    pos       =pos_col,
+                    build     =build,
+                    source    =anno_source,
+                    gtf_path  =gtf_path
                 ).rename(columns={"GENE":"GENENAME"})
 
         ax, texts = manhattan_type_annotate(
@@ -581,7 +563,7 @@ def miami_draw_anno_lines(renderer:RendererBase, axes:Axes, texts:list, variants
 
     return axes
 
-def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, p_col:str, plots_dir:str, top_highlights:list=[], top_annotations:pd.DataFrame=None, bottom_highlights:list=[], bottom_annotations:pd.DataFrame=None, top_gen_col:str=None, bottom_gen_col:str=None, gtf_path:str=None, save_name:str='miami_plot.jpeg', legend_top:str='top GWAS', legend_bottom:str='bottom GWAS')->bool:
+def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, p_col:str, plots_dir:str, top_highlights:list=[], top_annotations:pd.DataFrame=None, bottom_highlights:list=[], bottom_annotations:pd.DataFrame=None, top_gen_col:str=None, bottom_gen_col:str=None, gtf_path:str=None, anno_source: str = "ensemble", build: str = '38', save_name:str='miami_plot.jpeg', legend_top:str='top GWAS', legend_bottom:str='bottom GWAS')->bool:
     
     """
     Draws a Miami plot (a combination of two Manhattan plots) for visualizing GWAS results.
@@ -797,34 +779,18 @@ def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col
             top_variants_toanno = top_variants_toanno.rename(columns={top_gen_col:"GENENAME"})
 
         else:
-            if gtf_path is None:
-                gtf_url = 'https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.40_GRCh38.p14/GCF_000001405.40_GRCh38.p14_genomic.gtf.gz'
-                path_to_gz = os.path.join(os.path.abspath('..'), 'GCF_000001405.40_GRCh38.p14_genomic.gtf.gz')
-                path_to_gtf= os.path.join(os.path.abspath('..'), 'GCF_000001405.40_GRCh38.p14_genomic.gtf')
-
-                if os.path.exists(path_to_gz) is not True or os.path.exists(path_to_gtf) is not True:
-
-                    download_file(gtf_url, path_to_gz)
-
-                    with gzip.open(path_to_gz, 'rb') as f_in:
-                         with open(path_to_gtf, 'wb') as f_out:
-                            shutil.copyfileobj(f_in, f_out)
-                gtf_path = path_to_gtf
 
             top_variants_toanno = plot_data['upper'][plot_data['upper'][snp_col].isin(top_annotations[snp_col])]\
                 .reset_index(drop=True)
                 
             # get gene names for upper plot
             if (top_variants_toanno.empty is not True):
-                top_variants_toanno = annogene(
+                top_variants_toanno = annotate_snp(
                     top_variants_toanno,
-                    id     =snp_col,
                     chrom  =chr_col,
                     pos    =pos_col,
-                    log    =Log(),
-                    build  ='38',
-                    source ="refseq",
-                    verbose=False,
+                    build  =build,
+                    source =source,
                     gtf_path=gtf_path
                 ).rename(columns={"GENE":"GENENAME"})
 
@@ -848,34 +814,18 @@ def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col
             bottom_variants_toanno = bottom_variants_toanno.rename(columns={bottom_gen_col:"GENENAME"})
         
         else:
-            if gtf_path is None:
-                gtf_url = 'https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.40_GRCh38.p14/GCF_000001405.40_GRCh38.p14_genomic.gtf.gz'
-                path_to_gz = os.path.join(os.path.abspath('..'), 'GCF_000001405.40_GRCh38.p14_genomic.gtf.gz')
-                path_to_gtf= os.path.join(os.path.abspath('..'), 'GCF_000001405.40_GRCh38.p14_genomic.gtf')
-
-                if os.path.exists(path_to_gz) is not True or os.path.exists(path_to_gtf) is not True:
-
-                    download_file(gtf_url, path_to_gz)
-
-                    with gzip.open(path_to_gz, 'rb') as f_in:
-                         with open(path_to_gtf, 'wb') as f_out:
-                            shutil.copyfileobj(f_in, f_out)
-                gtf_path = path_to_gtf
 
             bottom_variants_toanno = plot_data['lower'][plot_data['lower'][snp_col].isin(bottom_annotations[snp_col])]\
             .reset_index(drop=True)
 
             # get gane names for bottom plot
             if (bottom_variants_toanno.empty is not True):
-                bottom_variants_toanno = annogene(
+                bottom_variants_toanno = annotate_snp(
                     bottom_variants_toanno,
-                    id     =snp_col,
                     chrom  =chr_col,
                     pos    =pos_col,
-                    log    =Log(),
-                    build  ='38',
-                    source ="refseq",
-                    verbose=False,
+                    build  =build,
+                    source =anno_source,
                     gtf_path=gtf_path
                 ).rename(columns={"GENE":"GENENAME"})
 

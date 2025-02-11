@@ -1,7 +1,4 @@
-import gzip
 import os
-import shutil
-import warnings
 import time
 import matplotlib
 
@@ -12,10 +9,8 @@ import pandas as pd
 
 from matplotlib.patches import FancyArrow
 
-from gwaslab.bd_download import download_file
-from gwaslab.bd_common_data import gtf_to_all_gene
-from gwaslab.g_Log import Log
-from gwaslab.util_in_get_sig import annogene
+from ideal_genom.annotations import annotate_snp, gtf_to_all_genes
+from ideal_genom.get_references import Ensembl37, Ensembl38
 
 from pyensembl import Genome
 
@@ -51,31 +46,14 @@ def filter_sumstats(data_df:pd.DataFrame, lead_snp:str, snp_col:str, p_col:str, 
 
     return df_filtered
 
-def snp_annotations(data_df:pd.DataFrame, snp_col:str, pos_col:str, chr_col:str, build:str='38', gtf_path:str=None, batch_size:int=100, request_persec:int=15) -> pd.DataFrame:
-    
-    if gtf_path is None:
-        gtf_url = 'https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.40_GRCh38.p14/GCF_000001405.40_GRCh38.p14_genomic.gtf.gz'
-        path_to_gz = os.path.join(os.path.abspath('..'), 'GCF_000001405.40_GRCh38.p14_genomic.gtf.gz')
-        path_to_gtf= os.path.join(os.path.abspath('..'), 'GCF_000001405.40_GRCh38.p14_genomic.gtf')
-        
-        if os.path.exists(path_to_gz) is not True or os.path.exists(path_to_gtf) is not True:
-            download_file(gtf_url, path_to_gz)
-            
-            with gzip.open(path_to_gz, 'rb') as f_in:
-                 with open(path_to_gtf, 'wb') as f_out:
-                    shutil.copyfileobj(f_in, f_out)
+def snp_annotations(data_df:pd.DataFrame, snp_col:str, pos_col:str, chr_col:str, build:str='38', anno_source: str = 'ensembl', gtf_path:str=None, batch_size:int=100, request_persec:int=15) -> pd.DataFrame:
 
-        gtf_path = path_to_gtf
-
-    variants_toanno = annogene(
-            data_df,
-            id     =snp_col,
+    variants_toanno = annotate_snp(
+            insumstats=data_df,
             chrom  =chr_col,
             pos    =pos_col,
-            log    =Log(),
             build  =build,
-            source ="refseq",
-            verbose=True,
+            source =anno_source,
             gtf_path=gtf_path
         ).rename(columns={"GENE":"GENENAME"})
     
@@ -141,37 +119,68 @@ def snp_annotations(data_df:pd.DataFrame, snp_col:str, pos_col:str, chr_col:str,
     
     return variants_toanno.drop(columns=['LOCATION'], inplace=False)
 
-def get_gene_information(genes:list, gtf_path:str=None, build:str=38)->pd.DataFrame:
+def get_gene_information(genes:list, gtf_path:str=None, build: str = "38", anno_source: str='ensembl')->pd.DataFrame:
 
-    if gtf_path is None:
-        gtf_url = 'https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.40_GRCh38.p14/GCF_000001405.40_GRCh38.p14_genomic.gtf.gz'
-        path_to_gz = os.path.join(os.path.abspath('..'), 'GCF_000001405.40_GRCh38.p14_genomic.gtf.gz')
-        path_to_gtf= os.path.join(os.path.abspath('..'), 'GCF_000001405.40_GRCh38.p14_genomic.gtf')
-        
-        if os.path.exists(path_to_gz) is not True or os.path.exists(path_to_gtf) is not True:
-            download_file(gtf_url, path_to_gz)
+    if anno_source == "ensembl":
+
+        if build=="19" or build=="37":
+
+            print(" -Assigning Gene name using ensembl_hg37_gtf for protein coding genes")
+  
+            if gtf_path is None:
+
+                nsmbl37 = Ensembl37()
+
+                nsmbl37.get_latest_release()
+                nsmbl37.download_latest()
+                nsmbl37.unzip_latest()
+                nsmbl37.get_all_genes()
+
+                gtf_path = nsmbl37.protein_coding_path
+
+            else:
+                print(" -Using user-provided gtf:{}".format(gtf_path))
+                
+                gtf_path = gtf_to_all_genes(gtf_path)
+
+            gtf_db_path = gtf_path[:-2]+"db"
             
-            with gzip.open(path_to_gz, 'rb') as f_in:
-                 with open(path_to_gtf, 'wb') as f_out:
-                    shutil.copyfileobj(f_in, f_out)
+            data = Genome(
+                reference_name='GRCh37',
+                annotation_name='Ensembl',
+                gtf_path_or_url=gtf_path
+            )
 
-        gtf_path = path_to_gtf
+            if os.path.isfile(gtf_db_path) is False:
 
-    gtf_path = gtf_to_all_gene(gtf_path, log=Log())
+                data.index()
+        
+        elif build=="38":
 
-    if build == '38':
-        data = Genome(
-            reference_name='GRCh38',
-            annotation_name='Refseq',
-            gtf_path_or_url=gtf_path
-        )
-    elif build == '19':
-        # data = Genome(
-        #     reference_name='GRCh37',
-        #     annotation_name='Refseq',
-        #     gtf_path_or_url=gtf_path
-        # )
-        warnings.warn("Build 19 not supported. Please, use built 38 instead.")
+            print(" -Assigning Gene name using ensembl_hg38_gtf for protein coding genes")
+
+            if gtf_path is None:
+
+                nsmbl38 = Ensembl38()
+
+                nsmbl38.get_latest_release()
+                nsmbl38.download_latest()
+                nsmbl38.unzip_latest()
+                nsmbl38.get_all_genes()
+
+                gtf_path = nsmbl38.all_genes_path
+
+            else:
+                print(" -Using user-provided gtf:{}".format(gtf_path))
+                gtf_path = gtf_to_all_genes(gtf_path)
+            
+            gtf_db_path = gtf_path[:-2]+"db"
+
+            data = Genome(
+                reference_name='GRCh38',
+                annotation_name='Ensembl',
+                gtf_path_or_url=gtf_path
+            )
 
     gene_info = {
         'gene':genes,
@@ -244,7 +253,7 @@ def get_ld_matrix(data_df:pd.DataFrame, snp_col:str, pos_col:str, bfile_folder:s
         
     return out_dict
 
-def get_zoomed_data(data_df:pd.DataFrame, lead_snp:str, snp_col:str, p_col:str, pos_col:str, chr_col:str, output_folder:str,pval_threshold:float=5e-6, radius:int=1e6, build='38', batch_size:int=100, request_persec:int=15)->pd.DataFrame:
+def get_zoomed_data(data_df:pd.DataFrame, lead_snp:str, snp_col:str, p_col:str, pos_col:str, chr_col:str, output_folder:str,pval_threshold:float=5e-6, radius:int=1e6, build: str='38', anno_source: str='ensemble', gtf_path: str = None, batch_size:int=100, request_persec:int=15)->pd.DataFrame:
 
     if not isinstance(data_df, pd.DataFrame):
         raise TypeError("data_df must be a pandas DataFrame.")
@@ -283,13 +292,15 @@ def get_zoomed_data(data_df:pd.DataFrame, lead_snp:str, snp_col:str, p_col:str, 
     
     # annotate the SNPs with gene names and functional consequences
     annotated = snp_annotations(
-        data_df=filtered_df, 
-        snp_col=snp_col, 
-        chr_col=chr_col, 
-        pos_col=pos_col,
-        build=build,
-        batch_size=batch_size,
-        request_persec=request_persec
+        data_df       =filtered_df, 
+        snp_col       =snp_col, 
+        chr_col       =chr_col, 
+        pos_col       =pos_col,
+        build         =build,
+        batch_size    =batch_size,
+        request_persec=request_persec,
+        anno_source   =anno_source,
+        gtf_path      =gtf_path
     )
 
     # scale the position to Mbp
@@ -301,7 +312,7 @@ def get_zoomed_data(data_df:pd.DataFrame, lead_snp:str, snp_col:str, p_col:str, 
 
     return annotated
 
-def draw_zoomed_heatmap(data_df:pd.DataFrame, lead_snp:str, snp_col:str, p_col:str, pos_col:str, chr_col:str, output_folder:str, pval_threshold:float=5e-6, radius:int=1e6, build='38', gtf_path:str=None, batch_size:int=100, bfile_folder:str=None, bfile_name:str=None, effect_dict:dict={}, extension:str='jpeg', request_persec:int=15)->None:
+def draw_zoomed_heatmap(data_df:pd.DataFrame, lead_snp:str, snp_col:str, p_col:str, pos_col:str, chr_col:str, output_folder:str, pval_threshold:float=5e-6, radius:int=1e6, build: str ='38', gtf_path:str=None, anno_source: str = "ensembl", batch_size:int=100, bfile_folder:str=None, bfile_name:str=None, effect_dict:dict={}, extension:str='jpeg', request_persec:int=15)->None:
 
     annotated = get_zoomed_data(
         data_df       =data_df,
@@ -314,7 +325,9 @@ def draw_zoomed_heatmap(data_df:pd.DataFrame, lead_snp:str, snp_col:str, p_col:s
         pval_threshold=pval_threshold, 
         radius        =radius,
         batch_size=batch_size,
-        request_persec=request_persec
+        request_persec=request_persec,
+        build=build,
+        gtf_path=gtf_path,
     )
 
     annotated['GENENAME'] = annotated['GENENAME'].apply(lambda x: x.split(',')[0])
@@ -328,9 +341,10 @@ def draw_zoomed_heatmap(data_df:pd.DataFrame, lead_snp:str, snp_col:str, p_col:s
     print('\n')
 
     genes = get_gene_information(
-        genes=annotated['GENENAME'].unique().tolist(),
+        genes   =annotated['GENENAME'].unique().tolist(),
         gtf_path=None,
-        build='38'
+        build   ='38',
+        anno_source=anno_source
     )
     genes['start_esc'] = genes['start']/1e6
     genes['end_esc']   = genes['end']/1e6

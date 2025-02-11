@@ -13,8 +13,6 @@ Functions:
 """
 
 import os
-import gzip
-import shutil
 
 import matplotlib
 import matplotlib.colors as mc
@@ -29,11 +27,10 @@ import textalloc as ta
 from matplotlib.collections import LineCollection
 from scipy import stats
 
-from gwaslab.bd_download import download_file
-from gwaslab.g_Log import Log
-from gwaslab.util_in_get_sig import annogene
-from gwaslab.util_in_calculate_power import get_beta
-from gwaslab.util_in_calculate_power import get_beta_binary
+from ideal_genom.annotations import annotate_snp
+
+from ideal_genom.power_comp import get_beta
+from ideal_genom.power_comp import get_beta_binary
 
 def qqplot_draw(df_gwas:pd.DataFrame, plots_dir:str, lambda_val:float=None, pval_col:str='P', conf_color="lightgray", save_name:str='qq_plot.jpeg')->bool:
 
@@ -411,7 +408,7 @@ def beta_beta_draw(gwas_1:pd.DataFrame, gwas_2:pd.DataFrame, p_col:str, beta_col
 
     return True
     
-def trumpet_draw(df_gwas:pd.DataFrame, df_freq:pd.DataFrame, plot_dir:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, maf_col:str, beta_col:str, power_ts:list, n_case:int, n_control:int, sample_size:int=None, n_col:str='', sample_size_strategy:str='median', p_col:str=None, prevalence:int=None, mode:str='binary', p_filter:float=5e-8, to_highlight:list=[], to_annotate:pd.DataFrame=None, gen_col:str=None, cmap:str="cool", power_sig_level:float=5e-8, build='38', gtf_path:str=None, save_name:str='trumpet_plot.jpeg')->bool:
+def trumpet_draw(df_gwas:pd.DataFrame, df_freq:pd.DataFrame, plot_dir:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, maf_col:str, beta_col:str, power_ts:list, n_case:int, n_control:int, sample_size:int=None, n_col:str='', sample_size_strategy:str='median', p_col:str=None, prevalence:int=None, mode:str='binary', p_filter:float=5e-8, to_highlight:list=[], to_annotate:pd.DataFrame=None, gen_col:str=None, cmap:str="cool", power_sig_level:float=5e-8, build='38', anno_source: str = 'ensembl', gtf_path:str=None, save_name:str='trumpet_plot.jpeg')->bool:
 
     if not isinstance(df_gwas, pd.DataFrame):
         raise ValueError(f"GWAS dataframe must be a pandas dataframe.")
@@ -668,33 +665,16 @@ def trumpet_draw(df_gwas:pd.DataFrame, df_freq:pd.DataFrame, plot_dir:pd.DataFra
 
         else:
 
-            if gtf_path is None:
-                gtf_url = 'https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.40_GRCh38.p14/GCF_000001405.40_GRCh38.p14_genomic.gtf.gz'
-                path_to_gz = os.path.join(os.path.abspath('..'), 'GCF_000001405.40_GRCh38.p14_genomic.gtf.gz')
-                path_to_gtf= os.path.join(os.path.abspath('..'), 'GCF_000001405.40_GRCh38.p14_genomic.gtf')
-
-                if os.path.exists(path_to_gz) is not True or os.path.exists(path_to_gtf) is not True:
-
-                    download_file(gtf_url, path_to_gz)
-
-                    with gzip.open(path_to_gz, 'rb') as f_in:
-                         with open(path_to_gtf, 'wb') as f_out:
-                            shutil.copyfileobj(f_in, f_out)
-                gtf_path = path_to_gtf
-
             variants_toanno = plot_data['data'][plot_data['data'][snp_col].isin(to_annotate[snp_col])]\
                 .reset_index(drop=True)
 
             if (variants_toanno.empty is not True):
-                variants_toanno = annogene(
+                variants_toanno = annotate_snp(
                     variants_toanno,
-                    id     =snp_col,
                     chrom  =chr_col,
                     pos    =pos_col,
-                    log    =Log(),
                     build  =build,
-                    source ="refseq",
-                    verbose=True,
+                    source =anno_source,
                     gtf_path=gtf_path
                 ).rename(columns={"GENE":"GENENAME"})
 
