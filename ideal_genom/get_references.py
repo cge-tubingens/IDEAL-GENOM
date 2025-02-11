@@ -372,9 +372,9 @@ class Ensembl37:
         if not hasattr(self, 'gtf_file') or not os.path.isfile(self.gtf_file):
             raise FileNotFoundError("Reference file not found")
         
-        if os.path.isfile(self.gtf_file[:-5]+"protein_coding.gtf.gz"):
-            self.protein_coding_path = self.gtf_file[:-3]+"protein_coding.gtf"
-            print(f"File already exists: {self.protein_coding_path}")
+        if os.path.isfile(self.gtf_file[:-5]+"all_genes.gtf.gz"):
+            self.all_genes_path = self.gtf_file[:-3]+"all_genes.gtf"
+            print(f"File already exists: {self.all_genes_path}")
             return
 
         gtf = read_gtf(self.gtf_file, usecols=["feature","gene_biotype","gene_id","gene_name"])
