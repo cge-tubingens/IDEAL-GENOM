@@ -156,7 +156,7 @@ class Ensembl38:
         if not hasattr(self, 'gz_file') or not os.path.isfile(self.gz_file):
             raise FileNotFoundError("Reference file not found")
         
-        gtf_file = os.path.join(destination_folder, os.path.basename(self.latest_url)[:-2])
+        gtf_file = os.path.join(destination_folder, os.path.basename(self.latest_url)[:-3])
 
         try:
             with gzip.open(self.gz_file, 'rb') as f_in:
@@ -179,7 +179,7 @@ class Ensembl38:
             print(f"File already exists: {self.all_genes_path}")
             return
 
-        gtf = read_gtf(self.gtf_file, usecols=["feature","gene_biotype","gene_id","gene_name"])
+        gtf = read_gtf(self.gtf_file, usecols=["feature","gene_biotype","gene_id","gene_name"], result_type='pandas')
 
         gene_list = gtf.loc[gtf["feature"]=="gene","gene_id"].values
 
@@ -192,7 +192,7 @@ class Ensembl38:
 
         gtf_raw.to_csv(all_genes_path, header=None, index=None, sep="\t")
 
-        self.protein_coding_path = all_genes_path
+        self.all_genes_path = all_genes_path
 
         return
     
