@@ -9,10 +9,7 @@ import shutil
 import pandas as pd
 
 from ideal_genom.Helpers import shell_do
-
-from gwaslab.bd_download import download_file
-from gwaslab.util_in_get_sig import annogene
-from gwaslab.g_Log import Log
+from ideal_genom.annotations import annotate_snp
 
 class GWASfixed:
 
@@ -310,7 +307,7 @@ class GWASfixed:
 
         return out_dict
     
-    def annotate_top_hits(self, gtf_path:str=None, build:str='38')->dict:
+    def annotate_top_hits(self, gtf_path:str=None, build:str='38', anno_source: str = "ensembl")->dict:
 
         """
         Annotate the top hits from the association analysis.
@@ -330,30 +327,13 @@ class GWASfixed:
 
         df_hits = df_hits[['Chr', 'SNP', 'bp']].copy()
 
-        if gtf_path is None:
-            gtf_url = 'https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.40_GRCh38.p14/GCF_000001405.40_GRCh38.p14_genomic.gtf.gz'
-            path_to_gz = os.path.join(os.path.abspath('..'), 'GCF_000001405.40_GRCh38.p14_genomic.gtf.gz')
-            path_to_gtf= os.path.join(os.path.abspath('..'), 'GCF_000001405.40_GRCh38.p14_genomic.gtf')
-            
-            if os.path.exists(path_to_gz) is not True or os.path.exists(path_to_gtf) is not True:
-
-                download_file(gtf_url, path_to_gz)
-                
-                with gzip.open(path_to_gz, 'rb') as f_in:
-                     with open(path_to_gtf, 'wb') as f_out:
-                        shutil.copyfileobj(f_in, f_out)
-            gtf_path = path_to_gtf
-
         if (df_hits.empty is not True):
-            variants_toanno = annogene(
+            variants_toanno = annotate_snp(
                 variants_toanno,
-                id     ='SNP',
                 chrom  ='Chr',
                 pos    ='bp',
-                log    =Log(),
                 build  =build,
-                source ="refseq",
-                verbose=False,
+                source =anno_source,
                 gtf_path=gtf_path
             ).rename(columns={"GENE":"GENENAME"})
 
