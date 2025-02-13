@@ -197,9 +197,9 @@ def gtf_to_all_genes(gtfpath):
         # get gene list
         logger.info(f" - Extracting genes from {gtfpath}")
         
-        gtf = read_gtf(gtfpath,usecols=["feature","gene_biotype","gene_id","gene_name"])
+        gtf = read_gtf(gtfpath,usecols=["feature", "gene_biotype", "gene_id", "gene_name"])
 
-        gene_list = gtf.loc[gtf["feature"]=="gene","gene_id"].values
+        gene_list = gtf.loc[gtf["feature"]=="gene", "gene_id"].values
         
         logger.info(f" - Loaded {gene_list} genes.")
         
@@ -286,6 +286,7 @@ def annotate_snp(insumstats: pd.DataFrame, chrom: str = "CHR", pos: str = "POS",
             
             if os.path.isfile(gtf_db_path) is False:
                 data.index()
+
             output.loc[:,["LOCATION","GENE"]] = pd.DataFrame(
                 list(output.apply(lambda x:get_closest_gene(x,data=data,chrom=chrom,pos=pos,source=source), axis=1)), 
                 index=output.index).values
