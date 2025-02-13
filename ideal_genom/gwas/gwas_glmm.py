@@ -202,7 +202,7 @@ class GWASrandom:
 
         return out_dict
     
-    def run_gwas_random(self, maf:float=0.01)->dict:
+    def run_gwas_glmm(self, maf:float=0.01)->dict:
         
         """
         Runs a Genome-Wide Association Study (GWAS) using a generalized linear mixed model (GLMMM).
