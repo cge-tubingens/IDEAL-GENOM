@@ -232,14 +232,14 @@ def annotate_snp(insumstats: pd.DataFrame, chrom: str = "CHR", pos: str = "POS",
   
             if gtf_path is None or not is_gtf_path:
 
-                nsmbl37 = Ensembl37()
+                nsmbl37 = Ensembl37Fetcher()
 
                 nsmbl37.get_latest_release()
                 nsmbl37.download_latest()
                 nsmbl37.unzip_latest()
                 nsmbl37.get_all_genes()
 
-                gtf_path = nsmbl37.protein_coding_path
+                gtf_path = nsmbl37.all_genes_path
 
             else:
                 logger.info(f" -Using user-provided gtf:{gtf_path}")
@@ -268,7 +268,7 @@ def annotate_snp(insumstats: pd.DataFrame, chrom: str = "CHR", pos: str = "POS",
 
             if gtf_path is None or not is_gtf_path:
 
-                nsmbl38 = Ensembl38()
+                nsmbl38 = Ensembl38Fetcher()
 
                 nsmbl38.get_latest_release()
                 nsmbl38.download_latest()
