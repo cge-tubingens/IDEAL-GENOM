@@ -221,6 +221,8 @@ def gtf_to_all_genes(gtfpath: str = None):
 def annotate_snp(insumstats: pd.DataFrame, chrom: str = "CHR", pos: str = "POS", build: str = "38", source: str = "ensembl", gtf_path: str = None):
     
     output = insumstats.copy()
+
+    is_gtf_path = os.path.isfile(gtf_path)
     
     if source == "ensembl":
 
@@ -228,7 +230,7 @@ def annotate_snp(insumstats: pd.DataFrame, chrom: str = "CHR", pos: str = "POS",
 
             logger.info(" -Assigning Gene name using Ensembl GRCh37 for protein coding genes")
   
-            if gtf_path is None:
+            if gtf_path is None or not is_gtf_path:
 
                 nsmbl37 = Ensembl37()
 
@@ -264,7 +266,7 @@ def annotate_snp(insumstats: pd.DataFrame, chrom: str = "CHR", pos: str = "POS",
 
             logger.info(" -Assigning Gene name using Ensembl GRCh38 for protein coding genes")
 
-            if gtf_path is None:
+            if gtf_path is None or not is_gtf_path:
 
                 nsmbl38 = Ensembl38()
 
