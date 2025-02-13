@@ -290,46 +290,77 @@ def annotate_snp(insumstats: pd.DataFrame, chrom: str = "CHR", pos: str = "POS",
                 list(output.apply(lambda x:get_closest_gene(x,data=data,chrom=chrom,pos=pos,source=source), axis=1)), 
                 index=output.index).values
     
-#    if source == "refseq":
-#        if build=="19":
-#            log.write(" -Assigning Gene name using NCBI refseq latest GRCh37 for protein coding genes", verbose=verbose)
-#            #gtf_path = check_and_download("refseq_hg19_gtf_protein_coding")
-#            if gtf_path is None:
-#                gtf_path = check_and_download("refseq_hg19_gtf")
-#                gtf_path = gtf_to_protein_coding(gtf_path,log=log,verbose=verbose)
-#            else:
-#                log.write(" -Using user-provided gtf:{}".format(gtf_path))
-#                gtf_path = gtf_to_all_gene(gtf_path,log=log,verbose=verbose)
-#            
-#            gtf_db_path = gtf_path[:-2]+"db"
-#            data = Genome(
-#                reference_name='GRCh37',
-#                annotation_name='Refseq',
-#                gtf_path_or_url=gtf_path)
-#            if path.isfile(gtf_db_path) is False:
-#                data.index()
-#            output.loc[:,["LOCATION","GENE"]] = pd.DataFrame(
-#                list(output.apply(lambda x:closest_gene(x,data=data,chrom=chrom,pos=pos,source=source,build=build), axis=1)), 
-#                index=output.index).values
-#        elif build=="38":
-#            log.write(" -Assigning Gene name using NCBI refseq latest GRCh38 for protein coding genes", verbose=verbose)
-#            #gtf_path = check_and_download("refseq_hg38_gtf_protein_coding")
-#            if gtf_path is None:
-#                gtf_path = check_and_download("refseq_hg38_gtf")
-#                gtf_path = gtf_to_protein_coding(gtf_path,log=log,verbose=verbose)
-#            else:
-#                log.write(" -Using user-provided gtf:{}".format(gtf_path))
-#                gtf_path = gtf_to_all_gene(gtf_path,log=log,verbose=verbose)
-#            
-#            gtf_db_path = gtf_path[:-2]+"db"
-#            data = Genome(
-#                reference_name='GRCh38',
-#                annotation_name='Refseq',
-#                gtf_path_or_url=gtf_path)
-#            if path.isfile(gtf_db_path) is False:
-#                data.index()
-#            output.loc[:,["LOCATION","GENE"]] = pd.DataFrame(
-#                list(output.apply(lambda x:closest_gene(x,data=data,chrom=chrom,pos=pos,source=source,build=build), axis=1)), 
-#                index=output.index).values
-#    log.write("Finished annotating variants with nearest gene name(s) successfully!", verbose=verbose)
+    if source == "refseq":
+
+        if build=="19" or build=="37":
+        
+            logger.info(" -Assigning Gene name using NCBI refseq latest GRCh37 for protein coding genes")
+            
+            if gtf_path is None or not is_gtf_path:
+
+                refseq37 = RefSeqFetcher(build = "37")
+
+                refseq37.get_latest_release()
+                refseq37.download_latest()
+                refseq37.unzip_latest()
+                refseq37.get_all_genes()
+
+                gtf_path = refseq37.all_genes_path
+
+            else:
+                logger.info(f" -Using user-provided gtf:{gtf_path}")
+                gtf_path = gtf_to_all_genes(gtf_path)
+            
+            gtf_db_path = gtf_path[:-2]+"db"
+            
+            
+            data = Genome(
+                reference_name='GRCh37',
+                annotation_name='Refseq',
+                gtf_path_or_url=gtf_path
+            )
+            
+
+            if os.path.isfile(gtf_db_path) is False:
+                data.index()
+
+            output.loc[:,["LOCATION","GENE"]] = pd.DataFrame(
+                list(output.apply(lambda x:get_closest_gene(x,data=data,chrom=chrom,pos=pos,source=source,build=build), axis=1)), 
+                index=output.index).values
+            
+        elif build=="38":
+            
+            logger.info(" -Assigning Gene name using NCBI refseq latest GRCh38 for protein coding genes")
+            
+            if gtf_path is None or not is_gtf_path:
+
+                refseq38 = RefSeqFetcher(build = "38")
+
+                refseq38.get_latest_release()
+                refseq38.download_latest()
+                refseq38.unzip_latest()
+                refseq38.get_all_genes()
+
+                gtf_path = refseq38.all_genes_path
+
+            else:
+                logger.info(f" -Using user-provided gtf:{gtf_path}")
+                gtf_path = gtf_to_all_genes(gtf_path)
+
+            gtf_db_path = gtf_path[:-2]+"db"
+            
+            data = Genome(
+                reference_name='GRCh38',
+                annotation_name='Refseq',
+                gtf_path_or_url=gtf_path
+            )
+            
+            if os.path.isfile(gtf_db_path) is False:
+                data.index()
+            
+            output.loc[:,["LOCATION","GENE"]] = pd.DataFrame(
+                list(output.apply(lambda x:get_closest_gene(x,data=data,chrom=chrom,pos=pos,source=source,build=build), axis=1)), 
+                index=output.index).values
+            
+    logger.info("Finished annotating variants with nearest gene name(s) successfully!")
     return output
