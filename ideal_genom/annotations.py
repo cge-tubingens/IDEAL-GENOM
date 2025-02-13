@@ -7,7 +7,10 @@ from pyensembl import Genome
 
 from gtfparse import read_gtf
 
-from ideal_genom.get_references import Ensembl37, Ensembl38
+from ideal_genom.get_references import Ensembl38Fetcher, Ensembl37Fetcher, RefSeqFetcher
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logger = logging.getLogger(__name__)
 
 def get_closest_gene(x, data: Genome, chrom: str = "CHR", pos: str = "POS", max_iter: int = 20000, step: int = 50, source: str = "ensembl", build: str="38"):
     
