@@ -3,7 +3,6 @@ import os
 import pandas as pd
 
 from pyensembl import Genome
-from pyensembl import EnsemblRelease
 
 from gtfparse import read_gtf
 
