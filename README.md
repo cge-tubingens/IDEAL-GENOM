@@ -55,10 +55,16 @@ The `parameters.JSON` file contains values for the different parameters used alo
         "maf": 0.01,
         "mind": 0.1,
         "hwe": 5e-8,
-        "ci": 0.95
+        "ci": 0.95,
+        "gtf_path": null,
+        "build": "38",
+        "anno_source": "ensembl"
     },
     "gwas_glmm": {
-        "maf": 0.01
+        "maf": 0.01,
+        "gtf_path": null,
+        "build": "38",
+        "anno_source": "ensembl"
     }
 }
 ```
