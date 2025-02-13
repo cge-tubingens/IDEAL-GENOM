@@ -1,4 +1,5 @@
 import os
+import logging
 
 import pandas as pd
 
@@ -194,13 +195,13 @@ def gtf_to_all_genes(gtfpath):
     if not os.path.isfile(all_gene_path):
         
         # get gene list
-        print(" - Extracting genes from {}".format(gtfpath))
+        logger.info(f" - Extracting genes from {gtfpath}")
         
         gtf = read_gtf(gtfpath,usecols=["feature","gene_biotype","gene_id","gene_name"])
 
         gene_list = gtf.loc[gtf["feature"]=="gene","gene_id"].values
         
-        print(" - Loaded {} genes.".format(len(gene_list)))
+        logger.info(f" - Loaded {gene_list} genes.")
         
         # extract entry using csv
         gtf_raw = pd.read_csv(gtfpath,sep="\t",header=None,comment="#",dtype="string")
@@ -208,7 +209,8 @@ def gtf_to_all_genes(gtfpath):
         gtf_raw = gtf_raw.loc[ gtf_raw["_gene_id"].isin(gene_list) ,:]
         gtf_raw = gtf_raw.drop("_gene_id",axis=1)
         
-        print(" - Extracted records are saved to : {} ".format(all_gene_path))
+        logger.info(f" - Extracted records are saved to : {all_gene_path} ")
+
         gtf_raw.to_csv(all_gene_path, header=None, index=None, sep="\t")
 
     return all_gene_path
@@ -221,7 +223,7 @@ def annotate_snp(insumstats: pd.DataFrame, chrom: str = "CHR", pos: str = "POS",
 
         if build=="19" or build=="37":
 
-            print(" -Assigning Gene name using ensembl_hg37_gtf for protein coding genes")
+            logger.info(" -Assigning Gene name using Ensembl GRCh37 for protein coding genes")
   
             if gtf_path is None:
 
@@ -235,7 +237,7 @@ def annotate_snp(insumstats: pd.DataFrame, chrom: str = "CHR", pos: str = "POS",
                 gtf_path = nsmbl37.protein_coding_path
 
             else:
-                print(" -Using user-provided gtf:{}".format(gtf_path))
+                logger.info(f" -Using user-provided gtf:{gtf_path}")
                 
                 gtf_path = gtf_to_all_genes(gtf_path)
 
@@ -257,7 +259,7 @@ def annotate_snp(insumstats: pd.DataFrame, chrom: str = "CHR", pos: str = "POS",
         
         elif build=="38":
 
-            print(" -Assigning Gene name using ensembl_hg38_gtf for protein coding genes")
+            logger.info(" -Assigning Gene name using Ensembl GRCh38 for protein coding genes")
 
             if gtf_path is None:
 
@@ -271,7 +273,7 @@ def annotate_snp(insumstats: pd.DataFrame, chrom: str = "CHR", pos: str = "POS",
                 gtf_path = nsmbl38.all_genes_path
 
             else:
-                print(" -Using user-provided gtf:{}".format(gtf_path))
+                logger.info(f" -Using user-provided gtf:{gtf_path}")
                 gtf_path = gtf_to_all_genes(gtf_path)
             
             gtf_db_path = gtf_path[:-2]+"db"
