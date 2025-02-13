@@ -328,8 +328,8 @@ class GWASfixed:
         df_hits = df_hits[['Chr', 'SNP', 'bp']].copy()
 
         if (df_hits.empty is not True):
-            variants_toanno = annotate_snp(
-                variants_toanno,
+            df_hits = annotate_snp(
+                df_hits,
                 chrom  ='Chr',
                 pos    ='bp',
                 build  =build,
