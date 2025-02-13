@@ -287,7 +287,7 @@ class GWASfixed:
 
         if recompute:
             # gcta command
-            gcta_cmd = f"gcta64 --bfile {os.path.join(input_path, input_name)} --maf {maf} --cojo-slct --cojo-file {os.path.join(results_dir, 'cojo_file.ma')}   --out {os.path.join(results_dir, 'cojo_file')} --thread-num {max_threads}"
+            gcta_cmd = f"gcta64 --bfile {os.path.join(input_path, input_name)} --maf {maf} --cojo-slct --cojo-file {os.path.join(results_dir, 'cojo_file.ma')}   --out {os.path.join(results_dir, input_name, '-cojo')} --thread-num {max_threads}"
 
             # execute gcta command
             shell_do(gcta_cmd, log=True)
