@@ -190,7 +190,7 @@ def get_chr_to_NC(build: str, inverse=False):
         return inv_dic
     return dic
 
-def gtf_to_all_genes(gtfpath):
+def gtf_to_all_genes(gtfpath: str = None):
     
     all_gene_path = gtfpath[:-6]+"all_genes.gtf.gz"
     
