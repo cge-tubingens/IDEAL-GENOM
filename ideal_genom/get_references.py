@@ -121,7 +121,7 @@ class ReferenceDataFetcher:
             raise
 
         self.gtf_file = str(gtf_file)
-        
+
         return str(gtf_file)
     
     def get_all_genes(self) -> str:
@@ -129,9 +129,9 @@ class ReferenceDataFetcher:
         if not hasattr(self, 'gtf_file') or not os.path.isfile(self.gtf_file):
             raise FileNotFoundError("Reference file not found")
         
-        if os.path.isfile(self.gtf_file[:-5]+"-all_genes.gtf.gz"):
+        if os.path.isfile(self.gtf_file[:-4]+"-all_genes.gtf.gz"):
 
-            self.all_genes_path = self.gtf_file[:-3] + "-all_genes.gtf"
+            self.all_genes_path = self.gtf_file[:-4] + "-all_genes.gtf.gz"
             logger.info(f"File already exists: {self.all_genes_path}")
 
             return
