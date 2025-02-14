@@ -496,7 +496,7 @@ def manhattan_type_annotate(axes:Axes, data:pd.DataFrame, variants_toanno:pd.Dat
             x_lines  = [x_lines_coor, x_lines_coor],
             y_lines  = [[-np.log10(suggestive_line)]*len(x_lines_coor), [-np.log10(genome_line)]*len(x_lines_coor)],
             avoid_label_lines_overlap =True,
-            avoid_crossing_label_lines=False,
+            avoid_crossing_label_lines=True,
             min_distance=0.01,
             max_distance=0.4,
             margin      =0.01,
