@@ -106,6 +106,11 @@ class ReferenceDataFetcher:
 
         gtf_file = self.destination_folder / (Path(self.gz_file).stem)  # Removes .gz extension
 
+        if gtf_file.exists():
+            self.gtf_file = str(gtf_file)
+            logger.info(f"File already exists: {gtf_file}")
+            return str(gtf_file)
+
         try:
             with gzip.open(self.gz_file, 'rb') as f_in:
                 with open(gtf_file, 'wb') as f_out:
@@ -116,6 +121,7 @@ class ReferenceDataFetcher:
             raise
 
         self.gtf_file = str(gtf_file)
+        
         return str(gtf_file)
     
     def get_all_genes(self) -> str:
