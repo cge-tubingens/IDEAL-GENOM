@@ -222,8 +222,11 @@ def annotate_snp(insumstats: pd.DataFrame, chrom: str = "CHR", pos: str = "POS",
     
     output = insumstats.copy()
 
-    is_gtf_path = os.path.isfile(gtf_path)
-    
+    if gtf_path is None:
+        is_gtf_path = False
+    else: 
+        is_gtf_path = os.path.isfile(gtf_path)
+
     if source == "ensembl":
 
         if build=="19" or build=="37":
