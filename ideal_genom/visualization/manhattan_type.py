@@ -168,7 +168,7 @@ def manhattan_process_data(data_df:pd.DataFrame, chr_col:str='CHR', pos_col:str=
 
     return manhattan_data
 
-def manhattan_draw(data_df:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, p_col:str, plot_dir:str, to_highlight:pd.DataFrame=pd.DataFrame(), highlight_hue:str='hue', to_annotate:pd.DataFrame=pd.DataFrame(), gen_col:str=None, build:str='38', anno_source='ensembl', gtf_path:str=None, save_name:str='manhattan_plot.jpeg')->bool:
+def manhattan_draw(data_df:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, p_col:str, plot_dir:str, to_highlight:pd.DataFrame=pd.DataFrame(), highlight_hue:str='hue', to_annotate:pd.DataFrame=pd.DataFrame(), gen_col:str=None, build:str='38', anno_source='ensembl', gtf_path:str=None, save_name:str='manhattan_plot.jpeg', genome_line: float = 5e-8, suggestive_line: str = 1e-5, yaxis_margin: float = 10)->bool:
 
     """
     Draws a Manhattan plot for visualizing GWAS results.
@@ -235,9 +235,7 @@ def manhattan_draw(data_df:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, 
     chr_colors           = ['#66c2a5', '#fc8d62']
     ylab                 = "-log10(p)"
     xlab                 = "Chromosome"
-    genome_line          = 5e-8
     genome_line_color    = "#636363"
-    suggestive_line      = 1e-5 
     suggestive_line_color= "#377eb8"
 
     # format data to draw manhattan plot
@@ -274,7 +272,7 @@ def manhattan_draw(data_df:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, 
 
     # set axis limits
     ax.set_xlim(0, max_x_axis+1000)
-    ax.set_ylim(0, plot_data['maxp']+10)
+    ax.set_ylim(0, plot_data['maxp'] + yaxis_margin)
 
     # set x-axis ticks and labels
     x_ticks=plot_data['axis']['center'].tolist()
