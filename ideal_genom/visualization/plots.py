@@ -13,6 +13,7 @@ Functions:
 """
 
 import os
+import logging
 
 import matplotlib
 import matplotlib.colors as mc
@@ -32,8 +33,11 @@ from ideal_genom.annotations import annotate_snp
 from ideal_genom.power_comp import get_beta
 from ideal_genom.power_comp import get_beta_binary
 
-def qqplot_draw(df_gwas:pd.DataFrame, plots_dir:str, lambda_val:float=None, pval_col:str='P', conf_color="lightgray", save_name:str='qq_plot.jpeg')->bool:
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logger = logging.getLogger(__name__)
 
+def qqplot_draw(df_gwas:pd.DataFrame, plots_dir: str, lambda_val: float = None, pval_col: str = 'P', conf_color: str = "lightgray", save_name: str = 'qq_plot.jpeg', fig_size: tuple = (10,10)) -> bool:
+    
     """
     Function to draw a qq plot for GWAS data.
 
