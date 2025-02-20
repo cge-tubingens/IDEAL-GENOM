@@ -484,7 +484,7 @@ def manhattan_type_annotate(axes:Axes, data:pd.DataFrame, variants_toanno:pd.Dat
         texts.append(row['GENENAME'])
 
     allocate = ta.allocate(
-            axes,              # the axis to which the text will be
+            axes,            
             x        =x,     # x-coordinates of the data point to annotate
             y        =y,     # y-coordinates of the data point to annotate
             text_list=texts, # list of text to annotate
