@@ -440,9 +440,14 @@ class PostImputation:
             RuntimeError: If password is incorrect
         """
         
-        password_bytes = bytes(password, 'utf-8')
+        
         
         with zipfile.ZipFile(zip_path, 'r') as zf:
+
+            if password is not None:
+                password_bytes = bytes(password, 'utf-8')
+            else:
+                password_bytes = None
 
             zf.setpassword(password_bytes)
             
