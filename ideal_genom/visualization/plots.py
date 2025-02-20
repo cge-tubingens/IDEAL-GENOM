@@ -29,7 +29,7 @@ from matplotlib.collections import LineCollection
 
 from ideal_genom.annotations import annotate_snp
 
-from ideal_genom.power_comp import get_beta
+from ideal_genom.power_comp import get_beta_quantitative
 from ideal_genom.power_comp import get_beta_binary
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -614,8 +614,7 @@ def trumpet_draw(df_gwas:pd.DataFrame, df_freq:pd.DataFrame, plot_dir:pd.DataFra
 
     if mode=='quantitative':
         for i,t in enumerate(power_ts):
-            xpower = get_beta(
-                mode      ="q",          
+            xpower = get_beta_quantitative(        
                 eaf_range =maf_range,
                 beta_range=beta_range, 
                 n         =sample_size,
