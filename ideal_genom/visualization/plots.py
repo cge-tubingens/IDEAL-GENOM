@@ -97,8 +97,13 @@ def qqplot_draw(df_gwas:pd.DataFrame, plots_dir: str, lambda_val: float = None, 
         raise ValueError(f"Figure size must be a tuple of length 2.")
 
     if lambda_val is None:
+
+        logger.info("Calculating genomic inflation factor (λ)...")
+        
         chi_sq = stats.chi2.isf(df_gwas[pval_col], df=1)
         lambda_val = np.median(chi_sq) / stats.chi2.ppf(0.5, df=1)
+
+        logger.info(f"Genomic inflation factor (λ) = {lambda_val:.6f}")
     
     pvalues = df_gwas[pval_col].values
     grp = None
@@ -133,11 +138,14 @@ def qqplot_draw(df_gwas:pd.DataFrame, plots_dir: str, lambda_val: float = None, 
     fig, ax = plt.subplots(figsize=(10,10))
 
     # compute confidence intervals
+    logger.info("Computing confidence intervals...")
+
     mpts = confidence_interval(n, conf_points=1500, conf_alpha=0.05)
 
     # Plot the confidence interval as a filled polygon
     plt.fill(mpts[:, 0], mpts[:, 1], color=conf_color)
 
+    logger.info("Plotting Q-Q plot...")
     if grp is not None:
         unique_groups = np.unique(grp)
         for group in unique_groups:
@@ -163,6 +171,8 @@ def qqplot_draw(df_gwas:pd.DataFrame, plots_dir: str, lambda_val: float = None, 
 
     plt.savefig(os.path.join(plots_dir, save_name), dpi=500)
     plt.show()
+
+    logger.info(f"Q-Q plot saved as {save_name} in {plots_dir}")
 
     return True
 
