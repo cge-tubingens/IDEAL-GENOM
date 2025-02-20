@@ -38,19 +38,63 @@ logger = logging.getLogger(__name__)
 def qqplot_draw(df_gwas:pd.DataFrame, plots_dir: str, lambda_val: float = None, pval_col: str = 'P', conf_color: str = "lightgray", save_name: str = 'qq_plot.jpeg', fig_size: tuple = (10,10)) -> bool:
     
     """
-    Function to draw a qq plot for GWAS data.
+    Creates a Q-Q (Quantile-Quantile) plot from GWAS results.
+    
+    This function generates a Q-Q plot comparing observed vs expected -log10(p-values)
+    from GWAS results, including confidence intervals and genomic inflation factor (λ).
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     df_gwas : pd.DataFrame
-        Dataframe with GWAS summary statistics.
+        DataFrame containing GWAS results with p-values
     plots_dir : str
-        Path to the directory to save the plot.
+        Directory path where the plot will be saved
+    lambda_val : float, optional
+        Pre-calculated genomic inflation factor (λ). If None, will be calculated
+    pval_col : str, default='P'
+        Name of the column containing p-values in df_gwas
+    conf_color : str, default='lightgray'
+        Color for the confidence interval region
+    save_name : str, default='qq_plot.jpeg'
+        Filename to save the plot
+    fig_size : tuple, default=(10,10)
+        Figure dimensions as (width, height) in inches
 
-    Returns:
-    --------
+    Returns
+    -------
     bool
+        True if plot is successfully created and saved
+
+    Raises
+    ------
+    ValueError
+        If input parameters are of incorrect type or format
+        If plots directory does not exist
+    
+    Notes
+    -----
+    The function includes data thinning to improve performance with large datasets
+    and automatically calculates genomic inflation factor if not provided.
     """
+
+    if not isinstance(df_gwas, pd.DataFrame):
+        raise ValueError(f"GWAS dataframe must be a pandas dataframe.")
+    if not isinstance(plots_dir, str):
+        raise ValueError(f"Plots directory must be a string.")
+    if not os.path.exists(plots_dir):
+        raise ValueError(f"Plots directory does not exist.")
+    if not isinstance(lambda_val, float) and lambda_val is not None:
+        raise ValueError(f"Lambda value must be a float.")
+    if not isinstance(pval_col, str):    
+        raise ValueError(f"P-value column must be a string.")
+    if not isinstance(conf_color, str):
+        raise ValueError(f"Confidence color must be a string.")
+    if not isinstance(save_name, str):
+        raise ValueError(f"Save name must be a string.")
+    if not isinstance(fig_size, tuple):
+        raise ValueError(f"Figure size must be a tuple.")
+    if len(fig_size) != 2:
+        raise ValueError(f"Figure size must be a tuple of length 2.")
 
     if lambda_val is None:
         chi_sq = stats.chi2.isf(df_gwas[pval_col], df=1)
