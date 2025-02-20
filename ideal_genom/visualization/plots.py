@@ -470,7 +470,7 @@ def beta_beta_draw(gwas_1:pd.DataFrame, gwas_2:pd.DataFrame, p_col:str, beta_col
 
     return True
     
-def trumpet_draw(df_gwas:pd.DataFrame, df_freq:pd.DataFrame, plot_dir:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, maf_col:str, beta_col:str, power_ts:list, n_case:int, n_control:int, sample_size:int=None, n_col:str='', sample_size_strategy:str='median', p_col:str=None, prevalence:int=None, mode:str='binary', p_filter:float=5e-8, to_highlight:list=[], to_annotate:pd.DataFrame=None, gen_col:str=None, cmap:str="cool", power_sig_level:float=5e-8, build='38', anno_source: str = 'ensembl', gtf_path:str=None, save_name:str='trumpet_plot.jpeg')->bool:
+def trumpet_draw(df_gwas: pd.DataFrame, df_freq: pd.DataFrame, plot_dir: str, snp_col: str, chr_col: str, pos_col: str, maf_col: str, beta_col: str, power_ts: list, n_case: int = None, n_control: int = None, sample_size: int = None, n_col: str = '', sample_size_strategy: str = 'median', p_col: str = None, prevalence: int = None, mode: str = 'binary', p_filter: float = 5e-8, to_highlight: list = [], to_annotate: pd.DataFrame = None, gen_col: str = None, cmap: str= "cool", power_sig_level: float = 5e-8, build = '38', anno_source: str = 'ensembl', gtf_path: str = None, save_name: str = 'trumpet_plot.jpeg') -> bool:
 
     if not isinstance(df_gwas, pd.DataFrame):
         raise ValueError(f"GWAS dataframe must be a pandas dataframe.")
@@ -511,6 +511,7 @@ def trumpet_draw(df_gwas:pd.DataFrame, df_freq:pd.DataFrame, plot_dir:pd.DataFra
             raise ValueError(f"Number of cases and controls must be positive.")
         if prevalence is None:
             prevalence = n_case / (n_case + n_control)
+            logger.info(f"Prevalence not provided. Infering from the number of cases and controls: {prevalence:.2f}")
 
     if mode == 'quantitative':
         if n_col not in df_gwas.columns and sample_size is None:
@@ -524,7 +525,6 @@ def trumpet_draw(df_gwas:pd.DataFrame, df_freq:pd.DataFrame, plot_dir:pd.DataFra
             if sample_size_strategy not in ['min', 'max', 'median', 'mean']:
                 raise ValueError(f"Sample size strategy must be either 'min', 'max', 'median' or 'mean'.")
 
-
     if p_filter is not None and p_col is not None:
         if not isinstance(p_filter, float):
             raise ValueError(f"Significance level must be a float.")
@@ -535,23 +535,25 @@ def trumpet_draw(df_gwas:pd.DataFrame, df_freq:pd.DataFrame, plot_dir:pd.DataFra
         else:
             # filter the dataframe according to the significance level
             gwas_df = df_gwas[df_gwas[p_col] < p_filter].reset_index(drop=True)
+            
+            logger.info(f"Filtering GWAS dataframe with p-value < {p_filter}")
+            logger.info(f"Number of SNPs in filtered GWAS dataframe: {gwas_df.shape[0]}")
     else:
         gwas_df = df_gwas.copy()
 
     if not isinstance(to_highlight, list):
         raise ValueError(f"to_highlight must be a list.")
-    if not isinstance(to_annotate, pd.DataFrame):
-        raise ValueError(f"to_annotate must be a pandas DataFrame.")
+    if to_annotate is not None:
+        if not isinstance(to_annotate, pd.DataFrame):
+            raise ValueError(f"to_annotate must be a pandas DataFrame.")
     for val in to_highlight:
         if not isinstance(val, str):
             raise ValueError(f"to_highlight must be a list of strings.")
-    for val in to_annotate:
-        if not isinstance(val, str):
-            raise ValueError(f"to_annotate must be a list of strings.")
 
-            
     if maf_col not in gwas_df.columns:
         df = pd.merge(gwas_df, df_freq, on=snp_col, how='inner')
+    else:
+        df = gwas_df.copy()
     
     del gwas_df, df_freq
 
@@ -621,7 +623,6 @@ def trumpet_draw(df_gwas:pd.DataFrame, df_freq:pd.DataFrame, plot_dir:pd.DataFra
                 t         =t,
                 sig_level =power_sig_level,
                 n_matrix  =2000,
-                verbose=False
             )
             
             xpower2   = xpower.copy()

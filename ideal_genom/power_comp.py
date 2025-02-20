@@ -37,36 +37,40 @@ def calculate_power_quantitative(beta: float, eaf: float, sample_size: int, sig_
                 
     return power
 
-def get_beta_quantitative(
-    eaf_range: tuple = (0.0001, 0.5),
-    beta_range: tuple = (0.0001, 10),
-    t: float = 0,
-    n: int = None,
-    sig_level: float = 5e-8,
-    variance: float = 1,
-    n_matrix: int = 500
-):
+def get_beta_quantitative(eaf_range: tuple = (0.0001, 0.5), beta_range: tuple = (0.0001, 10), t: float = 0, sample_size: int = None, sig_level: float = 5e-8, variance: float = 1, n_matrix: int = 500):
+
     if t <= 0 or t > 1:
         return pd.DataFrame(columns=["eaf", "beta"])  # Invalid threshold or no computation needed
 
-    if n is None:
+    if sample_size is None:
         raise ValueError("Sample size 'n' must be specified.")
 
     # Generate grid of eaf and beta values
-    eafs = np.linspace(eaf_range[0], eaf_range[1], n_matrix)
-    betas = np.linspace(beta_range[0], beta_range[1], n_matrix)
-    eaf_grid, beta_grid = np.meshgrid(eafs, betas, indexing="ij")
+    eaf_beta_matrix = np.zeros((n_matrix,n_matrix),dtype=float)
+    eafs = np.linspace(eaf_range[1],eaf_range[0],n_matrix)
+    betas =  np.linspace(beta_range[0],beta_range[1],n_matrix)
 
     # Compute power for each (eaf, beta) pair
-    power_matrix = np.vectorize(calculate_power_quantitative)(
-        beta=beta_grid, eaf=eaf_grid, n=n, sig_level=sig_level, variance=variance
-    )
+    for i in range(n_matrix):
+        eaf_beta_matrix[i,] = calculate_power_quantitative(
+            beta       =betas,
+            eaf        =eafs[i], 
+            sample_size=sample_size, 
+            sig_level  =sig_level,
+            variance   =variance
+        )
 
-    # Extract (eaf, beta) values where power >= threshold `t`
-    mask = power_matrix >= t
-    eaf_beta = np.column_stack((eaf_grid[mask], beta_grid[mask]))
+    i,j=1,1
+    eaf_beta = []
 
-    return pd.DataFrame(eaf_beta, columns=["eaf", "beta"])
+    while i<n_matrix-1 and j<n_matrix-1:
+        if eaf_beta_matrix[i,j] < t:
+            j+=1
+        else:
+            i+=1
+            eaf_beta.append((eafs[i],betas[j]))
+            
+    return pd.DataFrame(eaf_beta)
 
 def get_beta_binary(
               prevalence=None,
