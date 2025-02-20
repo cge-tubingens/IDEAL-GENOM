@@ -26,7 +26,6 @@ import scipy.stats as stats
 import textalloc as ta
 
 from matplotlib.collections import LineCollection
-from scipy import stats
 
 from ideal_genom.annotations import annotate_snp
 
