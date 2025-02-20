@@ -4,41 +4,69 @@ import pandas as pd
 import numpy as np
 import scipy.stats as ss
 
-def get_beta(mode: str = "q", eaf_range: tuple = (0.0001,0.5), beta_range: tuple =(0.0001,10), t=0, n=None, sig_level: float= 5e-8, vary=1, n_matrix: int = 500):
+def calculate_power_quantitative(beta: float, eaf: float, sample_size: int, sig_level: float = 5e-8, variance: float =1) -> float:
 
-    if mode=="q":
-        if t >0:
-            def calculate_power_single(
-                                beta, 
-                                eaf, 
-                                n, 
-                                sig_level=5e-8,
-                                vary=1):
+    """
+    Calculate the statistical power for a single beta value for quantitative traits.
+
+    Parameters:
+    -----------
+    beta (float): 
+        The effect size.
+    eaf (float): 
+        The effect allele frequency.
+    n (int): 
+        The sample size.
+    sig_level (float): 
+        The significance level (default is 5e-8).
+    variance (float): 
+        The variance (default is 1).
+
+    Returns:
+    --------
+    float: The calculated power.
+    """
                 
-                c = ss.chi2.isf(sig_level,df=1)
-                h2 = 2*eaf*(1-eaf)*(beta**2)
-                NCP = n * h2/vary
-                power = 1 - ss.ncx2.cdf(c,df=1,nc=NCP)
-                return power
-            
-            eaf_beta_matrix = np.zeros((n_matrix,n_matrix),dtype=float)
-            eafs = np.linspace(eaf_range[1],eaf_range[0],n_matrix)
-            betas =  np.linspace(beta_range[0],beta_range[1],n_matrix)
-            
-            for i in range(n_matrix):
-                    eaf_beta_matrix[i,] = calculate_power_single(beta=betas,eaf=eafs[i],n=n,sig_level=sig_level,vary=vary)
-            
-            print(" -Extracting eaf-beta combinations with power = {}...".format(t))
-            i,j=1,1
-            eaf_beta = []
-            while i<n_matrix-1 and j<n_matrix-1:
-                if eaf_beta_matrix[i,j] < t:
-                    j+=1
-                else:
-                    i+=1
-                    eaf_beta.append((eafs[i],betas[j]))
+    c = ss.chi2.isf(sig_level,df=1) # critical value for chi-square test
 
-        return pd.DataFrame(eaf_beta)
+    h2 = 2*eaf*(1-eaf)*(beta**2) # heritability contribution
+                
+    ncp = sample_size * h2/variance # non-centrality parameter 
+                
+    power = 1 - ss.ncx2.cdf(c,df=1,nc=ncp) # statistical power
+                
+    return power
+
+def get_beta_quantitative(
+    eaf_range: tuple = (0.0001, 0.5),
+    beta_range: tuple = (0.0001, 10),
+    t: float = 0,
+    n: int = None,
+    sig_level: float = 5e-8,
+    variance: float = 1,
+    n_matrix: int = 500
+):
+    if t <= 0 or t > 1:
+        return pd.DataFrame(columns=["eaf", "beta"])  # Invalid threshold or no computation needed
+
+    if n is None:
+        raise ValueError("Sample size 'n' must be specified.")
+
+    # Generate grid of eaf and beta values
+    eafs = np.linspace(eaf_range[0], eaf_range[1], n_matrix)
+    betas = np.linspace(beta_range[0], beta_range[1], n_matrix)
+    eaf_grid, beta_grid = np.meshgrid(eafs, betas, indexing="ij")
+
+    # Compute power for each (eaf, beta) pair
+    power_matrix = np.vectorize(calculate_power_quantitative)(
+        beta=beta_grid, eaf=eaf_grid, n=n, sig_level=sig_level, variance=variance
+    )
+
+    # Extract (eaf, beta) values where power >= threshold `t`
+    mask = power_matrix >= t
+    eaf_beta = np.column_stack((eaf_grid[mask], beta_grid[mask]))
+
+    return pd.DataFrame(eaf_beta, columns=["eaf", "beta"])
 
 def get_beta_binary(
               prevalence=None,
@@ -89,7 +117,6 @@ def get_beta_binary(
                 power = 1 - ss.norm.cdf(c-u) + ss.norm.cdf(-c-u)
                 return power
         
-        eaf_beta_matrix = np.zeros((n_matrix,n_matrix),dtype=float)
         eafs = np.linspace(eaf_range[1],eaf_range[0],n_matrix)
         betas =  np.linspace(beta_range[0],beta_range[1],n_matrix)
         
@@ -99,14 +126,10 @@ def get_beta_binary(
         else:
             print(" -OR is converted to GRR using base prevalence: {}".format(prevalence))
         
-        for i in range(n_matrix):
-                eaf_beta_matrix[i,] = calculate_power_single(beta=betas,
-                                                                daf=eafs[i],
-                                                                ncase=ncase,
-                                                                ncontrol=ncontrol,
-                                                                prevalence=prevalence,
-                                                                sig_level=sig_level,
-                                                                or_to_rr=or_to_rr)
+        eaf_beta_matrix = np.array([
+            [calculate_power_single(beta=betas[j], daf=eafs[i], ncase=ncase, ncontrol=ncontrol, prevalence=prevalence, sig_level=sig_level, or_to_rr=or_to_rr) for j in range(n_matrix)]
+            for i in range(n_matrix)
+        ])
         
         print(" -Extracting eaf-beta combinations with power = {}...".format(t))
         i,j=1,1
