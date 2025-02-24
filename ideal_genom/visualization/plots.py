@@ -576,15 +576,12 @@ def trumpet_draw(df_gwas: pd.DataFrame, df_freq: pd.DataFrame, plot_dir: str, sn
     # generate figure
     fig, ax = plt.subplots(figsize=(10, 10))
 
-    # BETA and MAF range for power calculation
+    # BETA and EAF range for power calculation
     maf_min_power = np.floor( -np.log10(df[maf_col].min())) + 1
-    maf_range=(min(np.power(10.0,-maf_min_power),np.power(10.0,-4)),0.5)
+    maf_range=(min(np.power(10.0,-maf_min_power),np.power(10.0,-4)), 0.5)
     
-    if df[beta_col].max()>3:
-        beta_range=(0.0001, df[beta_col].max())
-    else:
-        beta_range=(0.0001, 3)
-
+    beta_range=(0.0001, df[beta_col].max())
+    
     if mode=="quantitative" and sample_size is None:
         if sample_size_strategy == "min":
             sample_size = df[n_col].min() 
