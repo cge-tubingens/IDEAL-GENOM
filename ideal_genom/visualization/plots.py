@@ -742,8 +742,7 @@ def trumpet_draw(df_gwas: pd.DataFrame, df_freq: pd.DataFrame, plot_dir: str, sn
 
         else:
 
-            variants_toanno = plot_data['data'][plot_data['data'][snp_col].isin(to_annotate[snp_col])]\
-                .reset_index(drop=True)
+            variants_toanno = df[df[snp_col].isin(to_annotate[snp_col])].reset_index(drop=True)
 
             if (variants_toanno.empty is not True):
 
