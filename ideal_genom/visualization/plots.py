@@ -662,6 +662,7 @@ def trumpet_draw(df_gwas: pd.DataFrame, df_freq: pd.DataFrame, plot_dir: str, sn
             l[:int(len(power_ts))], 
             title         ="Power", 
             loc           ="upper right",
+            bbox_to_anchor=(1, 1.15),  # Adjust height above the plot
             fontsize      =10,
             title_fontsize=11
         )
@@ -674,9 +675,11 @@ def trumpet_draw(df_gwas: pd.DataFrame, df_freq: pd.DataFrame, plot_dir: str, sn
         h[int(len(power_ts)):],
         l[int(len(power_ts)):], 
         title="ABS_BETA", 
-        loc="lower right",
-        fontsize =10, 
-        title_fontsize=11
+        loc="upper left",  # Move legend to the top
+        bbox_to_anchor=(0, 1.15),  # Adjust height above the plot
+        fontsize=10, 
+        title_fontsize=11,
+        ncol=2  # Arrange items in two columns (optional)
     )
 
     if to_highlight is not None and len(to_highlight)>0:
