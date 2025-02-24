@@ -1,4 +1,7 @@
-# from GWASlab
+# This functions are used to calculate the power of a genetic association study for a given effect size and sample size.
+# They were fetched from GWASlab https://github.com/Cloufield/gwaslab and rewritten for better clarity and readability.
+# The original code was written by Cloufield and is licensed under the MIT License.
+
 import logging
 
 import pandas as pd
