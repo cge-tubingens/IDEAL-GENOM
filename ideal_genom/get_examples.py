@@ -40,12 +40,12 @@ def get_trumpet_quantitative_example() -> Path:
 
     return uncompressed_file
 
-def get_top_hits_trumpet_quantitative() -> Path:
+def get_top_loci_trumpet_quantitative() -> Path:
 
     library_path = Path(__file__).resolve().parent.parent
 
     url = r"https://static-content.springer.com/esm/art%3A10.1038%2Fs41467-019-12276-5/MediaObjects/41467_2019_12276_MOESM5_ESM.xlsx"
-    output_filename = "2019_BBJ_Height_autosomes_BOLT_top.xlsx"
+    output_filename = "2019_BBJ_Height_autosomes_BOLT_loci.xlsx"
 
     output_path = library_path / "data" / "sumstats" / output_filename
 
@@ -65,12 +65,51 @@ def get_top_hits_trumpet_quantitative() -> Path:
 
     df_top = pd.read_excel(output_path, engine='openpyxl')
 
-    df_top = df_top[['Unnamed: 7']].copy()
-    df_top = df_top.rename(columns={'Unnamed: 7': 'Variants'}).dropna().iloc[1:, :].copy()
+    df_top = df_top[['Unnamed: 7', 'Unnamed: 9']].copy()
+    df_top = df_top.rename(columns={'Unnamed: 7': 'Variants', 'Unnamed: 9': 'New_Locus'}).dropna().iloc[1:, :].copy()
 
     mask_autosome = df_top['Variants'].str.contains('X')
 
     df_top = df_top[~mask_autosome].reset_index(drop=True)
+
+    df_top.to_csv(output_path.with_suffix('.csv'), index=False, sep='\t')
+    logger.info(f"Saved top hits to: {output_path.with_suffix('.csv')}")
+
+    output_path.unlink()
+
+    return output_csv
+
+def get_top_cond_trumpet_quantitative() -> Path:
+
+    library_path = Path(__file__).resolve().parent.parent
+
+    url = r"https://static-content.springer.com/esm/art%3A10.1038%2Fs41467-019-12276-5/MediaObjects/41467_2019_12276_MOESM6_ESM.xlsx"
+    output_filename = "2019_BBJ_Height_autosomes_BOLT_cond.xlsx"
+
+    output_path = library_path / "data" / "sumstats" / output_filename
+
+    output_csv = output_path.with_suffix('.csv')
+    if output_csv.exists():
+        logger.info(f"File already exists: {output_csv}")
+        return output_csv
+
+    response = requests.get(url, stream=True)  # Stream to handle large files
+    if response.status_code == 200:
+        with open(output_path, "wb") as file:
+            for chunk in response.iter_content(chunk_size=1024):  # Download in chunks
+                file.write(chunk)
+        logger.info(f"Downloaded file: {output_path}")
+    else:
+        logger.info(f"Failed to download file. Status code: {response.status_code}")
+
+    df_top = pd.read_excel(output_path, engine='openpyxl', header=1)
+
+    df_top = df_top[['rsID', 'Candiate gene(s)', 'CHRa', 'POSa']].copy()
+    df_top = df_top.rename(columns={'Candiate gene(s)': 'Gene', 'CHRa': 'CHR', 'POSa': 'POS'}).dropna()
+
+    mask_autosome = (df_top['CHR']!='X')
+
+    df_top = df_top[mask_autosome].reset_index(drop=True)
 
     df_top.to_csv(output_path.with_suffix('.csv'), index=False, sep='\t')
     logger.info(f"Saved top hits to: {output_path.with_suffix('.csv')}")
