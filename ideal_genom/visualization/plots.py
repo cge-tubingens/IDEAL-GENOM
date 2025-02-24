@@ -541,6 +541,11 @@ def trumpet_draw(df_gwas: pd.DataFrame, df_freq: pd.DataFrame, plot_dir: str, sn
     else:
         gwas_df = df_gwas.copy()
 
+    if not isinstance(scale, str):
+        raise ValueError(f"Scale must be a string.")
+    if scale not in ['linear', 'log']:
+        raise ValueError(f"Scale must be either 'linear' or 'log.")
+
     if not isinstance(to_highlight, list):
         raise ValueError(f"to_highlight must be a list.")
     if to_annotate is not None:
