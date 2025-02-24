@@ -605,32 +605,32 @@ def trumpet_draw(df_gwas: pd.DataFrame, df_freq: pd.DataFrame, plot_dir: str, sn
                 t         =t,
                 sig_level =power_sig_level,
                 n_matrix  =2000,
-                verbose=False
             )
 
             xpower2   = xpower.copy()
-            xpower2[1]= -xpower2[1] 
-            xpower2[1]= xpower2[1] 
-            xpower[1] = xpower[1] 
+            xpower2['beta']= -xpower2['beta'] 
+            xpower2['beta']= xpower2['beta'] 
+            xpower['beta'] = xpower['beta'] 
             lines     = LineCollection([xpower2,xpower], label=t,color=output_hex_colors[i])
 
             ax.add_collection(lines)
 
     if mode=='quantitative':
         for i,t in enumerate(power_ts):
+
             xpower = get_beta_quantitative(        
                 eaf_range =maf_range,
                 beta_range=beta_range, 
-                n         =sample_size,
+                sample_size=sample_size,
                 t         =t,
                 sig_level =power_sig_level,
-                n_matrix  =2000,
+                n_matrix  =4000,
             )
             
             xpower2   = xpower.copy()
-            xpower2[1]= -xpower2[1]
-            xpower2[1]= xpower2[1]
-            xpower[1] = xpower[1]
+            xpower2['beta']= -xpower2['beta']
+            xpower2['beta']= xpower2['beta']
+            xpower['beta'] = xpower['beta']
 
             lines = LineCollection([xpower2,xpower], label=t,color=output_hex_colors[i],zorder=0)
 
