@@ -303,33 +303,35 @@ def manhattan_draw(data_df:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, 
         )
 
     # highlight SNPs
-    if to_highlight is not None:            
+    if to_highlight is not None:
 
-        df_subset = plot_data['data'].merge(to_highlight, on=snp_col, how='inner')
+        if to_highlight.empty is not True: 
 
-        if df_subset.empty is not True:
+            df_subset = plot_data['data'].merge(to_highlight, on=snp_col, how='inner')
 
-            if highlight_hue in df_subset.columns:
-                ax = sns.scatterplot(
-                    data     =df_subset, 
-                    x        ='rel_pos',
-                    y        ='log10p',
-                    s        =20,
-                    ax       =ax,
-                    edgecolor="black",
-                    hue      =highlight_hue,
-                    palette='Set1',
-                )
-                ax.legend(loc='best', fontsize=9, title=None)
-            else:
-                ax = sns.scatterplot(
+            if df_subset.empty is not True:
+            
+                if highlight_hue in df_subset.columns:
+                    ax = sns.scatterplot(
                         data     =df_subset, 
                         x        ='rel_pos',
                         y        ='log10p',
                         s        =20,
                         ax       =ax,
-                        edgecolor="black"
+                        edgecolor="black",
+                        hue      =highlight_hue,
+                        palette='Set1',
                     )
+                    ax.legend(loc='best', fontsize=9, title=None)
+                else:
+                    ax = sns.scatterplot(
+                            data     =df_subset, 
+                            x        ='rel_pos',
+                            y        ='log10p',
+                            s        =20,
+                            ax       =ax,
+                            edgecolor="black"
+                        )
                 
     plt.tight_layout()
 
