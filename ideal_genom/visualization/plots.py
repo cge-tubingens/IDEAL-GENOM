@@ -777,9 +777,9 @@ def trumpet_draw(df_gwas: pd.DataFrame, df_freq: pd.DataFrame, plot_dir: str, sn
                 texts.append(row['GENENAME'])
 
             if key == 'top':
-                direction = 'northeast'
+                direction = 'north'
             else:
-                direction = 'southeast'
+                direction = 'south'
 
             ta.allocate(
                     ax,              # the axis to which the text will be
@@ -794,7 +794,7 @@ def trumpet_draw(df_gwas: pd.DataFrame, df_freq: pd.DataFrame, plot_dir: str, sn
                     avoid_label_lines_overlap =True,
                     avoid_crossing_label_lines=False,
                     min_distance     =0.05,
-                    max_distance     =0.5,
+                    max_distance     =0.6,
                     margin           =0.01,
                     rotation         =90,
                     ha               ='center',
