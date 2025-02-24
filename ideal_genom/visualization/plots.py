@@ -716,7 +716,15 @@ def trumpet_draw(df_gwas: pd.DataFrame, df_freq: pd.DataFrame, plot_dir: str, sn
     ax.set_xlabel("Minor Allele Frequency", fontsize=10)
     ax.set_ylabel("Effect Size (Beta)", fontsize=10)
 
-    plt.tight_layout()
+    ax.set_xscale(scale)
+    if scale == 'log':
+        ax.set_xlim(df[maf_col].min()*0.8, 0.52)
+
+        pow_10 = [10**(-i) for i in range(1, 6) if 10**(-i) >= df[maf_col].min()]
+        ticks = [round(df[maf_col].min(),len(pow_10)+1)] + pow_10 + [0.2, 0.5]
+        plt.xticks(ticks, labels=[str(tick) for tick in ticks])
+
+    plt.tight_layout() 
 
     r = fig.canvas.get_renderer()
     fig.canvas.draw()
