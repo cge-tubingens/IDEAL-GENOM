@@ -720,6 +720,8 @@ def trumpet_draw(df_gwas: pd.DataFrame, df_freq: pd.DataFrame, plot_dir: str, sn
 
         if gen_col is not None:
 
+            logger.info(f"Annotating SNPs with gene names provided in the column {gen_col}...")
+
             variants_toanno = df[df[snp_col].isin(to_annotate[snp_col])]\
                 .reset_index(drop=True)
             variants_toanno = variants_toanno.merge(to_annotate, on=snp_col, how='left')
@@ -731,6 +733,9 @@ def trumpet_draw(df_gwas: pd.DataFrame, df_freq: pd.DataFrame, plot_dir: str, sn
                 .reset_index(drop=True)
 
             if (variants_toanno.empty is not True):
+
+                logger.info(f"Annotating {variants_toanno.shape[0]} SNPs with from {anno_source} with build {build}...")
+
                 variants_toanno = annotate_snp(
                     variants_toanno,
                     chrom  =chr_col,
@@ -739,6 +744,8 @@ def trumpet_draw(df_gwas: pd.DataFrame, df_freq: pd.DataFrame, plot_dir: str, sn
                     source =anno_source,
                     gtf_path=gtf_path
                 ).rename(columns={"GENE":"GENENAME"})
+
+            logger.info(f"Number of SNPs annotated: {variants_toanno.shape[0]}")
 
         split = {
             'top':variants_toanno[variants_toanno[beta_col]>0].reset_index(drop=True), 
