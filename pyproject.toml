@@ -10,7 +10,7 @@ dependencies = [
     "pandas (>=2.2.2, <3.0.0)",
     "matplotlib (>3.7.2,<3.9)",
     "seaborn (>=0.13.2, <1.0.0)",
-    "adjusttext == 0.8",
+    "adjusttext (>=1.0.0, <2.0.0)",
     "jupyter (>=1.0.0, <2.0.0)",
     "scipy (>=1.14.0, <2.0.0)",
     "statsmodels  (>=0.14.2, <2.0.0)",
@@ -19,6 +19,7 @@ dependencies = [
     "ipykernel (>=6.29.5,<7.0.0)",
     "gtfparse (>=2.5.0,<3.0.0)",
     "pyensembl (==2.3.13)",
+    "openpyxl (>=3.1.5,<4.0.0)",
 ]
 
 [tool.poetry.group.dev.dependencies]
