@@ -470,7 +470,7 @@ def beta_beta_draw(gwas_1:pd.DataFrame, gwas_2:pd.DataFrame, p_col:str, beta_col
 
     return True
     
-def trumpet_draw(df_gwas: pd.DataFrame, df_freq: pd.DataFrame, plot_dir: str, snp_col: str, chr_col: str, pos_col: str, maf_col: str, beta_col: str, power_ts: list, n_case: int = None, n_control: int = None, sample_size: int = None, n_col: str = '', sample_size_strategy: str = 'median', p_col: str = None, prevalence: int = None, mode: str = 'binary', p_filter: float = 5e-8, to_highlight: list = [], to_annotate: pd.DataFrame = None, gen_col: str = None, cmap: str= "cool", power_sig_level: float = 5e-8, build = '38', anno_source: str = 'ensembl', gtf_path: str = None, save_name: str = 'trumpet_plot.jpeg') -> bool:
+def trumpet_draw(df_gwas: pd.DataFrame, df_freq: pd.DataFrame, plot_dir: str, snp_col: str, chr_col: str, pos_col: str, maf_col: str, beta_col: str, power_ts: list, n_case: int = None, n_control: int = None, sample_size: int = None, n_col: str = '', sample_size_strategy: str = 'median', p_col: str = None, prevalence: int = None, mode: str = 'binary', p_filter: float = 5e-8, to_highlight: list = [], to_annotate: pd.DataFrame = None, gen_col: str = None, cmap: str= "cool", power_sig_level: float = 5e-8, build = '38', anno_source: str = 'ensembl', gtf_path: str = None, save_name: str = 'trumpet_plot.jpeg', scale: str = 'linear') -> bool:
 
     if not isinstance(df_gwas, pd.DataFrame):
         raise ValueError(f"GWAS dataframe must be a pandas dataframe.")
