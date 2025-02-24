@@ -19,6 +19,7 @@ import matplotlib
 import matplotlib.colors as mc
 import matplotlib.pyplot as plt
 
+import matplotlib.ticker
 import pandas as pd
 import numpy as np
 import seaborn as sns
@@ -723,6 +724,7 @@ def trumpet_draw(df_gwas: pd.DataFrame, df_freq: pd.DataFrame, plot_dir: str, sn
         pow_10 = [10**(-i) for i in range(1, 6) if 10**(-i) >= df[maf_col].min()]
         ticks = [round(df[maf_col].min(),len(pow_10)+1)] + pow_10 + [0.2, 0.5]
         plt.xticks(ticks, labels=[str(tick) for tick in ticks])
+        ax.xaxis.set_major_formatter(matplotlib.ticker.LogFormatter())
 
     plt.tight_layout() 
 
