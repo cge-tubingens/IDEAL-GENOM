@@ -144,3 +144,32 @@ def get_trumpet_binary_example() -> Path:
     uncompressed_file = extract_gz_file(local_filename, LOCAL_PATH, remove_gz=True)
 
     return uncompressed_file
+
+def get_bmi_japanese_gwas() -> tuple:
+
+    library_path = Path(__file__).resolve().parent.parent
+
+    URL = r"https://humandbs.dbcls.jp/files/hum0014/hum0014.v6.158k.v1.zip"
+    FILENAME = "hum0014.v6.158k.v1.zip"
+    LOCAL_PATH = library_path / "data" / "sumstats"
+
+    LOCAL_PATH.mkdir(parents=True, exist_ok=True)
+
+    local_filename = LOCAL_PATH / FILENAME
+
+    logger.info(f"Downloading file: {URL} to {local_filename}")
+    download_file(URL, local_filename=local_filename)
+
+    logger.info(f"Extracting file: {local_filename}")
+    extracted_gz_f = unzip_file_flat(local_filename, "hum0014.v6.158k.v1/Female_2017_BMI_BBJ_autosome.txt.gz", LOCAL_PATH, remove_zip=False)
+
+    logger.info(f"Extracting file: {local_filename}")
+    extracted_gz_m = unzip_file_flat(local_filename, "hum0014.v6.158k.v1/Male_2017_BMI_BBJ_autosome.txt.gz", LOCAL_PATH, remove_zip=True)
+
+    logger.info(f"Decompressing file: {extracted_gz_f}")
+    uncompressed_file_f = extract_gz_file(extracted_gz_f, LOCAL_PATH, remove_gz=True)
+
+    logger.info(f"Decompressing file: {extracted_gz_m}")
+    uncompressed_file_m = extract_gz_file(extracted_gz_m, LOCAL_PATH, remove_gz=True)
+
+    return uncompressed_file_f, uncompressed_file_m
