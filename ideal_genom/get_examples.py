@@ -157,6 +157,13 @@ def get_bmi_japanese_gwas() -> tuple:
 
     local_filename = LOCAL_PATH / FILENAME
 
+    female_path = LOCAL_PATH / "Female_2017_BMI_BBJ_autosome.txt"
+    male_path = LOCAL_PATH / "Male_2017_BMI_BBJ_autosome.txt"
+
+    if female_path.exists() and male_path.exists():
+        logger.info(f"Files {female_path} and {male_path} already exist")
+        return female_path, male_path
+
     logger.info(f"Downloading file: {URL} to {local_filename}")
     download_file(URL, local_filename=local_filename)
 
