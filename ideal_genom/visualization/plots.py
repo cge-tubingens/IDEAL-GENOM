@@ -342,9 +342,9 @@ def beta_beta_draw(gwas_1:pd.DataFrame, gwas_2:pd.DataFrame, p_col:str, beta_col
 
     df[f'P-val<{significance}']= None
 
-    df.loc[df['ID'].isin(on_both), f'P-val<{significance}']  = 'Both'
-    df.loc[df['ID'].isin(on_first), f'P-val<{significance}'] = f'{label_1} GWAS'
-    df.loc[df['ID'].isin(on_second), f'P-val<{significance}']= f'{label_2} GWAS'
+    df.loc[df[snp_col].isin(on_both), f'P-val<{significance}']  = 'Both'
+    df.loc[df[snp_col].isin(on_first), f'P-val<{significance}'] = f'{label_1} GWAS'
+    df.loc[df[snp_col].isin(on_second), f'P-val<{significance}']= f'{label_2} GWAS'
 
     # set the limits for the plot
     max_beta_x = df[f'{beta_col}_1'].abs().max() + 0.01
