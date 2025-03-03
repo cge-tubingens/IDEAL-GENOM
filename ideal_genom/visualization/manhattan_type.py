@@ -847,32 +847,25 @@ def miami_draw(df_top: pd.DataFrame, df_bottom: pd.DataFrame, snp_col: str, chr_
 
     from matplotlib.lines import Line2D
 
-    if len(both)>0:
+        if len(both)>0:
 
-        custom_dots = [
-            Line2D([0], [0], marker='o', color='w', markerfacecolor="#7B68EE", markersize=5, label='Top Hits both'),
-            Line2D([0], [0], marker='o', color='w', markerfacecolor="#008080", markersize=5, label=f'Top Hits {legend_top}'),
-            Line2D([0], [0], marker='o', color='w', markerfacecolor="#FF1493", markersize=5, label=f'Top Hits {legend_bottom}'),
-        ]
+            custom_dots = [
+                Line2D([0], [0], marker='o', color='w', markerfacecolor="#7B68EE", markersize=5, label='Top Hits both'),
+                Line2D([0], [0], marker='o', color='w', markerfacecolor="#008080", markersize=5, label=f'Top Hits {legend_top}'),
+                Line2D([0], [0], marker='o', color='w', markerfacecolor="#FF1493", markersize=5, label=f'Top Hits {legend_bottom}'),
+            ]
 
-    else:
-        custom_dots = [
-            Line2D([0], [0], marker='o', color='w', markerfacecolor="#008080", markersize=5, label=f'Top Hits {legend_top}'),
-            Line2D([0], [0], marker='o', color='w', markerfacecolor="#FF1493", markersize=5, label=f'Top Hits {legend_bottom}'),
-        ]
+        else:
+            custom_dots = [
+                Line2D([0], [0], marker='o', color='w', markerfacecolor="#008080", markersize=5, label=f'Top Hits {legend_top}'),
+                Line2D([0], [0], marker='o', color='w', markerfacecolor="#FF1493", markersize=5, label=f'Top Hits {legend_bottom}'),
+            ]
 
-    # Add custom legend
-    ax_upper.legend(handles=custom_dots, title='Legend', loc="best", fontsize=10)
+        # Add custom legend
+        ax_upper.legend(handles=custom_dots, title='Legend', loc="best", fontsize=10)
     
     ax_lower.set_xlabel("Chromosome")
     ax_upper.set_xlabel("")
-
-    # adjust layout
-    plt.tight_layout()
-
-    # render and draw the figure without showing it 
-    r = fig.canvas.get_renderer()
-    fig.canvas.draw()
 
     # lines between annotations and SNPs must be drawn after the plot is rendered
 
