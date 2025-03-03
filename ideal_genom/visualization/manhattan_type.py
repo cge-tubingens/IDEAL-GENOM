@@ -830,7 +830,7 @@ def miami_draw(df_top: pd.DataFrame, df_bottom: pd.DataFrame, snp_col: str, chr_
                     chrom  =chr_col,
                     pos    =pos_col,
                     build  =build,
-                    source =anno_source,
+                    source =source,
                     gtf_path=gtf_path
                 ).rename(columns={"GENE":"GENENAME"})
 
