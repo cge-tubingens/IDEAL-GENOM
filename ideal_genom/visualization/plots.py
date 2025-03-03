@@ -440,6 +440,7 @@ def beta_beta_draw(gwas_1: pd.DataFrame, gwas_2: pd.DataFrame, p_col: str, beta_
             lw       =0.5
         )
 
+
     ax.set_xlim(x_lim)
     ax.set_ylim(y_lim)
     
