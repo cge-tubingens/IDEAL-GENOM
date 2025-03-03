@@ -847,6 +847,8 @@ def miami_draw(df_top: pd.DataFrame, df_bottom: pd.DataFrame, snp_col: str, chr_
 
     from matplotlib.lines import Line2D
 
+    if len(top_highlights)>0 or len(bottom_highlights)>0:
+
         if len(both)>0:
 
             custom_dots = [
