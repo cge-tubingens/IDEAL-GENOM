@@ -767,6 +767,13 @@ def miami_draw(df_top: pd.DataFrame, df_bottom: pd.DataFrame, snp_col: str, chr_
             edgecolor='none'
         )
 
+    # adjust layout
+    plt.tight_layout()
+
+    # render and draw the figure without showing it 
+    r = fig.canvas.get_renderer()
+    fig.canvas.draw()
+
     if top_annotations.shape[0]>0:
         
         if top_gen_col is not None:
