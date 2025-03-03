@@ -180,3 +180,45 @@ def get_bmi_japanese_gwas() -> tuple:
     uncompressed_file_m = extract_gz_file(extracted_gz_m, LOCAL_PATH, remove_gz=True)
 
     return uncompressed_file_f, uncompressed_file_m
+
+def get_bmi_japanese_gwas_sex_dependent() -> Path:
+
+    library_path = Path(__file__).resolve().parent.parent
+
+    url = r"https://static-content.springer.com/esm/art%3A10.1038%2Fng.3951/MediaObjects/41588_2017_BFng3951_MOESM6_ESM.xlsx"
+    output_filename = "2017_BBJ_bmi_supplementary.xlsx"
+
+    output_path = library_path / "data" / "sumstats" / output_filename
+
+    output_csv = output_path.with_suffix('.csv')
+    if output_csv.exists():
+        logger.info(f"File already exists: {output_csv}")
+        return output_csv
+
+    response = requests.get(url, stream=True)  # Stream to handle large files
+    if response.status_code == 200:
+        with open(output_path, "wb") as file:
+            for chunk in response.iter_content(chunk_size=1024):  # Download in chunks
+                file.write(chunk)
+        logger.info(f"Downloaded file: {output_path}")
+    else:
+        logger.info(f"Failed to download file. Status code: {response.status_code}")
+
+    df_top = pd.read_excel(output_path, engine='openpyxl', header=[0,1,2,3], sheet_name='S.Table4')
+
+    df_top = df_top[df_top.columns[0:4]].copy()
+    df_top.columns = df_top.columns.droplevel([0,2,3])
+    df_top.columns = ['SNP', 'Sex', 'CHR', 'POS']
+
+    mask_rsid = df_top['SNP'].str.startswith('rs')
+
+    df_top = df_top[mask_rsid].reset_index(drop=True)
+
+    df_top.to_csv(output_path.with_suffix('.csv'), index=False, sep='\t')
+    logger.info(f"Saved top hits to: {output_path.with_suffix('.csv')}")
+
+    output_path.unlink()
+
+    return output_csv
+
+    return output_path
