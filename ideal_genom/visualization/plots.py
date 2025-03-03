@@ -338,8 +338,13 @@ def beta_beta_draw(gwas_1:pd.DataFrame, gwas_2:pd.DataFrame, p_col:str, beta_col
     mask_significance_2 = (df[f'{p_col}_2'] < significance)
 
     on_first = df[mask_significance_1 &  ~mask_significance_2].reset_index(drop=True)[snp_col].to_list()
+    logger.info(f"Number of SNPs significant in {label_1} GWAS: {len(on_first)}")
+
     on_both  = df[mask_significance_1 &  mask_significance_2].reset_index(drop=True)[snp_col].to_list()
+    logger.info(f"Number of SNPs significant in both GWAS: {len(on_both)}")
+
     on_second= df[mask_significance_2 &  ~mask_significance_1].reset_index(drop=True)[snp_col].to_list()
+    logger.info(f"Number of SNPs significant in {label_2} GWAS: {len(on_second)}")
 
     df[f'P-val<{significance}']= None
 
@@ -373,6 +378,8 @@ def beta_beta_draw(gwas_1:pd.DataFrame, gwas_2:pd.DataFrame, p_col:str, beta_col
     # plot with error bars
     if draw_error_line:
 
+        logger.info("Plotting beta-beta scatter plot with error bars...")
+
         for category in np.unique(df[f'P-val<{significance}']):
 
             mask_hue = (df[f'P-val<{significance}'] == category)
@@ -392,6 +399,9 @@ def beta_beta_draw(gwas_1:pd.DataFrame, gwas_2:pd.DataFrame, p_col:str, beta_col
             )
     # plot without error bars
     else:
+
+        logger.info("Plotting beta-beta scatter plot without error bars...")
+
         ax = sns.scatterplot(
             data=df,
             x=f'{beta_col}_1',
@@ -416,7 +426,11 @@ def beta_beta_draw(gwas_1:pd.DataFrame, gwas_2:pd.DataFrame, p_col:str, beta_col
     # draw regression line
     if draw_reg_line:
     
+        logger.info("Drawing regression line...")
+
         result = stats.linregress(df[f'{beta_col}_2'], df[f'{beta_col}_2'])
+
+        logger.info(f"Regression line: y = {result.slope:.2f}x + {result.intercept:.2f}")
 
         ax.plot(
             help_line, 
