@@ -561,7 +561,7 @@ def miami_draw_anno_lines(renderer:RendererBase, axes:Axes, texts:list, variants
 
     return axes
 
-def miami_draw(df_top:pd.DataFrame, df_bottom:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, p_col:str, plots_dir:str, top_highlights:list=[], top_annotations:pd.DataFrame=None, bottom_highlights:list=[], bottom_annotations:pd.DataFrame=None, top_gen_col:str=None, bottom_gen_col:str=None, gtf_path:str=None, anno_source: str = "ensemble", build: str = '38', save_name:str='miami_plot.jpeg', legend_top:str='top GWAS', legend_bottom:str='bottom GWAS')->bool:
+def miami_draw(df_top: pd.DataFrame, df_bottom: pd.DataFrame, snp_col: str, chr_col: str, pos_col: str, p_col: str, plots_dir: str, top_highlights: list = [], top_annotations: pd.DataFrame=pd.DataFrame(), bottom_highlights: list = [], bottom_annotations: pd.DataFrame = pd.DataFrame(), top_gen_col: str = None, bottom_gen_col: str = None, gtf_path: str = None, source: str = "ensemble", build: str = '38', save_name: str = 'miami_plot.jpeg', legend_top: str = 'top GWAS', legend_bottom: str = 'bottom GWAS')->bool:
     
     """
     Draws a Miami plot (a combination of two Manhattan plots) for visualizing GWAS results.
