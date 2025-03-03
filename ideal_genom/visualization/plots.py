@@ -492,6 +492,39 @@ def beta_beta_draw(gwas_1: pd.DataFrame, gwas_2: pd.DataFrame, p_col: str, beta_
                 linecolor='black',
                 textsize =7,
                 bbox     =dict(boxstyle='round,pad=0.3', edgecolor='black', facecolor='#f0f0f0', alpha=0.8),
+                avoid_crossing_label_lines=True,
+                avoid_label_lines_overlap=True,
+            )
+        
+    if annotate_diff != np.infty:
+        df['diff'] = (df[f'{beta_col}_1'] - df[f'{beta_col}_2']).abs()
+
+        to_annotate = df[df['diff'] > annotate_diff].reset_index(drop=True)
+
+        logger.info(f"Number of SNPs with difference in effect size > {annotate_diff}: {to_annotate.shape[0]}")
+
+        texts=[]
+        text_x = []
+        text_y = []
+
+        for i, row in to_annotate.iterrows():
+            
+            texts.append(row[snp_col])
+            text_x.append(row[f'{beta_col}_1'])
+            text_y.append(row[f'{beta_col}_2'])
+
+        ta.allocate(
+                ax,
+                x        =text_x,
+                y        =text_y,
+                text_list=texts,
+                x_scatter=df[f'{beta_col}_1'].to_list(),
+                y_scatter=df[f'{beta_col}_2'].to_list(),
+                linecolor='black',
+                textsize =7,
+                bbox     =dict(boxstyle='round,pad=0.3', edgecolor='black', facecolor='#f0f0f0', alpha=0.8),
+                avoid_crossing_label_lines=True,
+                avoid_label_lines_overlap=True,
             )
         
     plt.savefig(os.path.join(plot_dir, save_name), dpi=500)
