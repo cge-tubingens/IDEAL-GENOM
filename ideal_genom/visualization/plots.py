@@ -321,17 +321,13 @@ def beta_beta_draw(gwas_1:pd.DataFrame, gwas_2:pd.DataFrame, p_col:str, beta_col
     if annotate_coincidents is True:
         if snp_col not in gwas_1.columns or snp_col not in gwas_2.columns:
             raise ValueError(f"Column {snp_col} not present in both GWAS dataframes.")
-    
-    # rename columns to avoid conflicts
-    df_gwas1 = gwas_1.copy()
-    df_gwas1.columns = [f"{col}_1" if col != snp_col else col for col in df_gwas1.columns]
-    df_gwas2 = gwas_2.copy()
-    df_gwas2.columns = [f"{col}_2" if col != snp_col else col for col in df_gwas2.columns]
+        
+    if annotate_diff is not np.infty:
+        if not isinstance(annotate_diff, float):
+            raise ValueError(f"annotate_diff must be a float")
 
     # merge the dataframes
-    df = pd.merge(df_gwas1, df_gwas2, on=snp_col, how='inner')
-
-    del df_gwas1, df_gwas2
+    df = pd.merge(gwas_1, gwas_2, on=snp_col, how='inner', suffixes=('_1', '_2'))
 
     # create masks to identify the SNPs that are significant in one or both GWAS
     mask_significance_1 = (df[f'{p_col}_1'] < significance)
