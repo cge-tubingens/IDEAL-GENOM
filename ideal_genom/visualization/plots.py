@@ -18,6 +18,7 @@ import logging
 import matplotlib
 import matplotlib.colors as mc
 import matplotlib.pyplot as plt
+import matplotlib.lines as mlines
 
 import matplotlib.ticker
 import pandas as pd
@@ -433,7 +434,19 @@ def beta_beta_draw(gwas_1:pd.DataFrame, gwas_2:pd.DataFrame, p_col:str, beta_col
     
     ax.tick_params(axis='both', which='major', labelsize=7)
     
-    plt.legend(loc='best', fontsize=7, title=f'P-value < {significance}')
+    scatter_legend = ax.legend(title=f'P-value < {significance}', fontsize=7, loc="best")
+
+    # Second legend (for regression line)
+    if draw_reg_line:
+        reg_legend = ax.legend(
+            handles=[mlines.Line2D([], [], color='gray', linestyle='dashed', label=f"Fit: y = {result.slope:.2f}x + {result.intercept:.2f}, r={result.rvalue:.2f}, p-value={result.pvalue:.2f}")], 
+            loc="lower right", 
+            fontsize=7, 
+            title="Regression Line"
+        )
+
+        # Add the scatter legend back after adding the regression legend
+        ax.add_artist(scatter_legend)
 
     plt.tight_layout()
 
