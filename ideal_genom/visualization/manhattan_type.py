@@ -8,9 +8,7 @@ Functions:
 - draw_manhattan: Generate and save a Manhattan plot with optional SNP highlighting and annotation.
 """
 
-import gzip
 import os
-import shutil
 import warnings
 
 import matplotlib.pyplot as plt
