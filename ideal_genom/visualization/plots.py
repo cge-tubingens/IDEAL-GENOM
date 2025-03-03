@@ -236,7 +236,7 @@ def confidence_interval(n:int, conf_points:int=1500, conf_alpha:float=0.05)->np.
     
     return mpts
 
-def beta_beta_draw(gwas_1:pd.DataFrame, gwas_2:pd.DataFrame, p_col:str, beta_col:str, se_col:str, snp_col:str, label_1:str, label_2:str, plot_dir:str, significance:float=5e-8, annotate_coincidents:bool=True, save_name:str='beta_beta.jpeg', draw_error_line:bool=True, draw_reg_line:bool=True)->bool:
+def beta_beta_draw(gwas_1: pd.DataFrame, gwas_2: pd.DataFrame, p_col: str, beta_col: str, se_col: str, snp_col: str, label_1: str, label_2: str, plot_dir: str, significance: float = 5e-8, annotate_coincidents: bool = True, annotate_diff: float = np.infty, save_name: str = 'beta_beta.jpeg', draw_error_line:bool = True, draw_reg_line: bool = True) -> bool:
     
     """
     Generates a scatter plot comparing the effect sizes (beta values) of two GWAS studies.
@@ -265,6 +265,8 @@ def beta_beta_draw(gwas_1:pd.DataFrame, gwas_2:pd.DataFrame, p_col:str, beta_col
         Significance threshold for p-values, by default 5e-8.
     annotate_coincidents : bool, optional
         Whether to annotate SNPs that are significant in both GWAS studies, by default True.
+    annotate_diff : float, optional
+        Minimum difference in beta values to annotate, by default np.infty.
     save_name : str, optional
         Name of the saved plot file, by default 'beta_beta.jpeg'.
     draw_error_line : bool, optional
