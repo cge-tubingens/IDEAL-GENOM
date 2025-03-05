@@ -470,6 +470,9 @@ class AssemblyReferenceFetcher():
             raise
 
         self.file_path.unlink()
+        self.file_path = fa_file
+
+        return str(fa_file)
     
     def get_destination_folder(self) -> Path:
 
