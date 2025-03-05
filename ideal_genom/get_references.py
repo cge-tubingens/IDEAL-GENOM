@@ -361,3 +361,140 @@ class RefSeqFetcher(ReferenceDataFetcher):
             raise FileNotFoundError("GTF file not found")
         
         return
+
+class AssemblyReferenceFetcher():
+
+    def __init__(self, base_url: str, build: str, extension: str, destination_folder: str = None, avoid_substring: list = 'extra') -> None:
+
+        self.base_url = base_url
+        self.build = build
+        self.destination_folder = destination_folder
+        self.extension = extension
+        self.avoid_substring = avoid_substring
+
+        self.file_path = None
+        self.reference_url = None
+        self.reference_file = None
+        
+        pass
+
+    def get_reference_url(self) -> None:
+
+        response = requests.get(self.base_url)
+
+        if response.status_code != 200:
+            raise Exception(f"Failed to access {self.base_url}")
+        
+        soup = BeautifulSoup(response.text, "html.parser")
+
+        reference_file = None
+        for link in soup.find_all("a"):
+            href = link.get("href")
+            if href and f"{self.build}" in href and href.endswith(f"{self.extension}") and self.avoid_substring not in href:
+                reference_file = href
+                break  # Assuming the first match is the latest
+
+        self.reference_file = reference_file
+
+        if reference_file:
+            reference_url = self.base_url + reference_file
+            logger.info(f"Latest GTF file: {reference_file}")
+            logger.info(f"Download URL: {reference_url}")
+            self.reference_url = reference_url
+        else:
+            raise FileNotFoundError("Reference file not found")
+        
+        return str(reference_url)
+
+    def download_reference_file(self) -> str:
+        """
+        Downloads the reference assembly sequence file from base_url to `self.destination_folder`.
+
+        Raises:
+        -------
+            - AttributeError: If `self.latest_url` is not set.
+            - requests.exceptions.RequestException: If the HTTP request fails.
+        """
+
+        if not getattr(self, 'reference_url', None):
+            raise AttributeError("`self.reference_url` is not set. Call `get_reference_url` first.")
+        
+        if not getattr(self, 'reference_file', None):
+            raise AttributeError("`self.reference_file` is not set. Call `get_reference_url` first.")
+
+        self.destination_folder = self.get_destination_folder()
+
+        file_path = self.destination_folder / Path(self.reference_file).name
+
+        if file_path.exists():
+            logger.info(f"File already exists: {file_path}")
+            self.file_path = file_path
+            return str(file_path)
+        
+        fa_file = file_path.with_suffix('.fa')
+        
+        if fa_file.exists():
+            logger.info(f"File already exists: {fa_file}")
+            self.file_path = file_path
+            return str(fa_file)
+        
+        self._download_file(self.reference_url, file_path)
+        self.file_path = file_path
+
+        return str(file_path)
+    
+    def unzip_reference_file(self) -> str:
+
+        if not getattr(self, 'reference_file', None):
+            raise AttributeError("`self.reference_file` is not set. Call `get_reference_url` first.")
+        
+        if not getattr(self, 'file_path', None):
+            raise AttributeError("`self.file_path` is not set. Call `download_reference_file` first.")
+        
+        if self.file_path.suffix == '.fa':
+            logger.info(f"File already unzipped: {self.file_path}")
+            return str(self.file_path)
+        
+        fa_file = self.get_destination_folder() / Path(self.file_path.stem)
+        if fa_file.exists():
+            logger.info(f"File already exists: {fa_file}")
+            return str(fa_file)
+        
+        try:
+            with gzip.open(self.file_path, 'rb') as f_in:
+                with open(fa_file, 'wb') as f_out:
+                    shutil.copyfileobj(f_in, f_out)
+            logger.info(f"Successfully unzipped file to: {fa_file}")
+        except OSError as e:
+            logger.info(f"Error occurred while unzipping the file: {e}")
+            raise
+
+        self.file_path.unlink()
+    
+    def get_destination_folder(self) -> Path:
+
+        """Determine the destination folder for downloads."""
+
+        if self.destination_folder:
+            destination = Path(self.destination_folder)
+        else:
+            # Determine project root and default `data` directory
+            project_root = Path(__file__).resolve().parent.parent
+            destination = project_root / "data" / "assembly_references"
+
+        destination.mkdir(parents=True, exist_ok=True)
+
+        return destination
+    
+    def _download_file(self, url: str, file_path: Path) -> None:
+
+        """Download a file from the given URL and save it to `file_path`."""
+
+        with requests.get(url, stream=True) as response:
+            response.raise_for_status()
+
+            with open(file_path, 'wb') as file:
+                for chunk in response.iter_content(chunk_size=8192):
+                    file.write(chunk)
+
+        logger.info(f"Downloaded file to: {file_path}")
