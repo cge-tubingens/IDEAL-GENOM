@@ -8,9 +8,11 @@ import threading
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
+from ideal_genom.get_references import AssemblyReferenceFetcher
+
 class PostImputation:
 
-    def __init__(self, input_path:str, output_path:str, output_name:str, dependables:str)->None:
+    def __init__(self, input_path:str, output_path:str, output_name:str, dependables:str, built: str = '38')->None:
         
         """
         Initializes the AfterImputation class with the given input, output, and dependables directories.
@@ -49,6 +51,10 @@ class PostImputation:
             raise ValueError("Output name cannot be an empty string")
         if not isinstance(output_name, str):
             raise ValueError("Output name should be a string")
+        if not isinstance(built, str):
+            raise ValueError("Built should be a string")
+        if built not in ['37', '38']:
+            raise ValueError("Built should be either '37' or '38'")
         
         if os.path.isdir(input_path) is False:
             raise ValueError("Input directory does not exist")
@@ -61,6 +67,7 @@ class PostImputation:
         self.output_path= output_path
         self.dependables= dependables
         self.output_name= output_name
+        self.built      = built
 
         self.results_dir = os.path.join(output_path, 'post_imputation')
         if not os.path.exists(self.results_dir):
@@ -181,7 +188,8 @@ class PostImputation:
             chr_files    =chr_files,
             output_folder=results_dir,
             reference_file=os.path.join(dependables, reference_genome),
-            max_workers  =max_workers
+            max_workers  =max_workers,
+            built=self.built
         )
 
         pass
@@ -633,12 +641,35 @@ class PostImputation:
         pass
 
     @staticmethod
-    def normalize_chromosome_with_reference(input_chr_file:str, output_chr_file:str, reference_file:str)->None:
+    def normalize_chromosome_with_reference(input_chr_file:str, output_chr_file:str, reference_file:str, built: str)->None:
         
         if not os.path.isfile(input_chr_file):
             raise FileExistsError(f"Input file {input_chr_file} does not exist")
+        
         if not os.path.isfile(reference_file):
-            raise FileExistsError(f"Reference file {reference_file} does not exist")
+            if built == '37':
+
+                assemb37 = AssemblyReferenceFetcher(
+                        base_url='https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/reference/phase2_reference_assembly_sequence/',
+                        build='37',
+                        extension='.fa.gz'
+                )
+                assemb37.get_reference_url()
+                assemb37.download_reference_file()
+                assemb37.unzip_reference_file()
+                reference_file = str(assemb37.file_path)
+
+            elif built == '38':
+
+                assemb38 = AssemblyReferenceFetcher(
+                        base_url='https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/reference/GRCh38_reference_genome/',
+                        build='38',
+                        extension='.fa'
+                )
+                assemb38.get_reference_url()
+                assemb38.download_reference_file()
+                assemb38.unzip_reference_file()
+                reference_file = str(assemb38.file_path)
         
         # Normalize with reference genome and output to a new file
         bcf_cmd = [
@@ -657,7 +688,7 @@ class PostImputation:
         pass
 
     @staticmethod
-    def parallel_normalize_chromosome_with_reference(chr_files:list, output_folder:str, reference_file:str, max_workers:int=None)->None:
+    def parallel_normalize_chromosome_with_reference(chr_files:list, output_folder:str, reference_file:str, built: str, max_workers:int=None)->None:
 
         if max_workers is None:
             max_workers = min(8, os.cpu_count())
@@ -671,7 +702,8 @@ class PostImputation:
                     PostImputation.normalize_chromosome_with_reference, 
                     chr_file, 
                     os.path.join(output_folder, f"normalized_{os.path.basename(chr_file).split('_')[-1]}"),
-                    reference_file
+                    reference_file,
+                    built
                 ): chr_file for chr_file in chr_files
             }
             print(f"Active threads after submission: {threading.active_count()}")
