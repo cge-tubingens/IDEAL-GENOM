@@ -34,7 +34,6 @@ class ReferenceDataFetcher:
         """Determine the specific URL for fetching data."""
         raise NotImplementedError("Subclasses must implement this method.")
 
-
     def download_latest(self) -> str:
         """
         Downloads the latest file from `self.latest_url` to `self.destination_folder`.
