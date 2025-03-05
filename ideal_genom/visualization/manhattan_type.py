@@ -166,7 +166,7 @@ def manhattan_process_data(data_df:pd.DataFrame, chr_col:str='CHR', pos_col:str=
 
     return manhattan_data
 
-def manhattan_draw(data_df:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, p_col:str, plot_dir:str, to_highlight:pd.DataFrame=pd.DataFrame(), highlight_hue:str='hue', to_annotate:pd.DataFrame=pd.DataFrame(), gen_col:str=None, build:str='38', anno_source='ensembl', gtf_path:str=None, save_name:str='manhattan_plot.jpeg', genome_line: float = 5e-8, suggestive_line: str = 1e-5, yaxis_margin: float = 10)->bool:
+def manhattan_draw(data_df:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, p_col:str, plot_dir:str, to_highlight:pd.DataFrame=pd.DataFrame(), highlight_hue:str='hue', to_annotate:pd.DataFrame=pd.DataFrame(), gen_col:str=None, build:str='38', anno_source='ensembl', gtf_path:str=None, save_name:str='manhattan_plot.jpeg', genome_line: float = 5e-8, suggestive_line: str = 1e-5, yaxis_margin: float = 10, dpi: int = 500)->bool:
 
     """
     Draws a Manhattan plot for visualizing GWAS results.
@@ -372,7 +372,7 @@ def manhattan_draw(data_df:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, 
     # save the plot
 
     plt.savefig(
-        os.path.join(plot_dir, save_name), dpi=600
+        os.path.join(plot_dir, save_name), dpi=dpi
     )
     plt.show()
 
@@ -561,7 +561,7 @@ def miami_draw_anno_lines(renderer:RendererBase, axes:Axes, texts:list, variants
 
     return axes
 
-def miami_draw(df_top: pd.DataFrame, df_bottom: pd.DataFrame, snp_col: str, chr_col: str, pos_col: str, p_col: str, plots_dir: str, top_highlights: list = [], top_annotations: pd.DataFrame=pd.DataFrame(), bottom_highlights: list = [], bottom_annotations: pd.DataFrame = pd.DataFrame(), top_gen_col: str = None, bottom_gen_col: str = None, gtf_path: str = None, source: str = "ensemble", build: str = '38', save_name: str = 'miami_plot.jpeg', legend_top: str = 'top GWAS', legend_bottom: str = 'bottom GWAS')->bool:
+def miami_draw(df_top: pd.DataFrame, df_bottom: pd.DataFrame, snp_col: str, chr_col: str, pos_col: str, p_col: str, plots_dir: str, top_highlights: list = [], top_annotations: pd.DataFrame=pd.DataFrame(), bottom_highlights: list = [], bottom_annotations: pd.DataFrame = pd.DataFrame(), top_gen_col: str = None, bottom_gen_col: str = None, gtf_path: str = None, source: str = "ensemble", build: str = '38', save_name: str = 'miami_plot.jpeg', legend_top: str = 'top GWAS', legend_bottom: str = 'bottom GWAS', dpi: int = 500)->bool:
     
     """
     Draws a Miami plot (a combination of two Manhattan plots) for visualizing GWAS results.
@@ -870,7 +870,7 @@ def miami_draw(df_top: pd.DataFrame, df_bottom: pd.DataFrame, snp_col: str, chr_
     ax_upper.set_xlabel("")
     
     # save ad show the plot
-    plt.savefig(os.path.join(plots_dir, save_name), dpi=500)
+    plt.savefig(os.path.join(plots_dir, save_name), dpi=dpi)
     plt.show()
 
     return True
