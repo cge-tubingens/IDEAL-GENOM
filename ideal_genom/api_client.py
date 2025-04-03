@@ -5,8 +5,15 @@ import json
 
 class VEPEnsemblRestClient:
 
-    def __init__(self, server='https://rest.ensembl.org', reqs_per_sec=15):
-        self.server = server
+    ENSEMBL_API_URLS = [
+        "https://rest.ensembl.org",  # Main server
+        "https://useast.ensembl.org",  # US West mirror
+        "https://asia.ensembl.org"  # Asia mirror
+    ]
+
+    def __init__(self, server: str = None, reqs_per_sec: int = 15):
+        self.servers = self.ENSEMBL_API_URLS if server is None else [server]
+        self.current_server_idx = 0  # Start with the main server
         self.reqs_per_sec = reqs_per_sec
         self.req_count = 0
         self.last_req = 0
@@ -20,7 +27,12 @@ class VEPEnsemblRestClient:
             self.last_req = time.time()
             self.req_count = 0
 
-    def perform_rest_action(self, method, endpoint, headers=None, params=None, data=None):
+    def _switch_server(self):
+        """Switch to the next available Ensembl mirror if the current one fails."""
+        self.current_server_idx = (self.current_server_idx + 1) % len(self.servers)
+        logging.warning(f"Switching to Ensembl mirror: {self.servers[self.current_server_idx]}")
+
+    def perform_rest_action(self, method, endpoint, headers=None, params=None, data=None, retry_count: int = 0):
         """General method to perform REST actions with GET or POST"""
         self._rate_limit()
 
@@ -29,27 +41,39 @@ class VEPEnsemblRestClient:
         elif 'Content-Type' not in headers:
             headers['Content-Type'] = 'application/json'
 
-        url = self.server + endpoint
-        
-        try:
-            if method == 'GET':
-                response = requests.get(url, headers=headers, params=params, timeout=50)
-            elif method == 'POST':
-                response = requests.post(url, headers=headers, json=data, timeout=50)
-            response.raise_for_status()  # Will raise HTTPError for bad responses (4xx, 5xx)
-            self.req_count += 1
-            return response.json()
-        except requests.exceptions.HTTPError as e:
-            if response.status_code == 429:
-                retry_after = int(response.headers.get('Retry-After', 1))
-                logging.warning(f"Rate-limited. Retrying after {retry_after} seconds...")
-                time.sleep(retry_after)
-                return self.perform_rest_action(method, endpoint, headers, params, data)
-            else:
-                logging.error(f"HTTP error {response.status_code}: {e}")
-        except requests.exceptions.RequestException as e:
-            logging.error(f"Request failed: {e}")
-        return None
+        for _ in range(len(self.servers)):  # Try each server once
+            url = self.servers[self.current_server_idx] + endpoint
+            logging.info(f"Trying {url} ...")
+            
+            try:
+                if method == 'GET':
+                    response = requests.get(url, headers=headers, params=params, timeout=50)
+                elif method == 'POST':
+                    response = requests.post(url, headers=headers, json=data, timeout=50)
+
+                response.raise_for_status()  # Raise error for 4xx/5xx responses
+                self.req_count += 1
+                return response.json()  # Success, return data
+
+            except requests.exceptions.HTTPError as e:
+                if response.status_code == 429:
+                    retry_after = int(response.headers.get('Retry-After', 1))
+                    logging.warning(f"Rate-limited. Retrying after {retry_after} seconds...")
+                    time.sleep(retry_after)
+                    return self.perform_rest_action(method, endpoint, headers, params, data, retry_count+1)
+                elif response.status_code in [500, 502, 503]:  # Server issues
+                    logging.warning(f"Server error {response.status_code}. Trying another Ensembl mirror...")
+                    self._switch_server()
+                else:
+                    logging.error(f"HTTP error {response.status_code}: {e}")
+                    return None
+
+            except requests.exceptions.RequestException as e:
+                logging.error(f"Request failed: {e}")
+                self._switch_server()  # Try the next mirror
+
+        logging.error("All Ensembl mirrors failed.")
+        return None  # If all servers fail, return None
 
     def post_vep_request(self, ids):
         """Specific method to perform the VEP POST request with InAct parameter set to false."""
