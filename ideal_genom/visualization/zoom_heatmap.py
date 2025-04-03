@@ -10,7 +10,7 @@ import pandas as pd
 from matplotlib.patches import FancyArrow
 
 from ideal_genom.annotations import annotate_snp, gtf_to_all_genes
-from ideal_genom.get_references import Ensembl37, Ensembl38
+from ideal_genom.get_references import Ensembl37Fetcher, Ensembl38Fetcher
 
 from pyensembl import Genome
 
@@ -129,7 +129,7 @@ def get_gene_information(genes:list, gtf_path:str=None, build: str = "38", anno_
   
             if gtf_path is None:
 
-                nsmbl37 = Ensembl37()
+                nsmbl37 = Ensembl37Fetcher()
 
                 nsmbl37.get_latest_release()
                 nsmbl37.download_latest()
@@ -161,7 +161,7 @@ def get_gene_information(genes:list, gtf_path:str=None, build: str = "38", anno_
 
             if gtf_path is None:
 
-                nsmbl38 = Ensembl38()
+                nsmbl38 = Ensembl38Fetcher() 
 
                 nsmbl38.get_latest_release()
                 nsmbl38.download_latest()
