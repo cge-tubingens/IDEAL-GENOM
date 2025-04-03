@@ -1,6 +1,7 @@
 import os
 import time
 import matplotlib
+import logging
 
 import matplotlib.pyplot as plt
 from matplotlib import transforms
@@ -19,6 +20,10 @@ from itertools import cycle
 from ideal_genom.api_client import VEPEnsemblRestClient
 
 from ideal_genom.Helpers import shell_do
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s", force=True)
+logger = logging.getLogger(__name__)
 
 def filter_sumstats(data_df:pd.DataFrame, lead_snp:str, snp_col:str, p_col:str, pos_col:str, chr_col:str, pval_threshold:float=5e-8, radius:int=10e6) -> pd.DataFrame:
     """
@@ -57,10 +62,19 @@ def snp_annotations(data_df:pd.DataFrame, snp_col:str, pos_col:str, chr_col:str,
             gtf_path=gtf_path
         ).rename(columns={"GENE":"GENENAME"})
     
+    
+    logger.info(f" - Annotated SNPs with gene names.")
+    logger.info(f'variants_toanno shape: {variants_toanno.shape}')
+    logger.info(f'variants_toanno columns: {variants_toanno.columns.tolist()}')
+    
     if build == '38':
+
+        logger.info(" -Assigning functional consequences using Ensembl VEP for protein coding genes for build 38")
     
         # initialize VEP client
         vep_client = VEPEnsemblRestClient(server='https://rest.ensembl.org', reqs_per_sec=request_persec)
+
+        logger.info(" - Using Ensembl VEP API to annotate SNPs with functional consequences.")
 
         # list of IDs for the POST request
         snps = variants_toanno[snp_col].to_list()
@@ -87,6 +101,8 @@ def snp_annotations(data_df:pd.DataFrame, snp_col:str, pos_col:str, chr_col:str,
             time.sleep(5)
 
     elif build == '19' or build == '37':
+
+        logger.info(" -Assigning functional consequences using Ensembl VEP for protein coding genes for build 37")
 
         # initialize VEP client
         vep_client = VEPEnsemblRestClient(server='https://grch37.rest.ensembl.org', reqs_per_sec=15)
@@ -115,9 +131,13 @@ def snp_annotations(data_df:pd.DataFrame, snp_col:str, pos_col:str, chr_col:str,
 
             time.sleep(5)
 
+    logger.info(" - Finished annotating SNPs with functional consequences.")
+    logger.info(f'df_vep shape: {df_vep.shape}')
+    logger.info(f'df_vep columns: {df_vep.columns.tolist()}')
+
     variants_toanno = variants_toanno.merge(df_vep, on=snp_col, how='left')
     
-    return variants_toanno.drop(columns=['LOCATION'], inplace=False)
+    return variants_toanno#.drop(columns=['LOCATION'], inplace=False)
 
 def get_gene_information(genes:list, gtf_path:str=None, build: str = "38", anno_source: str='ensembl')->pd.DataFrame:
 
@@ -253,7 +273,7 @@ def get_ld_matrix(data_df:pd.DataFrame, snp_col:str, pos_col:str, bfile_folder:s
         
     return out_dict
 
-def get_zoomed_data(data_df:pd.DataFrame, lead_snp:str, snp_col:str, p_col:str, pos_col:str, chr_col:str, output_folder:str,pval_threshold:float=5e-6, radius:int=1e6, build: str='38', anno_source: str='ensemble', gtf_path: str = None, batch_size:int=100, request_persec:int=15)->pd.DataFrame:
+def get_zoomed_data(data_df:pd.DataFrame, lead_snp:str, snp_col:str, p_col:str, pos_col:str, chr_col:str, output_folder:str,pval_threshold:float=5e-6, radius:int=1e6, build: str='38', anno_source: str='ensembl', gtf_path: str = None, batch_size:int=100, request_persec:int=15)->pd.DataFrame:
 
     if not isinstance(data_df, pd.DataFrame):
         raise TypeError("data_df must be a pandas DataFrame.")
@@ -275,6 +295,8 @@ def get_zoomed_data(data_df:pd.DataFrame, lead_snp:str, snp_col:str, p_col:str, 
     if os.path.isdir(output_folder) is not True:
         raise FileNotFoundError(f"Folder {output_folder} not found.")
     
+    logger.info(f" - Filtering data for lead SNP: {lead_snp} in region of radius {radius} around the lead SNP.")
+    
     # filter significant SNPs in the specified region
     filtered_df = filter_sumstats(
         data_df       =data_df, 
@@ -286,6 +308,9 @@ def get_zoomed_data(data_df:pd.DataFrame, lead_snp:str, snp_col:str, p_col:str, 
         pval_threshold=pval_threshold, 
         radius        =radius
     )
+
+    logger.info(f" - Filtered data shape: {filtered_df.shape}")
+    logger.info(f" - Filtered data columns: {filtered_df.columns.tolist()}")
 
     if filtered_df.empty:
         raise ValueError("No significant SNPs found in the specified region.")
@@ -329,6 +354,8 @@ def draw_zoomed_heatmap(data_df:pd.DataFrame, lead_snp:str, snp_col:str, p_col:s
         build=build,
         gtf_path=gtf_path,
     )
+
+    logger.info(f" - Annotated data shape: {annotated.shape}")
 
     annotated['GENENAME'] = annotated['GENENAME'].apply(lambda x: x.split(',')[0])
 

@@ -8,8 +8,9 @@ from pyensembl import Genome
 from gtfparse import read_gtf
 
 from ideal_genom.get_references import Ensembl38Fetcher, Ensembl37Fetcher, RefSeqFetcher
+from ideal_genom.get_references import ReferenceDataFetcher
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s", force=True)
 logger = logging.getLogger(__name__)
 
 def get_closest_gene(x, data: Genome, chrom: str = "CHR", pos: str = "POS", max_iter: int = 20000, step: int = 50, source: str = "ensembl", build: str="38"):
@@ -218,158 +219,106 @@ def gtf_to_all_genes(gtfpath: str = None):
 
     return all_gene_path
 
-def annotate_snp(insumstats: pd.DataFrame, chrom: str = "CHR", pos: str = "POS", build: str = "38", source: str = "ensembl", gtf_path: str = None):
+def annotate_snp(insumstats: pd.DataFrame, chrom: str = "CHR", pos: str = "POS", build: str = "38", source: str = "ensembl", gtf_path: str = None) -> pd.DataFrame:
+
+    if not isinstance(insumstats, pd.DataFrame):
+        raise TypeError("Input must be a pandas DataFrame.")
+    if chrom not in insumstats.columns or pos not in insumstats.columns:
+        raise ValueError(f"Input DataFrame must contain columns '{chrom}' and '{pos}'.")
+    if build not in ["19", "37", "38"]:
+        raise ValueError("Build must be one of '19', '37', or '38'.")
+    if source not in ["ensembl", "refseq"]:
+        raise ValueError("Source must be either 'ensembl' or 'refseq'.")
+    if gtf_path is not None and not isinstance(gtf_path, str):
+        raise TypeError("GTF path must be a string.")
     
     output = insumstats.copy()
+    
+    is_gtf_path = gtf_path is not None and os.path.isfile(gtf_path)
 
-    if gtf_path is None:
-        is_gtf_path = False
-    else: 
-        is_gtf_path = os.path.isfile(gtf_path)
+    logger.info("Starting to annotate variants with nearest gene name(s)...")
+    logger.info(f" -Using {build} as genome build")
+    logger.info(f"is_gtf_path set to {is_gtf_path}")
 
     if source == "ensembl":
+        logger.info(f" -Using ensembl as source for gene annotation")
+        output = annotate_with_ensembl(output, chrom, pos, build, gtf_path, is_gtf_path)
+    elif source == "refseq":
+        logger.info(f" -Using refseq as source for gene annotation")
+        output = annotate_with_refseq(output, chrom, pos, build, gtf_path, is_gtf_path)
 
-        if build=="19" or build=="37":
-
-            logger.info(" -Assigning Gene name using Ensembl GRCh37 for protein coding genes")
-  
-            if gtf_path is None or not is_gtf_path:
-
-                nsmbl37 = Ensembl37Fetcher()
-
-                nsmbl37.get_latest_release()
-                nsmbl37.download_latest()
-                nsmbl37.unzip_latest()
-                nsmbl37.get_all_genes()
-
-                gtf_path = nsmbl37.all_genes_path
-
-            else:
-                logger.info(f" -Using user-provided gtf:{gtf_path}")
-                
-                gtf_path = gtf_to_all_genes(gtf_path)
-
-            gtf_db_path = gtf_path[:-2]+"db"
-            
-            data = Genome(
-                reference_name='GRCh37',
-                annotation_name='Ensembl',
-                gtf_path_or_url=gtf_path
-            )
-
-            if os.path.isfile(gtf_db_path) is False:
-
-                data.index()
-            
-            output.loc[:,["LOCATION","GENE"]] = pd.DataFrame(
-                list(output.apply(lambda x: get_closest_gene(x,data=data,chrom=chrom,pos=pos,source=source), axis=1)), 
-                index=output.index).values
-        
-        elif build=="38":
-
-            logger.info(" -Assigning Gene name using Ensembl GRCh38 for protein coding genes")
-
-            if gtf_path is None or not is_gtf_path:
-
-                nsmbl38 = Ensembl38Fetcher()
-
-                nsmbl38.get_latest_release()
-                nsmbl38.download_latest()
-                nsmbl38.unzip_latest()
-                nsmbl38.get_all_genes()
-
-                gtf_path = nsmbl38.all_genes_path
-
-            else:
-                logger.info(f" -Using user-provided gtf:{gtf_path}")
-                gtf_path = gtf_to_all_genes(gtf_path)
-            
-            gtf_db_path = gtf_path[:-2]+"db"
-
-            data = Genome(
-                reference_name='GRCh38',
-                annotation_name='Ensembl',
-                gtf_path_or_url=gtf_path
-            )
-            
-            if os.path.isfile(gtf_db_path) is False:
-                data.index()
-
-            output.loc[:,["LOCATION","GENE"]] = pd.DataFrame(
-                list(output.apply(lambda x:get_closest_gene(x,data=data,chrom=chrom,pos=pos,source=source), axis=1)), 
-                index=output.index).values
-    
-    if source == "refseq":
-
-        if build=="19" or build=="37":
-        
-            logger.info(" -Assigning Gene name using NCBI refseq latest GRCh37 for protein coding genes")
-            
-            if gtf_path is None or not is_gtf_path:
-
-                refseq37 = RefSeqFetcher(build = "37")
-
-                refseq37.get_latest_release()
-                refseq37.download_latest()
-                refseq37.unzip_latest()
-                refseq37.get_all_genes()
-
-                gtf_path = refseq37.all_genes_path
-
-            else:
-                logger.info(f" -Using user-provided gtf:{gtf_path}")
-                gtf_path = gtf_to_all_genes(gtf_path)
-            
-            gtf_db_path = gtf_path[:-2]+"db"
-            
-            
-            data = Genome(
-                reference_name='GRCh37',
-                annotation_name='Refseq',
-                gtf_path_or_url=gtf_path
-            )
-            
-
-            if os.path.isfile(gtf_db_path) is False:
-                data.index()
-
-            output.loc[:,["LOCATION","GENE"]] = pd.DataFrame(
-                list(output.apply(lambda x:get_closest_gene(x,data=data,chrom=chrom,pos=pos,source=source,build=build), axis=1)), 
-                index=output.index).values
-            
-        elif build=="38":
-            
-            logger.info(" -Assigning Gene name using NCBI refseq latest GRCh38 for protein coding genes")
-            
-            if gtf_path is None or not is_gtf_path:
-
-                refseq38 = RefSeqFetcher(build = "38")
-
-                refseq38.get_latest_release()
-                refseq38.download_latest()
-                refseq38.unzip_latest()
-                refseq38.get_all_genes()
-
-                gtf_path = refseq38.all_genes_path
-
-            else:
-                logger.info(f" -Using user-provided gtf:{gtf_path}")
-                gtf_path = gtf_to_all_genes(gtf_path)
-
-            gtf_db_path = gtf_path[:-2]+"db"
-            
-            data = Genome(
-                reference_name='GRCh38',
-                annotation_name='Refseq',
-                gtf_path_or_url=gtf_path
-            )
-            
-            if os.path.isfile(gtf_db_path) is False:
-                data.index()
-            
-            output.loc[:,["LOCATION","GENE"]] = pd.DataFrame(
-                list(output.apply(lambda x:get_closest_gene(x,data=data,chrom=chrom,pos=pos,source=source,build=build), axis=1)), 
-                index=output.index).values
-            
     logger.info("Finished annotating variants with nearest gene name(s) successfully!")
     return output
+
+def annotate_with_ensembl(output: pd.DataFrame, chrom: str, pos: str, build: str, gtf_path: str, is_gtf_path: bool) -> pd.DataFrame:
+
+    if not isinstance(output, pd.DataFrame):
+        raise TypeError("Input must be a pandas DataFrame.")
+    if chrom not in output.columns or pos not in output.columns:
+        raise ValueError(f"Input DataFrame must contain columns '{chrom}' and '{pos}'.")
+    if build not in ["19", "37", "38"]:
+        raise ValueError("Build must be one of '19', '37', or '38'.")
+    if gtf_path is not None and not isinstance(gtf_path, str):
+        raise TypeError("GTF path must be a string.")
+    
+    if build in ["19", "37"]:
+        logger.info(" -Assigning Gene name using Ensembl GRCh37 for protein coding genes")
+        gtf_path = prepare_gtf_path(gtf_path, is_gtf_path, Ensembl37Fetcher)
+        data = prepare_genome(gtf_path, "GRCh37", "Ensembl")
+
+    elif build == "38":
+        logger.info(" -Assigning Gene name using Ensembl GRCh38 for protein coding genes")
+        gtf_path = prepare_gtf_path(gtf_path, is_gtf_path, Ensembl38Fetcher)
+        data = prepare_genome(gtf_path, "GRCh38", "Ensembl")
+
+    output.loc[:, ["LOCATION", "GENE"]] = annotate_variants(output, data, chrom, pos, "ensembl")
+    return output
+
+def annotate_with_refseq(output: pd.DataFrame, chrom: str, pos: str, build: str, gtf_path: str, is_gtf_path: bool) -> pd.DataFrame:
+
+    if not isinstance(output, pd.DataFrame):
+        raise TypeError("Input must be a pandas DataFrame.")
+    if chrom not in output.columns or pos not in output.columns:
+        raise ValueError(f"Input DataFrame must contain columns '{chrom}' and '{pos}'.")
+    if build not in ["19", "37", "38"]:
+        raise ValueError("Build must be one of '19', '37', or '38'.")
+    if gtf_path is not None and not isinstance(gtf_path, str):
+        raise TypeError("GTF path must be a string.")
+    
+    if build in ["19", "37"]:
+        logger.info(" -Assigning Gene name using NCBI refseq latest GRCh37 for protein coding genes")
+        gtf_path = prepare_gtf_path(gtf_path, is_gtf_path, lambda: RefSeqFetcher(build="37"))
+        data = prepare_genome(gtf_path, "GRCh37", "Refseq")
+    elif build == "38":
+        logger.info(" -Assigning Gene name using NCBI refseq latest GRCh38 for protein coding genes")
+        gtf_path = prepare_gtf_path(gtf_path, is_gtf_path, lambda: RefSeqFetcher(build="38"))
+        data = prepare_genome(gtf_path, "GRCh38", "Refseq")
+    output.loc[:, ["LOCATION", "GENE"]] = annotate_variants(output, data, chrom, pos, "refseq", build)
+    return output
+
+def prepare_gtf_path(gtf_path: str, is_gtf_path: bool, fetcher_class: ReferenceDataFetcher) -> str:
+
+    if gtf_path is None or not is_gtf_path:
+        fetcher = fetcher_class()
+        fetcher.get_latest_release()
+        fetcher.download_latest()
+        fetcher.unzip_latest()
+        fetcher.get_all_genes()
+        gtf_path = fetcher.all_genes_path
+    else:
+        logger.info(f" -Using user-provided gtf:{gtf_path}")
+        gtf_path = gtf_to_all_genes(gtf_path)
+    return gtf_path
+
+def prepare_genome(gtf_path: str, reference_name: str, annotation_name: str):
+    gtf_db_path = gtf_path[:-2] + "db"
+    data = Genome(reference_name=reference_name, annotation_name=annotation_name, gtf_path_or_url=gtf_path)
+    if not os.path.isfile(gtf_db_path):
+        data.index()
+    return data
+
+def annotate_variants(output: pd.DataFrame, data: str, chrom: str, pos: str, source: str, build: str=None):
+    return pd.DataFrame(
+        list(output.apply(lambda x: get_closest_gene(x, data=data, chrom=chrom, pos=pos, source=source, build=build), axis=1)),
+        index=output.index
+    ).values
