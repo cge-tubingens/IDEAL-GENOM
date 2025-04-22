@@ -1,81 +1,80 @@
 """
-Module to prepare data for the downstream analysis
+Module to prepare data for the GWAS and another advanced analysis.
 
-The module provides a class to perform data preparation for downstream analysis.
+The module provides a class to perform data preparation for advanced analysis.
 
 Classes:
 --------
-PrepDS
+Preparatory:
     Class to perform data preparation for downstream analysis.
 """
 
 import os
 import psutil
+import logging
 
-from ideal_genom.Helpers import shell_do, delete_temp_files
+from ideal_genom.Helpers import shell_do
+from ideal_genom.get_references import FetcherLDRegions
+
+from pathlib import Path
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logger = logging.getLogger(__name__)
 
 class Preparatory:
 
-    """
-    Class designed to perform data preparation for downstream analysis.
-    """
-
-    def __init__(self, input_path:str, input_name:str, output_path:str, output_name:str, dependables:str) -> None:
+    def __init__(self, input_path: str | Path, input_name: str, output_path: str | Path, output_name: str, high_ld_file: str | Path, built: str = '38') -> None:
         
         """
-        Initializes the preparatory class with the given input and output paths, file names, and dependables path.
+        Initialize the preparatory class for genomic data processing.
         
+        This class handles the initialization and validation of paths and files needed for genomic data preprocessing.
+        It checks for the existence of required PLINK files and sets up the directory structure for output results.
         Parameters:
-        -----------
-        input_path (str): 
-            The path to the input directory.
+        ----------
+        input_path (str | Path): 
+            Directory path containing input PLINK files
         input_name (str): 
-            The name of the input file (without extension).
-        output_path (str): 
-            The path to the output directory.
+            Base name of input PLINK files (without extension)
+        output_path (str | Path): 
+            Directory path for output files
         output_name (str): 
-            The name of the output file (without extension).
-        dependables (str): 
-            The path to the dependables directory.
+            Base name for output files (without extension)
+        high_ld_file (str | Path): 
+            Path to the high LD regions file
+        built (str, optional): 
+            Genome build version. Must be either '38' or '37'. Defaults to '38'
         
         Raises:
         -------
-        ValueError: 
-            If any of input_path, output_path, or dependables is None.
-        FileNotFoundError: 
-            If input_path, output_path, or dependables does not exist.
-        ValueError: 
-            If input_name or output_name is None.
-        TypeError: 
-            If input_name or output_name is not a string.
-        FileNotFoundError: 
-            If any of the required PLINK files (.bed, .bim, .fam) are not found in the input_path.
+            ValueError: If input_path, output_path, input_name, or output_name are not set,
+                       or if built is not '38' or '37'
+            TypeError: If input_path, output_path are not str or Path objects,
+                       if input_name, output_name are not str objects,
+                       or if built is not a str object
+            FileNotFoundError: If input_path or output_path don't exist,
+                              or if required PLINK files (.bed, .bim, .fam) are not found
         
-        Attributes:
-        -----------
-        input_path (str): 
-            The path to the input directory.
-        output_path (str): 
-            The path to the output directory.
-        input_name (str): 
-            The name of the input file (without extension).
-        output_name (str): 
-            The name of the output file (without extension).
-        dependables (str): 
-            The path to the dependables directory.
-        results_dir (str): 
-            The directory where results will be stored.
+        Note:
+        -----
+            If high_ld_file is not found, it will be automatically fetched from the package
+            using the FetcherLDRegions class.
         """
         
         # check if paths are set
-        if input_path is None or output_path is None or dependables is None:
-            raise ValueError("Values for input_path, output_path and dependables_path must be set upon initialization.")
+        if input_path is None or output_path:
+            raise ValueError("Values for input_path and output_path must be set upon initialization.")
         
-        if not os.path.exists(input_path):
-            raise FileNotFoundError(f"Input path does not exist: {input_path}")
-        if not os.path.exists(dependables):
-            raise FileNotFoundError(f"Dependables path does not exist: {dependables}")
-        if not os.path.exists(output_path):
+        if not isinstance(input_path, (str, Path)) or not isinstance(output_path, (str, Path)):
+            raise TypeError("input_path and output_path should be of type str or Path.")
+        
+        input_path  = Path(input_path)
+        output_path = Path(output_path)
+        high_ld_file = Path(high_ld_file)
+        
+        if not input_path.exists() or not input_path.is_dir():
+            raise FileNotFoundError(f"Input directory path does not exist: {input_path}")
+        if not output_path.exists() or not output_path.is_dir():
             raise FileNotFoundError(f"Output path does not exist: {output_path}")
         
         # check if input_name and output_name are set
@@ -84,67 +83,87 @@ class Preparatory:
         if not isinstance(input_name, str) or not isinstance(output_name, str):
             raise TypeError("input_name and output_name should be of type str.")
         
+        if not isinstance(built, str):
+            raise TypeError("built should be of type str.")
+        if built not in ['38', '37']:
+            raise ValueError("built should be either '38' or '37'.")
+        
         # check existence of PLINK files
-        if not os.path.exists(os.path.join(input_path, input_name+'.bed')):
-            raise FileNotFoundError(f"PLINK bed file was not found: {os.path.join(input_path, input_name+'.bed')}")
-        if not os.path.exists(os.path.join(input_path, input_name+'.bim')):
-            raise FileNotFoundError(f"PLINK bim file was not found: {os.path.join(input_path, input_name+'.bim')}")
-        if not os.path.exists(os.path.join(input_path, input_name+'.fam')):
-            raise FileNotFoundError(f"PLINK fam file was not found: {os.path.join(input_path, input_name+'.fam')}")
+        if not (input_path / f"{input_name}.bed").exists():
+            raise FileNotFoundError(f"PLINK bed file was not found: {input_path / f"{input_name}.bed"}")
+        if not (input_path / f"{input_name}.bim").exists():
+            raise FileNotFoundError(f"PLINK bim file was not found: {input_path / f"{input_name}.bim"}")
+        if not (input_path / f"{input_name}.fam").exists():
+            raise FileNotFoundError(f"PLINK fam file was not found: {input_path / f"{input_name}.fam"}")
+        if not high_ld_file.is_file():
+            logger.info(f"High LD file not found at {high_ld_file}")
+            logger.info('High LD file will be fetched from the package')
+            
+            ld_fetcher = FetcherLDRegions(built=built)
+            ld_fetcher.get_ld_regions()
+
+            high_ld_file = ld_fetcher.ld_regions
+            logger.info(f"High LD file fetched from the package and saved at {high_ld_file}")
 
         self.input_path  = input_path
         self.output_path = output_path
         self.input_name  = input_name
         self.output_name = output_name
-        self.dependables = dependables
+        self.built       = built
+        self.high_ld_file = high_ld_file
 
         # create results folder
-        self.results_dir = os.path.join(output_path, 'preparatory')
-        if not os.path.exists(self.results_dir):
-            os.mkdir(self.results_dir)
+        self.results_dir = self.output_path / 'preparatory'
+        self.results_dir.mkdir(parents=True, exist_ok=True)
 
         pass
 
-    def execute_ld_prunning(self, maf:float=0.01, geno:float=0.1, hwe:float=5e-6, ind_pair:list=[50, 5, 0.2], memory:int=None)->dict:
-        
+    def execute_ld_prunning(self, mind: float = 0.2, maf: float = 0.01, geno: float = 0.1, hwe: float = 5e-6, ind_pair: list = [50, 5, 0.2], memory: int = None) -> None:
         """
-        Executes LD pruning using PLINK.
-        
-        This function performs linkage disequilibrium (LD) pruning on genotype data using PLINK. It filters SNPs based on minor allele frequency (MAF), genotype missingness, and Hardy-Weinberg equilibrium (HWE). It also excludes high LD regions and performs LD pruning using the specified parameters.
+        Execute LD (Linkage Disequilibrium) pruning on genetic data using PLINK.
 
-        Parameters:
-        -----------
-        maf : float, optional
-            Minor allele frequency threshold (default is 0.01).
-        geno : float, optional
-            Genotype missingness threshold (default is 0.1).
-        hwe : float, optional
-            Hardy-Weinberg equilibrium threshold (default is 5e-6).
-        ind_pair : list, optional
-            Parameters for the --indep-pairwise option in PLINK (default is [50, 5, 0.2]).
-        memory : int, optional
-            Amount of memory (in MB) to allocate for PLINK (default is None, which calculates 2/3 of available memory).
+        This method performs LD pruning in two steps:
+        1. Excludes high LD regions and identifies independent SNPs
+        2. Extracts the identified independent SNPs
         
-        Returns:
-        --------
-        dict
-            A dictionary containing the status of the process, the step name, and the output directory.
+        Parameters
+        ----------
+        mind : float, optional (default=0.2)
+            Missing rate per individual threshold. Excludes individuals with missing rate higher than threshold.
+        maf : float, optional (default=0.01) 
+            Minor allele frequency threshold. Must be between 0 and 0.5.
+        geno : float, optional (default=0.1)
+            Missing rate per SNP threshold. Must be between 0 and 1.
+        hwe : float, optional (default=5e-6)
+            Hardy-Weinberg equilibrium exact test p-value threshold. Must be between 0 and 1.
+        ind_pair : list, optional (default=[50, 5, 0.2])
+            Parameters for pairwise pruning: [window size(variants), step size(variants), r^2 threshold]
+        memory : int, optional (default=None)
+            Memory in MB to allocate. If None, uses 2/3 of available system memory.
         
-        Raises:
+        Returns
         -------
+        None
+            The results are saved to disk and the pruned file path is stored in self.pruned_file
+        
+        Raises
+        ------
         TypeError
-            If any of the parameters `maf`, `geno`, or `hwe` are not of type float.
+            If mind, maf, geno, or hwe are not float
         ValueError
-            If any of the parameters `maf`, `geno`, or `hwe` are out of their respective valid ranges.
-        FileNotFoundError
-            If the file with high LD regions is not found.
+            If maf is not between 0 and 0.5
+            If geno is not between 0 and 1
+            If hwe is not between 0 and 1
+        
+        Notes
+        -----
+        Uses PLINK software for the pruning operations.
+        Operates on chromosomes 1-22 only.
+        Automatically determines optimal thread count based on system CPU cores.
         """
-
-        input_path       = self.input_path
-        input_name       = self.input_name
-        results_dir      = self.results_dir
-        output_name      = self.output_name
-        dependables_path = self.dependables
+        
+        if not isinstance(mind, float):
+            raise TypeError("mind should be of type float.")
 
         # Check type of maf
         if not isinstance(maf, float):
@@ -170,12 +189,7 @@ class Preparatory:
         if hwe < 0 or hwe > 1:
             raise ValueError("hwe should be between 0 and 1")
         
-        # check existence of high LD regions file
-        high_ld_regions_file = os.path.join(dependables_path, 'high-LD-regions.txt')
-        if not os.path.exists(high_ld_regions_file):
-            raise FileNotFoundError(f"File with high LD region was not found: {high_ld_regions_file}")
-
-        step = "ld_prune"
+        logger.info("STEP: LD pruning")
 
         # compute the number of threads to use
         if os.cpu_count() is not None:
@@ -190,61 +204,57 @@ class Preparatory:
             memory = round(2*available_memory_mb/3,0)
 
         # plink command to exclude high LD regions
-        plink_cmd1 = f"plink --bfile {os.path.join(input_path, input_name)} --chr 1-22 --maf {maf} --geno {geno}  --hwe {hwe} --exclude {high_ld_regions_file} --indep-pairwise {ind_pair[0]} {ind_pair[1]} {ind_pair[2]} --threads {max_threads} --memory {memory} --make-bed --out {os.path.join(results_dir, output_name+'_prunning')}"
+        plink_cmd1 = f"plink --bfile {self.input_path / self.input_name} --chr 1-22 --mind {mind} --maf {maf} --geno {geno}  --hwe {hwe} --exclude {self.high_ld_file} --indep-pairwise {ind_pair[0]} {ind_pair[1]} {ind_pair[2]} --keep-allele-order --threads {max_threads} --memory {memory} --make-bed --out {self.results_dir / (self.output_name+'-prunning')}"
+
+        prune_in_file = (self.results_dir / (self.input_name+'-prunning')).with_suffix('.prune.in')
 
         # plink command to perform LD pruning
-        plink_cmd2 = f"plink --bfile {os.path.join(results_dir, output_name+'_prunning')} --extract {os.path.join(results_dir, output_name+'_prunning.prune.in')} --make-bed --out {os.path.join(input_path, input_name+'-pruned')} --threads {max_threads}"
+        plink_cmd2 = f"plink --bfile {self.results_dir / (self.output_name+'-prunning')} --extract {prune_in_file} --keep-allele-order --make-bed --out {self.input_path / (self.input_name+'-pruned')} --threads {max_threads}"
 
         # execute plink commands
         cmds = [plink_cmd1, plink_cmd2]
         for cmd in cmds:
             shell_do(cmd, log=True)
 
-        # report
-        process_complete = True
+        self.pruned_file = self.input_path / (self.input_name+'-pruned')
 
-        outfiles_dict = {
-            'plink_out': results_dir
-        }
-
-        out_dict = {
-            'pass': process_complete,
-            'step': step,
-            'output': outfiles_dict
-        }
-
-        return out_dict
+        return
     
-    def execute_pc_decomposition(self, pca:int=10)->dict:
+    def execute_pc_decomposition(self, pca: int = 10) -> None:
         """
-        Executes Principal Component Analysis (PCA) decomposition using PLINK.
+        Execute PCA decomposition on pruned PLINK binary files.
 
-        This method performs PCA decomposition on pruned genetic data using the PLINK software. It checks for the existence of necessary input files, constructs the PLINK command, and executes it. The results are stored in the specified output directory.
+        This method performs Principal Component Analysis (PCA) on the pruned genotype data
+        using PLINK software. It requires the existence of pruned binary PLINK files
+        (.bed, .bim, .fam) and generates PCA eigenvectors and eigenvalues.
 
-        Parameters:
-        -----------
-        pca (int, optional): 
-            The number of principal components to compute. Default is 10.
+        Parameters
+        ----------
+        pca : int, default=10
+            Number of principal components to compute. Must be greater than 0.
 
-        Returns:
-        --------
-        dict: 
-            A dictionary containing the status of the process, the step name, and the output files.
+        Returns
+        -------
+        None
 
-        Raises:
+        Raises
         ------
-        TypeError: 
-            If `pca` is not of type int.
-        ValueError: 
-            If `pca` is less than 1.
-        FileNotFoundError: 
-            If the required pruned data files are not found.
-        """
+        TypeError
+            If pca parameter is not an integer.
+        ValueError
+            If pca parameter is less than 1.
+        FileNotFoundError
+            If any of the required pruned PLINK files (.bed, .bim, .fam) are not found.
 
-        results_dir = self.results_dir
-        input_name = self.input_name
-        input_path = self.input_path
-        output_name = self.output_name
+        Notes
+        -----
+        The method automatically determines the optimal number of threads to use based on
+        CPU count, reserving 2 cores for other processes. If CPU count cannot be determined,
+        it defaults to 10 threads.
+
+        The output files will be created in the same directory as the input files, using
+        the input name as prefix with extensions .eigenvec and .eigenval.
+        """
 
         # Check type of pca and range
         if not isinstance(pca, int):
@@ -252,7 +262,7 @@ class Preparatory:
         if pca < 1:
             raise ValueError("pca should be greater than 0.")
 
-        step = "pca_decomposition"
+        logger.info("STEP: PCA decomposition")
 
         # compute the number of threads to use
         if os.cpu_count() is not None:
@@ -260,26 +270,17 @@ class Preparatory:
         else:
             max_threads = 10
 
-        if not os.path.exists(os.path.join(input_path, input_name+'-pruned.bed')) or not os.path.exists(os.path.join(input_path, input_name+'-pruned.bim')) or not os.path.exists(os.path.join(input_path, input_name+'-pruned.fam')):
-            raise FileNotFoundError(f"File with pruned data was not found: {os.path.join(input_path, input_name+'-pruned')}")
+        if not self.pruned_file.with_suffix('.bed').exists():
+            raise FileNotFoundError(f"bed file with pruned data was not found: {self.pruned_file.with_suffix('.bed')}")
+        if not self.pruned_file.with_suffix('.bim').exists():
+            raise FileNotFoundError(f"bim file with pruned data was not found: {self.pruned_file.with_suffix('.bim')}")
+        if not self.pruned_file.with_suffix('.fam').exists():
+            raise FileNotFoundError(f"fam file with pruned data was not found: {self.pruned_file.with_suffix('.fam')}")
 
         # plink command to perform PCA decomposition
-        plink_cmd = f"plink --bfile {os.path.join(input_path, input_name+'-pruned')} --pca {pca} --threads {max_threads} --out {os.path.join(input_path, input_name)}"
+        plink_cmd = f"plink --bfile {self.input_path / (self.input_name+'-pruned')} --pca {pca} --threads {max_threads} --out {self.input_path / self.input_name}"
 
         # execute plink command
         shell_do(plink_cmd, log=True)
 
-        # report
-        process_complete = True
-
-        outfiles_dict = {
-            'plink_out': results_dir
-        }
-
-        out_dict = {
-            'pass': process_complete,
-            'step': step,
-            'output': outfiles_dict
-        }
-
-        return out_dict
+        return
