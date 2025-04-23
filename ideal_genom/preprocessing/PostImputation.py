@@ -191,6 +191,9 @@ class FilterVariants(ParallelTaskRunner):
         
         output_file = self.output_path / (output_prefix + input_file.name)
 
+        logger.info(f"Filtering {input_file} with R2 > {r2_threshold}")
+        logger.info(f"Output file: {output_file}")
+
         # bcftools command
         bcf_cmd = [
             "bcftools", "view", "-Oz", "-i", f"R2>{r2_threshold}",
