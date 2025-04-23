@@ -457,8 +457,46 @@ class FilterVariants(ParallelTaskRunner):
         pass
 
 class NormalizeVCF(ParallelTaskRunner):
+    """
+    A class for normalizing VCF files post-imputation in parallel.
+    This class provides functionality to process VCF files by normalizing them using
+    bcftools. It's specifically designed to handle post-imputation VCF files and
+    split multiallelic variants into separate entries.
+    The class inherits from ParallelTaskRunner to enable parallel processing of
+    multiple VCF files, which improves performance for large-scale genomic datasets.
+    
+    Attributes:
+    ----------
+        Inherits all attributes from ParallelTaskRunner
 
+    Methods:
+    -------
+    execute_task(output_prefix='uncompressed-')
+        Execute the normalization task on VCF files in parallel.
+    normalize_vcf(input_file, output_prefix='uncompressed-')
+        Normalize a single VCF file using bcftools norm with the -m -any option.
+    """
+    
     def execute_task(self, output_prefix: str = 'uncompressed-') -> None:
+        """
+        Execute the post-imputation normalization task on VCF files.
+
+        This method collects filtered dose VCF files matching the pattern 'filtered-*dose.vcf.gz'
+        and runs the normalization process on them. The normalized files will be prefixed with 
+        the provided output_prefix.
+
+        Parameters:
+        -----------
+            output_prefix (str, optional): Prefix to add to the output files. Defaults to 'uncompressed-'.
+
+        Raises:
+        -------
+            TypeError: If output_prefix is not a string.
+
+        Returns:
+        --------
+            None
+        """
 
         task_args = {'output_prefix': output_prefix}
         if not isinstance(output_prefix, str):
@@ -475,6 +513,32 @@ class NormalizeVCF(ParallelTaskRunner):
         return
     
     def normalize_vcf(self, input_file: Path, output_prefix: str = 'uncompressed-') -> None:
+        """
+        Normalizes a VCF file using bcftools norm with the -m -any option.
+        This method takes a VCF file, performs normalization using bcftools to split 
+        multiallelic variants into separate entries, and outputs the normalized file 
+        with the specified prefix.
+        
+        Parameters:
+        -----------
+            input_file (Path): Path to the input VCF file to be normalized
+            output_prefix (str, optional): Prefix for the output file name. Defaults to 'uncompressed-'
+        
+        Returns:
+        --------
+            None
+
+        Raises:
+        -------
+            FileExistsError: If the input file does not exist
+            IsADirectoryError: If the input file path points to a directory
+            TypeError: If output_prefix is not a string
+        
+        Note:
+        -----
+            The output file will be saved in the output_path directory with the naming 
+            convention: output_prefix + base_name, where base_name is derived from the input file.
+        """
 
         if not input_file.exists():
             raise FileExistsError(f"Input file {input_file} does not exist")
