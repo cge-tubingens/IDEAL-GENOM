@@ -17,10 +17,56 @@ logger = logging.getLogger(__name__)
 
 class ParallelTaskRunner:
     """
-    Base class to run tasks in parallel using threads.
+    A base class for running parallel tasks on files.
+    
+    This class provides the basic infrastructure for parallel processing of files
+    using ThreadPoolExecutor. It handles file collection and parallel task execution
+    while providing progress monitoring and logging.
+    
+    Attributes:
+    -----------
+        input_path (Path): Directory path where input files are located.
+        output_path (Path): Directory path where output files will be saved.
+        max_workers (int): Maximum number of worker threads to use. Defaults to min(8, CPU count).
+        files (List[Path]): List of files to be processed.
+    
+    Example:
+    --------
+        class MyTaskRunner(ParallelTaskRunner):
+                def task_fn(file):
+                    # Process file
+                self._file_collector("*.txt")
+                self._run_task(task_fn, {})
+   
+    Raises:
+    -------
+        TypeError: If input_path or output_path are not Path objects.
+        FileNotFoundError: If input_path or output_path don't exist.
+        NotADirectoryError: If input_path or output_path are not directories.
     """
-
+    
     def __init__(self, input_path: Path, output_path: Path, max_workers: Optional[int] = None) -> None:
+        """
+        Initialize a ParallelTask processor.
+
+        This constructor sets up paths for processing multiple VCF in parallel and validates
+        that both input and output directories exist and are properly formatted.
+
+        Parameters:
+        -----------
+        input_path (Path): 
+            Path to the directory containing input files to process.
+        output_path (Path): 
+            Path to the directory where processed files will be saved.
+        max_workers (Optional[int], optional): 
+            Maximum number of concurrent workers for parallel processing. If None, defaults to min(8, os.cpu_count()).
+
+        Raises:
+        -------
+        TypeError: If input_path or output_path is not a Path object.
+        FileNotFoundError: If input_path or output_path does not exist.
+        NotADirectoryError: If input_path or output_path is not a directory.
+        """
 
         if not isinstance(input_path, Path):
             raise TypeError(f"input_path should be of type Path, got {type(input_path)}")
@@ -44,16 +90,54 @@ class ParallelTaskRunner:
 
         pass
 
-    def execute_task(self):
+    def execute_task(self) -> None:
         """
-        Execute the task. This method should be overridden by subclasses.
+        Execute the specific post-imputation processing task.
+
+        This abstract method should be implemented by all subclasses to perform
+        their specific post-imputation processing operations. Implementations
+        should handle the execution logic for the particular task the subclass
+        is designed to perform.
+
+        Returns:
+        --------
+        None
+
+        Raises:
+        -------
+        NotImplementedError: If the subclass does not implement this method.
         """
+
         raise NotImplementedError("Subclasses must implement this method.")
 
     def _file_collector(self, filename_pattern: str) -> List[Path]:
         """
-        Collect files matching the filename pattern from the input path.
+        Collect files matching a given pattern from the input directory.
+        This method finds all files matching the specified glob pattern within the
+        input directory, sorts them, and stores the resulting list as an instance attribute.
+        
+        Parameters
+        ----------
+        filename_pattern : str
+            A glob pattern string to match files (e.g., "*.vcf.gz").
+        
+        Returns
+        -------
+        List[Path]
+            A sorted list of Path objects for the files matching the pattern.
+        
+        Raises
+        ------
+        TypeError
+            If filename_pattern is not a string.
+        FileNotFoundError
+            If no files match the given pattern in the input directory.
+        
+        Notes
+        -----
+        The matched files are also stored in the instance attribute `files`.
         """
+
         if not isinstance(filename_pattern, str):
             raise TypeError(f"filename_pattern should be of type str, got {type(filename_pattern)}")
 
@@ -69,15 +153,33 @@ class ParallelTaskRunner:
         return files
     
     def _run_task(self, task_fn: Callable, task_args: Dict[str, Any], desc: str = "Running tasks") -> None:
+        """
+        Execute a task function across all files using parallel processing with ThreadPoolExecutor.
+        This method applies the given task function to each file in self.files concurrently,
+        managing thread allocation, progress tracking, and error handling.
         
+        Parameters
+        ----------
+        task_fn : Callable
+            The function to execute for each file. First argument should accept a file,
+            and it should accept **kwargs for additional arguments.
+        task_args : Dict[str, Any]
+            Dictionary of keyword arguments to pass to the task function.
+        desc : str, optional
+            Description for the progress bar and logging, by default "Running tasks".
+        
+        Returns
+        -------
+        None
+        
+        Notes
+        -----
+        - Uses ThreadPoolExecutor with max_workers defined in class initialization
+        - Provides progress tracking via tqdm
+        - Logs timing information and any exceptions that occur
+        - Does not raise exceptions from individual tasks but logs them instead
         """
-        Run a list of tasks in parallel using threads.
-
-        Args:
-            task_fn: A callable to run, e.g., a processing function.
-            task_args: A list of tuples, each containing the arguments for one task.
-            desc: Description for the progress bar.
-        """
+        
         start_time = time.time()
 
         logger.info(f"Active threads before: {threading.active_count()}")
