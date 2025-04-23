@@ -318,8 +318,63 @@ class UnzipVCF(ParallelTaskRunner):
         pass
 
 class FilterVariants(ParallelTaskRunner):
+    """
+    A class for filtering genetic variants in VCF/BCF files based on imputation quality (R² statistic).
+    This class extends ParallelTaskRunner to provide parallel processing capabilities for filtering
+    variants across multiple VCF files. It identifies variants with imputation quality below a specified
+    R² threshold and removes them from the output files.
+    
+    Attributes
+    ----------
+    Inherits all attributes from ParallelTaskRunner
+    
+    Methods
+    -------
+    execute_task(r2_threshold, output_prefix='filtered-')
+        Set up and execute parallel filtering of variants based on R² threshold
+    filter_variants(input_file, r2_threshold, output_prefix='filtered-')
+        Filter a single VCF/BCF file based on the R² imputation quality threshold
+    
+    Dependencies
+    -----------
+    - bcftools must be installed and available in the system path
+    - ParallelTaskRunner parent class for handling parallel execution
+    
+    Notes
+    -----
+    The class searches for files matching the pattern '*dose.vcf.gz' in the input directory
+    and processes them in parallel. The filtered output files will be saved in the output
+    directory with the specified prefix added to their original filenames.
+    """
 
     def execute_task(self, r2_threshold: float, output_prefix: str = 'filtered-') -> None:
+        """
+        Execute the task of filtering variants based on an R² threshold.
+
+        This method collects the necessary files with the pattern '*dose.vcf.gz' and runs 
+        the filtering task with the specified parameters.
+
+        Parameters
+        ----------
+        r2_threshold : float
+            The threshold value for the R² statistic. Variants with an R² value below this threshold 
+            will be filtered out.
+        output_prefix : str, optional
+            The prefix to be added to output filenames. Default is 'filtered-'.
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        TypeError
+            If r2_threshold is not a float or output_prefix is not a string.
+
+        Notes
+        -----
+        The method uses internal methods _file_collector and _run_task to perform the filtering operation.
+        """
 
         task_args = {'r2_threshold': r2_threshold, 'output_prefix': output_prefix}
         if not isinstance(r2_threshold, float):
@@ -338,6 +393,37 @@ class FilterVariants(ParallelTaskRunner):
         return
     
     def filter_variants(self, input_file: Path, r2_threshold: float, output_prefix: str = 'filtered-') -> None:
+        """
+        Filter variants from a VCF/BCF file based on R2 imputation quality threshold.
+        This method takes an imputed VCF/BCF file and filters out variants with 
+        imputation quality (R2) below the specified threshold. The filtered output 
+        is saved as a compressed VCF.
+
+        Parameters:
+        -----------
+        input_file (Path): 
+            Path to the input VCF/BCF file to be filtered
+        r2_threshold (float): 
+            Minimum R2 imputation quality threshold (variants with R2 <= threshold will be removed)
+        output_prefix (str, optional): 
+            Prefix to add to the output filename. Defaults to 'filtered-'.
+        
+        Returns:
+        --------
+            None: The method outputs a filtered VCF file but doesn't return a value.
+        
+        Raises:
+        -------
+            FileExistsError: If the input file does not exist
+            IsADirectoryError: If the input path is a directory, not a file
+            TypeError: If r2_threshold is not a float or output_prefix is not a string
+        
+        Notes:
+        ------
+            The output file will be saved in the instance's output_path directory with
+            the name constructed as: output_prefix + input_file.name
+            This method requires bcftools to be installed and available in the system path.
+        """
 
         if not input_file.exists():
             raise FileExistsError(f"Input file {input_file} does not exist")
