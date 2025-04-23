@@ -476,7 +476,7 @@ class NormalizeVCF(ParallelTaskRunner):
     normalize_vcf(input_file, output_prefix='uncompressed-')
         Normalize a single VCF file using bcftools norm with the -m -any option.
     """
-    
+
     def execute_task(self, output_prefix: str = 'uncompressed-') -> None:
         """
         Execute the post-imputation normalization task on VCF files.
@@ -568,8 +568,53 @@ class NormalizeVCF(ParallelTaskRunner):
         pass
 
 class ReferenceNormalizeVCF(ParallelTaskRunner):
+    """
+    A class for normalizing VCF files using a reference genome in parallel.
+    This class extends ParallelTaskRunner to process multiple VCF files concurrently,
+    normalizing them against a reference genome using bcftools. If a reference file
+    is not provided, it will automatically download the appropriate reference genome
+    based on the specified build.
+    
+    Attributes:
+    -----------
+        reference_file (str): Path to the reference genome file used for normalization.
+    
+    Methods:
+    --------
+        execute_task: Sets up normalization task and processes files in parallel.
+        normalize_with_reference: Normalizes a single VCF file using bcftools.
+    
+    Example:
+    --------
+        normalizer = ReferenceNormalizeVCF()
+        normalizer.execute_task(build='38', output_prefix='normalized-')
+    """
 
     def execute_task(self, build: str = '38', output_prefix: str = 'normalized-', reference_file: Path = None) -> None:
+        """
+        Execute the post-imputation normalization task with reference genome.
+        This method normalizes VCF files using a reference genome. If no reference file is provided,
+        it automatically downloads the appropriate reference genome based on the build parameter.
+
+        Parameters:
+        -----------
+            build (str, optional): Genome build version, either '37' or '38'. Defaults to '38'.
+            output_prefix (str, optional): Prefix to add to output files. Defaults to 'normalized-'.
+            reference_file (Path, optional): Path to the reference genome file. If None or the file doesn't exist,
+                                            the reference will be downloaded. Defaults to None.
+        Returns:
+        --------
+            None
+
+        Raises:
+        -------
+            TypeError: If output_prefix is not a string.
+        
+        Notes:
+        ------
+            This method collects uncompressed dose VCF files using a pattern match and normalizes them
+            against the reference genome. The downloaded reference genomes come from the 1000 Genomes Project.
+        """
 
         task_args = {'output_prefix': output_prefix}
         if not isinstance(output_prefix, str):
@@ -612,6 +657,38 @@ class ReferenceNormalizeVCF(ParallelTaskRunner):
         return
     
     def normalize_with_reference(self, input_file: Path, output_prefix: str = 'normalized-') -> None:
+        """
+        Normalize a VCF file with a reference genome using bcftools.
+        This method takes an input VCF file and normalizes it against a reference genome
+        using bcftools norm. The normalized output is compressed with gzip (-Oz).
+        
+        Parameters
+        ----------
+        input_file : Path
+            Path to the input VCF file to be normalized.
+        output_prefix : str, default='normalized-'
+            Prefix to add to the output filename.
+        
+        Returns
+        -------
+        None
+            The method doesn't return a value but creates a normalized VCF file
+            at the output_path location.
+        
+        Raises
+        ------
+        TypeError
+            If output_prefix is not a string.
+        subprocess.CalledProcessError
+            If the bcftools command fails.
+        FileNotFoundError
+            If the input file cannot be found.
+        
+        Notes
+        -----
+        The output filename is constructed from the output_prefix and the
+        base name extracted from the input filename (after the first hyphen).
+        """
 
         if not isinstance(output_prefix, str):
             raise TypeError(f"output_prefix should be of type str, got {type(output_prefix)}")
