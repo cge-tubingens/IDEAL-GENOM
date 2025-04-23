@@ -10,6 +10,8 @@ from typing import Callable, List, Dict, Any, Optional
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from tqdm import tqdm
 
+from ideal_genom.get_references import AssemblyReferenceFetcher
+
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
