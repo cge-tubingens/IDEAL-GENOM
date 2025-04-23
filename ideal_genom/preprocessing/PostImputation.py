@@ -203,8 +203,50 @@ class ParallelTaskRunner:
         logger.info(f"{desc} finished in {elapsed:.2f} seconds.")
 
 class UnzipVCF(ParallelTaskRunner):
+    """
+    A class for unzipping VCF (Variant Call Format) files after imputation, with support for parallel processing.
+    This class extends ParallelTaskRunner to efficiently extract VCF files from zip archives,
+    including password-protected ones. It collects all zip files in the working directory
+    and extracts their contents to the output directory.
+    
+    Attributes
+    ----------
+    Inherits all attributes from ParallelTaskRunner
+    
+    Methods
+    -------
+    execute_task(password=None)
+        Execute the unzipping process for all zip files in the working directory
+    unzip_files(zip_path, password)
+        Extract files from a specific zip archive, handling password protection if needed
+
+    Notes
+    -----
+    - VCF files are commonly used in genomics for storing gene sequence variations
+    - The class only extracts files (not directories) from the zip archives
+    - All extracted files are placed directly in the output directory without preserving paths
+    - This class is designed for post-imputation processing in genetic data pipelines
+    """
 
     def execute_task(self, password: Optional[str] = None) -> None:
+        """
+        Execute the post-imputation unzipping task on VCF files.
+
+        This method performs the following steps:
+        1. Collects all zip files in the working directory
+        2. Unzips the VCF files, using the provided password if necessary
+
+        Parameters
+        ----------
+        password : Optional[str]
+            Password to decrypt zip files if they are password-protected.
+            Default is None.
+
+        Returns
+        -------
+        None
+            This method doesn't return any value.
+        """
 
         task_args ={'password': password}
 
@@ -220,16 +262,31 @@ class UnzipVCF(ParallelTaskRunner):
     
     def unzip_files(self, zip_path: Path, password: str) -> None:
         """
-        Unzips a password-protected zip file into a specified output folder.
-        Parameters:
-        -----------
-            zip_path (str): Path to the zip file
-            output_folder (str): Folder where files will be extracted
-            password (str): Password to decrypt the zip file
-        Raises:
+        Extract files from a password-protected zip archive.
+        This method extracts all non-directory files from the specified zip archive
+        to the class's output_path directory. If the zip file is password-protected,
+        provide the password as a parameter.
+        
+        Parameters
+        ----------
+        zip_path : Path
+            Path to the zip file to be extracted
+        password : str
+            Password for the zip file, None if the file is not password-protected
+        
+        Returns
         -------
-            zipfile.BadZipFile: If zip file is corrupted
-            RuntimeError: If password is incorrect
+        None
+        
+        Raises
+        ------
+        No exceptions are explicitly raised, but logging errors occur if the zip file is corrupted
+        
+        Notes
+        -----
+        Files are extracted to the output_path directory of the class instance.
+        Only files (not directories) are extracted from the archive.
+        File paths are not preserved - all files are placed directly in output_path.
         """
         
         with zipfile.ZipFile(zip_path, 'r') as zf:
