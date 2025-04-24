@@ -1176,6 +1176,11 @@ class ProcessVCF:
         if not isinstance(output_name, str):
             raise TypeError(f"output_file should be of type str, got {type(output_file)}")
         
+        if output_name.endswith('.vcf'):
+            output_name += '.gz' 
+        if not output_name.endswith('.vcf.gz'):
+            output_name += '.vcf.gz'
+        
         output_path = self.output_path / output_name
 
         input_files = list(self.process_vcf.glob('annotated*.vcf.gz'))
