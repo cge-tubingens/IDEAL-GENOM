@@ -714,8 +714,41 @@ class ReferenceNormalizeVCF(ParallelTaskRunner):
         pass
 
 class IndexVCF(ParallelTaskRunner):
+    """
+    A class for indexing VCF (Variant Call Format) files using bcftools in parallel.
+    This class extends ParallelTaskRunner to enable parallel processing of multiple VCF files.
+    It creates index files that facilitate quick random access to compressed VCF files.
+    
+    Methods
+    -------
+    execute_task(pattern: str) -> None
+        Collects VCF files based on the given pattern and runs indexing in parallel.
+        Parameters:
+            pattern (str): File pattern used to find VCF files for indexing.
+    index_vcf(input_file: Path) -> None
+        Indexes a single VCF file using bcftools.
+        Parameters:
+            input_file (Path): Path to the VCF file to be indexed.
+        Raises:
+            FileExistsError: If the input file does not exist.
+            subprocess.CalledProcessError: If the bcftools indexing command fails.
+    """
 
     def execute_task(self, pattern: str) -> None:
+        """
+        Execute the task of indexing VCF files.
+
+        This method collects files based on the provided pattern and indexes
+        the VCF files.
+
+        Parameter:
+        ----------
+            pattern (str): The pattern used to filter/collect files for processing.
+
+        Returns:
+        --------
+            None: This method doesn't return anything.
+        """
 
         task_args = dict()
 
@@ -728,6 +761,26 @@ class IndexVCF(ParallelTaskRunner):
         return
     
     def index_vcf(self, input_file: Path) -> None:
+        """
+        Index a VCF file using bcftools.
+
+        This method creates an index for the specified VCF file using bcftools,
+        which is required for efficient querying and processing of VCF files.
+
+        Parameters
+        ----------
+        input_file : Path
+            Path to the VCF file to be indexed. Must be an existing file.
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        FileExistsError
+            If the input file does not exist.
+        """
 
         if not os.path.isfile(input_file):
             raise FileExistsError(f"Input file {input_file} does not exist")
