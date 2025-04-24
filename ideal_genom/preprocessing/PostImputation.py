@@ -1145,7 +1145,7 @@ class ProcessVCF:
 
         return
     
-    def execute_concatenate(self, output_name: str = 'final.vcf.gz', max_threads: int = None) -> None:
+    def execute_concatenate(self, output_name: str, max_threads: int = None) -> None:
         """
         Concatenates annotated VCF files using bcftools concat.
         This method finds all annotated VCF files in the process_vcf directory, 
@@ -1153,7 +1153,7 @@ class ProcessVCF:
         
         Parameters:
         ----------
-            output_name (str, optional): Name of the output file. Defaults to 'final.vcf.gz'.
+            output_name (str): Name of the output file.
             max_threads (int, optional): Maximum number of threads to use for concatenation.
                 If None, uses min(8, os.cpu_count()). Defaults to None.
         
