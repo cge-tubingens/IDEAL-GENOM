@@ -991,7 +991,7 @@ class ProcessVCF:
         self.input_path = input_path
         self.output_path= output_path
 
-        self.process_vcf = self.input_path / 'process_vcf'
+        self.process_vcf = self.output_path / 'process_vcf'
         self.process_vcf.mkdir(parents=True, exist_ok=True)
 
         pass
