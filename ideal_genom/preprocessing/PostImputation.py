@@ -799,7 +799,37 @@ class IndexVCF(ParallelTaskRunner):
 
 class AnnotateVCF(ParallelTaskRunner):
 
+    """
+    AnnotateVCF is a task runner class that extends ParallelTaskRunner to annotate 
+    normalized VCF files using a reference annotation file and `bcftools`.
+
+    This class is intended for workflows where multiple VCF files (e.g., per chromosome)
+    are annotated in parallel using external tools.
+
+    :param ref_annotation: Path to the reference annotation file.
+    :type ref_annotation: pathlib.Path
+    :param output_prefix: Prefix for output annotated VCF files (default is 'annotated-').
+    :type output_prefix: str
+
+    :raises TypeError: If provided arguments are not of expected types.
+    :raises FileNotFoundError: If input or reference annotation file does not exist.
+    :raises IsADirectoryError: If the provided input file is a directory.
+    """
+
     def execute_task(self, ref_annotation: Path, output_prefix: str = 'annotated-') -> None:
+
+        """
+        Collects normalized VCF files and dispatches parallel annotation tasks
+        using the `annotate_vcf` method.
+
+        :param ref_annotation: Path to the reference annotation file.
+        :type ref_annotation: pathlib.Path
+        :param output_prefix: Prefix for output annotated VCF files.
+        :type output_prefix: str
+
+        :raises TypeError: If `ref_annotation` is not a Path or `output_prefix` is not a string.
+        :raises FileNotFoundError: If the `ref_annotation` file does not exist.
+        """
 
         task_args = {'ref_annotation': ref_annotation, 'output_prefix': output_prefix}
         if not isinstance(ref_annotation, Path):
@@ -820,6 +850,21 @@ class AnnotateVCF(ParallelTaskRunner):
         return
     
     def annotate_vcf(self, input_file: Path, ref_annotation: Path, output_prefix: str = 'annotated-') -> None:
+
+        """
+        Annotates a VCF file using `bcftools` with the provided reference annotation.
+
+        :param input_file: Path to the input VCF file to annotate.
+        :type input_file: pathlib.Path
+        :param ref_annotation: Path to the reference annotation file.
+        :type ref_annotation: pathlib.Path
+        :param output_prefix: Prefix for the annotated output file.
+        :type output_prefix: str
+
+        :raises FileExistsError: If the input file does not exist.
+        :raises IsADirectoryError: If the input path is a directory.
+        :raises TypeError: If arguments are not of the expected types.
+        """
 
         if not input_file.exists():
             raise FileExistsError(f"Input file {input_file} does not exist")
@@ -856,10 +901,78 @@ class AnnotateVCF(ParallelTaskRunner):
 
 class ProcessVCF:
     """
-    Class to run the entire post-imputation pipeline.
+    ProcessVCF class for post-imputation processing of Variant Call Format (VCF) files.
+
+    This class provides a pipeline for processing VCF files through multiple sequential steps:
+    
+    1. Unzipping VCF files (if compressed)
+    2. Filtering variants based on imputation quality (R²)
+    3. Normalizing variant representation
+    4. Normalizing against a reference genome
+    5. Indexing the normalized VCF files
+    6. Annotating variants with additional information
+    7. Concatenating multiple VCF files into a single output file
+
+    :ivar input_path: Directory containing input VCF files.
+    :vartype input_path: pathlib.Path
+    :ivar output_path: Directory where processed files will be saved.
+    :vartype output_path: pathlib.Path
+    :ivar process_vcf: Subdirectory created for intermediate processing files.
+    :vartype process_vcf: pathlib.Path
+
+    :meth:`execute_unzip(password)`
+        Unzips compressed VCF files.
+
+    :meth:`execute_filter(r2_threshold)`
+        Filters variants based on imputation quality.
+
+    :meth:`execute_normalize()`
+        Normalizes variant representation.
+
+    :meth:`execute_reference_normalize(build, reference_file)`
+        Normalizes variants against a reference genome.
+
+    :meth:`execute_index(pattern)`
+        Creates index files for the VCF files.
+
+    :meth:`execute_annotate(ref_annotation, output_prefix)`
+        Annotates variants with additional information.
+
+    :meth:`execute_concatenate(output_name, max_threads)`
+        Concatenates multiple VCF files into a single output file.
     """
 
     def __init__(self, input_path: Path, output_path: Path) -> None:
+
+        """
+        Initialize the ProcessVCF class for post-imputation processing of VCF files.
+
+        This constructor sets up the input and output directories for processing VCF files
+        and creates a subdirectory for intermediate processing files.
+
+        Parameters
+        ----------
+        input_path : Path
+            Path to the directory containing input VCF files.
+        output_path : Path
+            Path to the directory where processed files will be saved.
+
+        Raises
+        ------
+        TypeError
+            If `input_path` or `output_path` is not of type `Path`.
+        FileNotFoundError
+            If `input_path` or `output_path` does not exist.
+        NotADirectoryError
+            If `input_path` or `output_path` is not a directory.
+
+        Notes
+        -----
+        - A subdirectory named `process_vcf` is created inside the `input_path` directory
+          for storing intermediate files during processing.
+        - This class is designed to handle multiple sequential steps in VCF file processing,
+          such as unzipping, filtering, normalizing, and annotating.
+        """
         
         if not isinstance(input_path, Path):
             raise TypeError(f"input_path should be of type Path, got {type(input_path)}")
@@ -883,6 +996,20 @@ class ProcessVCF:
         pass
 
     def execute_unzip(self, password: str = None) -> None:
+        """
+        Unzips a VCF file using the UnzipVCF utility.
+        This method creates an instance of UnzipVCF with the input and process paths
+        from the current object, then executes the unzipping task. If the VCF file
+        is password-protected, a password can be provided.
+        
+        Parameters:
+        -----------
+            password (str, optional): Password for the protected zip file. Defaults to None.
+        
+        Returns:
+        --------
+            None
+        """
         
         unzipper = UnzipVCF(
             input_path = self.input_path,
@@ -894,6 +1021,23 @@ class ProcessVCF:
         return
 
     def execute_filter(self, r2_threshold: float = 0.3) -> None:
+        """
+        Execute a filtering operation on VCF data based on R² threshold.
+
+        This method filters variants in the processed VCF file by creating and 
+        executing a FilterVariants object with the specified R² threshold.
+        Both input and output are set to the same process_vcf file.
+
+        Parameters:
+        ----------
+        r2_threshold : float, optional
+            The R² threshold value for filtering variants. Variants with R² value
+            below this threshold will be filtered out. Default is 0.3.
+
+        Returns:
+        -------
+        None
+        """
 
         filter = FilterVariants(
             input_path = self.process_vcf,
@@ -904,6 +1048,16 @@ class ProcessVCF:
         return
     
     def execute_normalize(self) -> None:
+        """
+        Normalizes the VCF file using the NormalizeVCF class.
+        This method creates a NormalizeVCF object with the current processed VCF file
+        as both input and output, then executes the normalization task. The normalization
+        process updates the VCF file in place.
+        
+        Returns:
+        --------
+            None: This method doesn't return any value.
+        """
         
         normalizer = NormalizeVCF(
             input_path = self.process_vcf,
@@ -914,6 +1068,22 @@ class ProcessVCF:
         return
     
     def execute_reference_normalize(self, build: str = '38', reference_file: Path = None) -> None:
+        """
+        Normalize the VCF file against a reference genome.
+        This method creates a ReferenceNormalizeVCF object and executes the normalization 
+        task on the processed VCF file, using the specified genome build or reference file.
+        
+        Parameters:
+        -----------
+            build (str, optional): Genome build version to use. Defaults to '38'.
+            reference_file (Path, optional): Path to a custom reference file. If provided, 
+                                            this will be used instead of the default reference 
+                                            for the specified build. Defaults to None.
+        
+        Returns:
+        --------
+            None: This method doesn't return anything.
+        """
         
         reference_normalizer = ReferenceNormalizeVCF(
             input_path = self.process_vcf,
@@ -924,6 +1094,21 @@ class ProcessVCF:
         return
     
     def execute_index(self, pattern: str = 'normalized-*dose.vcf.gz') -> None:
+        """
+        Index VCF files matching a specific pattern.
+
+        This method creates an indexer for VCF files and executes the indexing task
+        on files that match the given pattern in the process_vcf directory.
+
+        Parameters:
+        -----------
+            pattern (str, optional): The glob pattern to match VCF files for indexing.
+                Defaults to 'normalized-*dose.vcf.gz'.
+
+        Returns:
+        --------
+            None: This method doesn't return any value.
+        """
 
         indexer = IndexVCF(
             input_path = self.process_vcf,
@@ -934,6 +1119,22 @@ class ProcessVCF:
         return
     
     def execute_annotate(self, ref_annotation: Path, output_prefix: str = 'annotated-') -> None:
+        """
+        Annotates a VCF file using a reference annotation file.
+        This method initializes an AnnotateVCF object and executes the annotation
+        process on the current VCF file.
+        
+        Parameters
+        ----------
+        ref_annotation : Path
+            Path to the reference annotation file.
+        output_prefix : str, optional
+            Prefix to be added to the output file name. Default is 'annotated-'.
+        
+        Returns
+        -------
+        None
+        """
         
         annotator = AnnotateVCF(
             input_path = self.process_vcf,
@@ -945,8 +1146,32 @@ class ProcessVCF:
     
     def execute_concatenate(self, output_name: str = 'final.vcf.gz', max_threads: int = None) -> None:
         """
-        Concatenate all VCF files in the output directory into a single VCF file.
+        Concatenates annotated VCF files using bcftools concat.
+        This method finds all annotated VCF files in the process_vcf directory, 
+        sorts them, and concatenates them into a single compressed VCF file.
+        
+        Parameters:
+        ----------
+            output_name (str, optional): Name of the output file. Defaults to 'final.vcf.gz'.
+            max_threads (int, optional): Maximum number of threads to use for concatenation.
+                If None, uses min(8, os.cpu_count()). Defaults to None.
+        
+        Returns:
+        --------
+            None
+
+        Raises:
+        -------
+            TypeError: If output_name is not a string.
+            FileNotFoundError: If no annotated VCF files are found in the process_vcf directory.
+            ValueError: If max_threads is less than 1.
+        
+        Notes:
+        ------
+            The output file will be saved in the output_path directory.
+            The method uses the 'bcftools concat' command with Oz compression.
         """
+        
         if not isinstance(output_name, str):
             raise TypeError(f"output_file should be of type str, got {type(output_file)}")
         
