@@ -85,7 +85,8 @@ class ParallelTaskRunner:
         self.input_path = input_path
         self.output_path = output_path
 
-        self.max_workers = max_workers or min(8, os.cpu_count())
+        cpu_count = os.cpu_count() or 1  # Use 1 as fallback if cpu_count returns None
+        self.max_workers = max_workers or min(8, cpu_count)
 
         self.files = []
 
@@ -294,10 +295,7 @@ class UnzipVCF(ParallelTaskRunner):
 
             if password is not None:
                 password_bytes = bytes(password, 'utf-8')
-            else:
-                password_bytes = None
-
-            zf.setpassword(password_bytes)
+                zf.setpassword(password_bytes)
             
             if zf.testzip() is not None:
                 logger.error(f"Corrupted ZIP file: {zip_path}")
@@ -591,7 +589,7 @@ class ReferenceNormalizeVCF(ParallelTaskRunner):
         normalizer.execute_task(build='38', output_prefix='normalized-')
     """
 
-    def execute_task(self, build: str = '38', output_prefix: str = 'normalized-', reference_file: Path = None) -> None:
+    def execute_task(self, build: str = '38', output_prefix: str = 'normalized-', reference_file: Optional[Path] = None) -> None:
         """
         Execute the post-imputation normalization task with reference genome.
         This method normalizes VCF files using a reference genome. If no reference file is provided,
@@ -632,7 +630,7 @@ class ReferenceNormalizeVCF(ParallelTaskRunner):
                 assemb37.get_reference_url()
                 assemb37.download_reference_file()
                 assemb37.unzip_reference_file()
-                reference_file = str(assemb37.file_path)
+                reference_file = assemb37.file_path
 
             elif build == '38':
 
@@ -644,7 +642,7 @@ class ReferenceNormalizeVCF(ParallelTaskRunner):
                 assemb38.get_reference_url()
                 assemb38.download_reference_file()
                 assemb38.unzip_reference_file()
-                reference_file = str(assemb38.file_path)
+                reference_file = assemb38.file_path
 
         self._file_collector('uncompressed-*dose.vcf.gz')
         self.reference_file = reference_file
@@ -996,7 +994,7 @@ class ProcessVCF:
 
         pass
 
-    def execute_unzip(self, password: str = None) -> None:
+    def execute_unzip(self, password: Optional[str] = None) -> None:
         """
         Unzips a VCF file using the UnzipVCF utility.
         This method creates an instance of UnzipVCF with the input and process paths
@@ -1068,7 +1066,7 @@ class ProcessVCF:
 
         return
     
-    def execute_reference_normalize(self, build: str = '38', reference_file: Path = None) -> None:
+    def execute_reference_normalize(self, build: str = '38', reference_file: Optional[Path] = None) -> None:
         """
         Normalize the VCF file against a reference genome.
         This method creates a ReferenceNormalizeVCF object and executes the normalization 
@@ -1145,7 +1143,7 @@ class ProcessVCF:
 
         return
     
-    def execute_concatenate(self, output_name: str, max_threads: int = None) -> None:
+    def execute_concatenate(self, output_name: str, max_threads: Optional[int] = None) -> None:
         """
         Concatenates annotated VCF files using bcftools concat.
         This method finds all annotated VCF files in the process_vcf directory, 
@@ -1189,7 +1187,8 @@ class ProcessVCF:
             raise FileNotFoundError(f"No VCF files annotated VCF files found in {self.process_vcf}")
         
         if not max_threads:
-            max_threads = min(8, os.cpu_count())
+            cpu_count = os.cpu_count() or 1  # Default to 1 if cpu_count returns None
+            max_threads = min(8, cpu_count)
         if max_threads < 1:
             raise ValueError(f"max_threads should be at least 1, got {max_threads}")
 
@@ -1276,7 +1275,7 @@ class GetPLINK:
         
         pass
 
-    def convert_vcf_to_plink(self, double_id: bool = True, threads: int = None, memory: int = None) -> None:
+    def convert_vcf_to_plink(self, double_id: bool = True, threads: Optional[int] = None, memory: Optional[int] = None) -> None:
         """
         Convert a VCF file to PLINK binary format (.bed, .bim, .fam).
         This method runs the plink2 command-line tool to convert the input VCF file to PLINK
@@ -1305,8 +1304,9 @@ class GetPLINK:
 
         
         if threads is None:
-            if os.cpu_count() is not None:
-                threads = os.cpu_count() - 2
+            cpu_count = os.cpu_count()
+            if cpu_count is not None:
+                threads = max(1, cpu_count - 2)  # Ensure at least 1 thread
             else:
                 threads = 10
 
@@ -1314,7 +1314,7 @@ class GetPLINK:
             # get virtual memory details
             memory_info = psutil.virtual_memory()
             available_memory_mb = memory_info.available / (1024 * 1024)
-            memory = round(2*available_memory_mb/3,0)
+            memory = int(round(2*available_memory_mb/3,0))
 
         if double_id:
             # plink2 command
@@ -1348,7 +1348,7 @@ class GetPLINK:
 
         pass
 
-    def update_fam(self, for_fam_update_file: Path, threads: int = None) -> None:
+    def update_fam(self, for_fam_update_file: Path, threads: Optional[int] = None) -> None:
         """
         Add family information to the PLINK .fam file.
 
@@ -1387,8 +1387,9 @@ class GetPLINK:
         logger.info(f"Updating family information in {self.output_name}-nosex.fam with {for_fam_update_file}")
    
         if threads is None:
-            if os.cpu_count() is not None:
-                threads = os.cpu_count() - 2
+            cpu_count = os.cpu_count()
+            if cpu_count is not None:
+                threads = max(1, cpu_count - 2)  # Ensure at least 1 thread
             else:
                 threads = 10
         
