@@ -12,6 +12,7 @@ Preparatory:
 import os
 import psutil
 import logging
+from typing import Optional
 
 from ideal_genom.Helpers import shell_do
 from ideal_genom.get_references import FetcherLDRegions
@@ -90,11 +91,11 @@ class Preparatory:
         
         # check existence of PLINK files
         if not (input_path / f"{input_name}.bed").exists():
-            raise FileNotFoundError(f"PLINK bed file was not found: {input_path / f"{input_name}.bed"}")
+            raise FileNotFoundError(f"PLINK bed file was not found: {input_path / f'{input_name}.bed'}")
         if not (input_path / f"{input_name}.bim").exists():
-            raise FileNotFoundError(f"PLINK bim file was not found: {input_path / f"{input_name}.bim"}")
+            raise FileNotFoundError(f"PLINK bim file was not found: {input_path / f'{input_name}.bim'}")
         if not (input_path / f"{input_name}.fam").exists():
-            raise FileNotFoundError(f"PLINK fam file was not found: {input_path / f"{input_name}.fam"}")
+            raise FileNotFoundError(f"PLINK fam file was not found: {input_path / f'{input_name}.fam'}")
         if not high_ld_file.is_file():
             logger.info(f"High LD file not found at {high_ld_file}")
             logger.info('High LD file will be fetched from the package')
@@ -102,6 +103,9 @@ class Preparatory:
             ld_fetcher = FetcherLDRegions(built=built)
             ld_fetcher.get_ld_regions()
 
+            if ld_fetcher.ld_regions is None:
+                raise FileNotFoundError("Could not fetch high LD regions file")
+                
             high_ld_file = ld_fetcher.ld_regions
             logger.info(f"High LD file fetched from the package and saved at {high_ld_file}")
 
@@ -117,8 +121,7 @@ class Preparatory:
         self.results_dir.mkdir(parents=True, exist_ok=True)
 
         pass
-
-    def execute_ld_prunning(self, mind: float = 0.2, maf: float = 0.01, geno: float = 0.1, hwe: float = 5e-6, ind_pair: list = [50, 5, 0.2], memory: int = None) -> None:
+    def execute_ld_prunning(self, mind: float = 0.2, maf: float = 0.01, geno: float = 0.1, hwe: float = 5e-6, ind_pair: list = [50, 5, 0.2], memory: Optional[int] = None, threads: Optional[int] = None) -> None:
         """
         Execute LD (Linkage Disequilibrium) pruning on genetic data using PLINK.
 
@@ -192,16 +195,20 @@ class Preparatory:
         logger.info("STEP: LD pruning")
 
         # compute the number of threads to use
-        if os.cpu_count() is not None:
-            max_threads = os.cpu_count()-2
+        if threads is None:
+            cpu_count = os.cpu_count()
+            if cpu_count is not None:
+                max_threads = max(1, cpu_count - 2)  # Ensure at least 1 thread
+            else:
+                max_threads = 10
         else:
-            max_threads = 10
+            max_threads = threads
 
         if memory is None:
             # get virtual memory details
             memory_info = psutil.virtual_memory()
             available_memory_mb = memory_info.available / (1024 * 1024)
-            memory = round(2*available_memory_mb/3,0)
+            memory = int(round(2*available_memory_mb/3,0))
 
         # plink command to exclude high LD regions
         plink_cmd1 = f"plink --bfile {self.input_path / self.input_name} --chr 1-22 --mind {mind} --maf {maf} --geno {geno}  --hwe {hwe} --exclude {self.high_ld_file} --indep-pairwise {ind_pair[0]} {ind_pair[1]} {ind_pair[2]} --keep-allele-order --threads {max_threads} --memory {memory} --make-bed --out {self.results_dir / (self.output_name+'-prunning')}"
@@ -220,7 +227,7 @@ class Preparatory:
 
         return
     
-    def execute_pc_decomposition(self, pca: int = 10) -> None:
+    def execute_pc_decomposition(self, pca: int = 10, threads: Optional[int] = None) -> None:
         """
         Execute PCA decomposition on pruned PLINK binary files.
 
@@ -265,10 +272,14 @@ class Preparatory:
         logger.info("STEP: PCA decomposition")
 
         # compute the number of threads to use
-        if os.cpu_count() is not None:
-            max_threads = os.cpu_count()-2
+        if threads is None:
+            cpu_count = os.cpu_count()
+            if cpu_count is not None:
+                max_threads = max(1, cpu_count - 2)  # Ensure at least 1 thread
+            else:
+                max_threads = 10
         else:
-            max_threads = 10
+            max_threads = threads
 
         if not self.pruned_file.with_suffix('.bed').exists():
             raise FileNotFoundError(f"bed file with pruned data was not found: {self.pruned_file.with_suffix('.bed')}")
