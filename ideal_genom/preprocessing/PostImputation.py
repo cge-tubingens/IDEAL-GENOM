@@ -335,7 +335,7 @@ class FilterVariants(ParallelTaskRunner):
         Filter a single VCF/BCF file based on the R² imputation quality threshold
     
     Dependencies
-    -----------
+    ------------
     - bcftools must be installed and available in the system path
     - ParallelTaskRunner parent class for handling parallel execution
     
@@ -768,7 +768,7 @@ class IndexVCF(ParallelTaskRunner):
 
         Parameters
         ----------
-        input_file : Path
+        input_file: Path
             Path to the VCF file to be indexed. Must be an existing file.
 
         Returns
@@ -797,37 +797,52 @@ class IndexVCF(ParallelTaskRunner):
         pass
 
 class AnnotateVCF(ParallelTaskRunner):
-
     """
-    AnnotateVCF is a task runner class that extends ParallelTaskRunner to annotate 
-    normalized VCF files using a reference annotation file and `bcftools`.
+    A parallel task runner for annotating normalized VCF files using reference annotation.
+    This class provides functionality to annotate normalized VCF files with identifiers
+    from a reference annotation file using bcftools. It processes multiple VCF files in 
+    parallel, making it efficient for large genomic datasets.
 
-    This class is intended for workflows where multiple VCF files (e.g., per chromosome)
-    are annotated in parallel using external tools.
-
-    :param ref_annotation: Path to the reference annotation file.
-    :type ref_annotation: pathlib.Path
-    :param output_prefix: Prefix for output annotated VCF files (default is 'annotated-').
-    :type output_prefix: str
-
-    :raises TypeError: If provided arguments are not of expected types.
-    :raises FileNotFoundError: If input or reference annotation file does not exist.
-    :raises IsADirectoryError: If the provided input file is a directory.
+    The class identifies all normalized VCF files matching a specified pattern and
+    annotates them using the provided reference annotation file. It adds identifiers
+    from the reference file to the VCF entries.
+    
+    Attributes
+    ----------
+    Inherits all attributes from ParallelTaskRunner.
+    
+    Methods
+    -------
+    execute_task(ref_annotation, output_prefix='annotated-')
+        Annotate all normalized VCF files using the reference annotation file.
+    annotate_vcf(input_file, ref_annotation, output_prefix='annotated-')
+        Annotate a single VCF file using bcftools.
     """
+
+
 
     def execute_task(self, ref_annotation: Path, output_prefix: str = 'annotated-') -> None:
-
         """
-        Collects normalized VCF files and dispatches parallel annotation tasks
-        using the `annotate_vcf` method.
+        Annotates normalized VCF files using a reference annotation file.
+        This method collects all normalized VCF files matching the pattern 'normalized-*dose.vcf.gz' 
+        and annotates them using the provided reference annotation file. The annotated files 
+        will be saved with the specified output prefix.
 
-        :param ref_annotation: Path to the reference annotation file.
-        :type ref_annotation: pathlib.Path
-        :param output_prefix: Prefix for output annotated VCF files.
-        :type output_prefix: str
+        Parameters
+        ----------
+        ref_annotation: Path 
+            Path to the reference annotation file.
+        output_prefix: str (optional)
+            Prefix to add to the output files. Defaults to 'annotated-'.
 
-        :raises TypeError: If `ref_annotation` is not a Path or `output_prefix` is not a string.
-        :raises FileNotFoundError: If the `ref_annotation` file does not exist.
+        Raises
+        ------
+        TypeError: If ref_annotation is not a Path object or output_prefix is not a string.
+        FileNotFoundError: If the reference annotation file does not exist.
+        
+        Returns
+        -------
+        None
         """
 
         task_args = {'ref_annotation': ref_annotation, 'output_prefix': output_prefix}
@@ -849,21 +864,33 @@ class AnnotateVCF(ParallelTaskRunner):
         return
     
     def annotate_vcf(self, input_file: Path, ref_annotation: Path, output_prefix: str = 'annotated-') -> None:
-
         """
-        Annotates a VCF file using `bcftools` with the provided reference annotation.
+        Annotates a VCF file with identifiers from a reference annotation file using bcftools.
+        This method takes an input VCF file and annotates it with IDs from a reference
+        annotation file. The annotated VCF is saved to a new file with the specified prefix.
 
-        :param input_file: Path to the input VCF file to annotate.
-        :type input_file: pathlib.Path
-        :param ref_annotation: Path to the reference annotation file.
-        :type ref_annotation: pathlib.Path
-        :param output_prefix: Prefix for the annotated output file.
-        :type output_prefix: str
-
-        :raises FileExistsError: If the input file does not exist.
-        :raises IsADirectoryError: If the input path is a directory.
-        :raises TypeError: If arguments are not of the expected types.
+        Parameters
+        ----------
+        input_file: Path
+            Path to the input VCF file to be annotated.
+        ref_annotation: Path 
+            Path to the reference annotation file used for annotation.
+        output_prefix: str (optional)
+            Prefix to add to the output filename. Defaults to 'annotated-'.
+        
+        Returns
+        -------
+        None
+        
+        Raises
+        ------
+        FileExistsError: If the input file does not exist.
+        IsADirectoryError: If the input file is a directory, not a file.
+        TypeError: If ref_annotation is not a Path object or output_prefix is not a string.
+        subprocess.CalledProcessError: If the bcftools command fails.
+        FileNotFoundError: If the input file is not found during execution.
         """
+
 
         if not input_file.exists():
             raise FileExistsError(f"Input file {input_file} does not exist")
