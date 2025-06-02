@@ -1,7 +1,8 @@
 import requests
 import time
 import logging
-import json
+
+from typing import Optional
 
 class VEPEnsemblRestClient:
 
@@ -11,7 +12,7 @@ class VEPEnsemblRestClient:
         "https://asia.ensembl.org"  # Asia mirror
     ]
 
-    def __init__(self, server: str = None, reqs_per_sec: int = 15):
+    def __init__(self, server: Optional[str] = None, reqs_per_sec: int = 15):
         self.servers = self.ENSEMBL_API_URLS if server is None else [server]
         self.current_server_idx = 0  # Start with the main server
         self.reqs_per_sec = reqs_per_sec
