@@ -8,10 +8,12 @@ import pandas as pd
 from ideal_genom.Helpers import shell_do
 from ideal_genom.annotations import annotate_snp
 
+from typing import Optional
+
 
 class GWASrandom:
 
-    def __init__(self, input_path:str, input_name:str, output_path:str, output_name:str, recompute:str=True) -> None:
+    def __init__(self, input_path:str, input_name:str, output_path:str, output_name:str, recompute:bool = True) -> None:
         
         """
         Initializes the GWAS random effect model analysis.
@@ -79,7 +81,7 @@ class GWASrandom:
 
         pass
 
-    def prepare_aux_files(self)->dict:
+    def prepare_aux_files(self) -> dict:
         
         """
         Prepares auxiliary files for GWAS analysis by processing phenotype and sex data.
@@ -142,7 +144,7 @@ class GWASrandom:
 
         return out_dict
     
-    def compute_grm(self, max_threads:int=None)->dict:
+    def compute_grm(self, max_threads: Optional[int] = None) -> dict:
         
         """
         Compute the Genetic Relationship Matrix (GRM) using GCTA software.
@@ -170,9 +172,10 @@ class GWASrandom:
         step = "compute_grm"
 
         # compute the number of threads to use
+        cpu_count = os.cpu_count()
         if max_threads is None:
-            if os.cpu_count() is not None:
-                max_threads = os.cpu_count()-2
+            if cpu_count is not None:
+                max_threads = cpu_count-2
             else:
                 max_threads = 10
 
@@ -202,7 +205,7 @@ class GWASrandom:
 
         return out_dict
     
-    def run_gwas_glmm(self, maf:float=0.01)->dict:
+    def run_gwas_glmm(self, maf: float = 0.01) -> dict:
         
         """
         Runs a Genome-Wide Association Study (GWAS) using a generalized linear mixed model (GLMMM).
@@ -237,8 +240,9 @@ class GWASrandom:
         step = "run_gwas_random"
 
         # compute the number of threads to use
-        if os.cpu_count() is not None:
-            max_threads = os.cpu_count()-2
+        cpu_count = os.cpu_count()
+        if cpu_count is not None:
+            max_threads = cpu_count-2
         else:
             max_threads = 10
 
@@ -272,7 +276,7 @@ class GWASrandom:
 
         return out_dict
     
-    def get_top_hits(self, maf:float=0.01)->dict:
+    def get_top_hits(self, maf: float = 0.01) -> dict:
         
         """
         Get the top hits from the GWAS results.
@@ -309,8 +313,9 @@ class GWASrandom:
         step = "get_top_hits"
 
         # compute the number of threads to use
-        if os.cpu_count() is not None:
-            max_threads = os.cpu_count()-2
+        cpu_count = os.cpu_count()
+        if cpu_count is not None:
+            max_threads = cpu_count-2
         else:
             max_threads = 10
 
@@ -363,7 +368,7 @@ class GWASrandom:
 
         return out_dict
 
-    def annotate_top_hits(self, gtf_path:str=None, build:str='38', anno_source: str = 'ensembl')->dict:
+    def annotate_top_hits(self, gtf_path: Optional[str] = None, build: str = '38', anno_source: str = 'ensembl') -> dict:
 
         """
         Annotate the top hits from the association analysis.
@@ -392,7 +397,7 @@ class GWASrandom:
                 pos    ='bp',
                 build  =build,
                 source =anno_source,
-                gtf_path=gtf_path
+                gtf_path=gtf_path # type: ignore
             ).rename(columns={"GENE":"GENENAME"})
 
         df_hits.to_csv(os.path.join(results_dir, 'top_hits_annotated.tsv'), sep="\t", index=False)
