@@ -12,14 +12,14 @@ class VEPEnsemblRestClient:
         "https://asia.ensembl.org"  # Asia mirror
     ]
 
-    def __init__(self, server: Optional[str] = None, reqs_per_sec: int = 15):
+    def __init__(self, server: Optional[str] = None, reqs_per_sec: int = 15) -> None:
         self.servers = self.ENSEMBL_API_URLS if server is None else [server]
         self.current_server_idx = 0  # Start with the main server
         self.reqs_per_sec = reqs_per_sec
         self.req_count = 0
         self.last_req = 0
 
-    def _rate_limit(self):
+    def _rate_limit(self) -> None:
         """Rate-limiting to respect requests per second"""
         if self.req_count >= self.reqs_per_sec:
             delta = time.time() - self.last_req
@@ -28,7 +28,7 @@ class VEPEnsemblRestClient:
             self.last_req = time.time()
             self.req_count = 0
 
-    def _switch_server(self):
+    def _switch_server(self) -> None:
         """Switch to the next available Ensembl mirror if the current one fails."""
         self.current_server_idx = (self.current_server_idx + 1) % len(self.servers)
         logging.warning(f"Switching to Ensembl mirror: {self.servers[self.current_server_idx]}")
@@ -94,13 +94,13 @@ class VEPEnsemblRestClient:
 
 class GeneEnsemblRestClient:
     
-    def __init__(self, server='https://rest.ensembl.org', reqs_per_sec=15):
+    def __init__(self, server='https://rest.ensembl.org', reqs_per_sec=15) -> None:
         self.server = server
         self.reqs_per_sec = reqs_per_sec
         self.req_count = 0
         self.last_req = 0
 
-    def _rate_limit(self):
+    def _rate_limit(self) -> None:
         """Rate-limiting to respect requests per second"""
         if self.req_count >= self.reqs_per_sec:
             delta = time.time() - self.last_req
