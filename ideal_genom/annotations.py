@@ -1,6 +1,5 @@
 import os
 import logging
-from typing import Type
 
 import pandas as pd
 
@@ -9,7 +8,6 @@ from pyensembl import Genome
 from gtfparse import read_gtf
 
 from ideal_genom.get_references import Ensembl38Fetcher, Ensembl37Fetcher, RefSeqFetcher
-from ideal_genom.get_references import ReferenceDataFetcher
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s", force=True)
 logger = logging.getLogger(__name__)
