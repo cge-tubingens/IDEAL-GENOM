@@ -464,8 +464,44 @@ class Ensembl37Fetcher(ReferenceDataFetcher):
         pass
 
 class RefSeqFetcher(ReferenceDataFetcher):
+    """
+    A class for fetching and downloading reference genome data from NCBI's RefSeq repository.
+    This class extends ReferenceDataFetcher to specifically handle downloading human
+    genome reference files from the RefSeq database. It supports different genome 
+    builds (e.g., 'GRCh37', 'GRCh38') and automatically identifies the latest version
+    available for the specified build.
+    The class handles navigating the NCBI FTP directory structure, finding the
+    appropriate GTF files for the requested genome build, and managing the
+    download process.
+
+    Attributes
+    ----------
+    base_url : str
+        The base URL for the NCBI RefSeq FTP server directory.
+    build : str
+        The genome build version ('37' for GRCh37, '38' for GRCh38).
+    source : str
+        The source of the reference data (set to 'refseq').
+    latest_url : str
+        URL to the latest GTF file, set after calling get_latest_release().
+
+    Methods
+    -------
+    get_latest_release()
+        Identifies and sets the URL for the latest available GTF file
+    """
 
     def __init__(self, build: str, destination_folder: Optional[str] = None):
+        """
+        Initialize a RefSeq genome reference downloader.
+
+        Parameters
+        ----------
+            build (str): The genome build/assembly version to download (e.g., 'GRCh38').
+            destination_folder (Optional[str], optional): Directory path where the downloaded
+                reference files will be stored. If None, files will be stored in the default
+                location. Defaults to None.
+        """
 
         super().__init__(
             base_url = "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/vertebrate_mammalian/Homo_sapiens/all_assembly_versions/", 
