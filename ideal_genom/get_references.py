@@ -252,8 +252,48 @@ class ReferenceDataFetcher:
         return all_genes_path
     
 class Ensembl38Fetcher(ReferenceDataFetcher):
+    """
+    A fetcher class for downloading human genome reference data from Ensembl, specifically for GRCh38 (build 38).
+    This class provides functionality to download and access the latest GTF (Gene Transfer Format) 
+    annotation files for the human genome from the Ensembl FTP server. It automatically
+    determines the most recent release available and handles the download process.
+    
+    Attributes
+    ----------
+    base_url : str
+        The base URL for Ensembl's FTP server where human GTF files are stored
+    build : str
+        The genome build identifier (38 for GRCh38)
+    source : str
+        The data source identifier ('ensembl')
+    latest_url : str
+        URL to the latest GTF file, populated after calling get_latest_release()
+    
+    Methods
+    -------
+    get_latest_release()
+        Identifies and sets the URL for the latest available GTF file
+    """
 
     def __init__(self, destination_folder = None):
+        """
+        Initialize the Ensembl human genome reference downloader.
+        This class downloads human genome reference data from the Ensembl FTP server,
+        specifically for homo sapiens (human) GTF files from the current release.
+        
+        Parameters
+        ----------
+        destination_folder : str, optional
+            Directory where the downloaded files will be saved. If None, a default
+            location will be used (typically determined by the parent class).
+        
+        Notes
+        -----
+        This downloader is configured to use:
+        - GRCh38 (build 38) human genome assembly
+        - Ensembl as the data source
+        - The current GTF release from Ensembl
+        """
         
         super().__init__(
             base_url = "https://ftp.ensembl.org/pub/current_gtf/homo_sapiens/",
