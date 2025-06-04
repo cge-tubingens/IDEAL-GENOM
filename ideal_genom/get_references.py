@@ -344,8 +344,44 @@ class Ensembl38Fetcher(ReferenceDataFetcher):
         pass
 
 class Ensembl37Fetcher(ReferenceDataFetcher):
+    """
+    A class for fetching reference genome data from Ensembl's GRCh37 (hg19) repository.
+    This class specializes the ReferenceDataFetcher to work specifically with 
+    Ensembl's GRCh37 human genome build. It provides functionality to automatically
+    detect and download the latest available GTF file for Homo sapiens from the
+    Ensembl GRCh37 archive.
+    The fetcher connects to Ensembl's FTP server, identifies the most recent release
+    available for GRCh37, and locates the chromosome GTF file for human genome data.
+
+    Attributes
+    ----------
+    base_url : str
+        The base URL for Ensembl's GRCh37 repository
+    build : str
+        The genome build identifier ('37')
+    source : str
+        The data source identifier ('ensembl')
+    latest_url : str
+        The complete URL to the latest GTF file, populated after calling get_latest_release()
+
+    Methods
+    -------
+    get_latest_release()
+        Identifies and sets the URL for the latest available GTF file
+    """
 
     def __init__(self, destination_folder = None):
+        """
+        Initialize a reference genome downloader for Ensembl GRCh37.
+        This constructor configures the downloader to retrieve data from Ensembl's GRCh37 
+        repository.
+        
+        Parameters
+        ----------
+        destination_folder : str, optional
+            The folder where downloaded files will be stored. If None, a default 
+            location will be used based on the parent class implementation.
+        """
         
         super().__init__(
             base_url = 'https://ftp.ensembl.org/pub/grch37/', 
@@ -355,6 +391,26 @@ class Ensembl37Fetcher(ReferenceDataFetcher):
         )
 
     def get_latest_release(self) -> None:
+        """
+        Fetches the URL of the latest GTF file for Homo sapiens GRCh37 from Ensembl.
+        This method:
+        1. Connects to the base URL and identifies all available release folders
+        2. Determines the latest release by finding the highest release number
+        3. Navigates to the GTF directory for that release
+        4. Locates the Homo sapiens GRCh37 chromosome GTF file
+        5. Stores the complete download URL in self.latest_url
+        
+        Raises
+        ------
+            Exception: If the base URL cannot be accessed
+            Exception: If no release folders are found
+            Exception: If the latest release folder cannot be accessed
+            FileNotFoundError: If the GTF file is not found in the latest release
+        
+        Returns
+        -------
+            None
+        """
 
         response = requests.get(self.base_url)
 
