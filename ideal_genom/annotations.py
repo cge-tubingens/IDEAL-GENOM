@@ -67,8 +67,6 @@ def get_closest_gene(x, data: Genome, chrom: str = "CHR", pos: str = "POS", max_
         # query
     gene = data.gene_names_at_locus(contig=contig, position=position)
 
-
-        
     if len(clean_empty(gene))==0:
         # if not in any gene
         i=0
@@ -247,6 +245,7 @@ def get_chr_to_NC(build: str, inverse: bool = False) -> dict:
         inv_dic = {v: k for k, v in dic.items()}
         return inv_dic
     return dic
+
 def gtf_to_all_genes(gtfpath: str) -> str:
     """
     Extract all gene records from a GTF file and save them to a new file.
@@ -349,6 +348,48 @@ def annotate_snp(insumstats: pd.DataFrame, gtf_path: str, chrom: str = "CHR", po
     return output
 
 def annotate_with_ensembl(output: pd.DataFrame, chrom: str, pos: str, build: str, gtf_path: str, is_gtf_path: bool) -> pd.DataFrame:
+    """
+    Annotate variants with gene information from Ensembl database.
+    This function adds gene annotations to a DataFrame containing variant information
+    by looking up the genomic coordinates in Ensembl data. It adds 'LOCATION' and 'GENE' 
+    columns to the input DataFrame.
+    
+    Parameters
+    ----------
+    output : pd.DataFrame
+        DataFrame containing variant information with chromosome and position columns.
+    chrom : str
+        Name of the column in the DataFrame that contains chromosome information.
+    pos : str
+        Name of the column in the DataFrame that contains position information.
+    build : str
+        Genome build version to use. Must be one of '19', '37', or '38'.
+        Note that '19' and '37' are treated as equivalent (GRCh37).
+    gtf_path : str
+        Path to GTF file with gene annotations or None to use default paths.
+        If None, the appropriate GTF file will be downloaded or used from cache.
+    is_gtf_path : bool
+        If True, gtf_path is treated as a direct path to a GTF file.
+        If False, gtf_path is treated as a directory where the GTF file should be downloaded.
+    
+    Returns
+    -------
+    pd.DataFrame
+        The input DataFrame with additional 'LOCATION' and 'GENE' columns containing
+        gene annotations from Ensembl.
+    
+    Raises
+    ------
+    TypeError
+        If output is not a pandas DataFrame or if gtf_path is not a string (when provided).
+    ValueError
+        If the required columns are not in the DataFrame or if the build is invalid.
+    
+    Notes
+    -----
+    The function supports both GRCh37 (build '19' or '37') and GRCh38 (build '38')
+    and will download the appropriate annotation files if not already available.
+    """
 
     if not isinstance(output, pd.DataFrame):
         raise TypeError("Input must be a pandas DataFrame.")
