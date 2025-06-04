@@ -13,27 +13,37 @@ from typing import Tuple, Optional
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
-def calculate_power_quantitative(beta: np.ndarray, eaf: np.ndarray, sample_size: int, sig_level: float = 5e-8, variance: float = 1) -> float:
-
+def calculate_power_quantitative(beta: np.ndarray, eaf: np.ndarray, sample_size: int, sig_level: float = 5e-8, variance: float = 1) -> np.ndarray:
     """
-    Calculate the statistical power for a single beta value for quantitative traits.
-
-    Parameters:
-    -----------
-    beta (float): 
-        The effect size.
-    eaf (float): 
-        The effect allele frequency.
-    n (int): 
-        The sample size.
-    sig_level (float): 
-        The significance level (default is 5e-8).
-    variance (float): 
-        The variance (default is 1).
-
-    Returns:
-    --------
-    float: The calculated power.
+    Calculate statistical power for detecting genetic associations in quantitative traits.
+    This function computes the statistical power for quantitative trait association tests
+    based on effect sizes (beta), effect allele frequencies (EAF), sample size, 
+    significance level, and trait variance.
+    
+    Parameters
+    ----------
+    beta : numpy.ndarray
+        Array of effect sizes (regression coefficients)
+    eaf : numpy.ndarray
+        Array of effect allele frequencies (between 0 and 1)
+    sample_size : int
+        Number of individuals in the study
+    sig_level : float, optional
+        Significance threshold (default: 5e-8, typical for GWAS)
+    variance : float, optional
+        Phenotypic variance of the trait (default: 1)
+    
+    Returns
+    -------
+    numpy.ndarray
+        Array of statistical power values corresponding to each variant
+    
+    Notes
+    -----
+    The calculation uses the non-central chi-square distribution to determine 
+    the probability of detecting true associations at the specified significance level.
+    Power is calculated as 1 minus the cumulative distribution function of the 
+    non-central chi-square distribution with 1 degree of freedom.
     """
                 
     c = ss.chi2.isf(sig_level,df=1) # critical value for chi-square test
@@ -46,34 +56,36 @@ def calculate_power_quantitative(beta: np.ndarray, eaf: np.ndarray, sample_size:
                 
     return power
 
-def calculate_power_binary(beta, daf, prevalence: float, ncase: int, ncontrol: int, sig_level: float = 5e-8, or_to_rr: bool = False):
-    
+def calculate_power_binary(beta: np.ndarray, daf: np.ndarray, prevalence: float, ncase: int, ncontrol: int, sig_level: float = 5e-8, or_to_rr: bool = False) -> np.ndarray:
     """
-    Calculate statistical power for genetic association testing under binary trait.
-    This function calculates the statistical power for genetic association studies with binary traits
-    (e.g., case-control studies) using an additive genetic model.
-
+    Calculate the statistical power of genetic association tests in a case-control study with binary traits.
+    This function computes the power to detect genetic associations in a case-control study design,
+    assuming an additive genetic model. It accounts for allele frequencies, effect sizes,
+    disease prevalence, and sample sizes to determine the probability of detecting true associations
+    at a specified significance level.
+    
     Parameters
     ----------
-    beta : float
-        Effect size (log odds ratio)
-    daf : float
-        Disease allele frequency (between 0 and 1)
+    beta : np.ndarray
+        Log odds ratios representing effect sizes of variants.
+    daf : np.ndarray
+        Disease allele frequencies.
     prevalence : float
-        Disease prevalence in the population (between 0 and 1)
+        Disease prevalence in the population.
     ncase : int
-        Number of cases
+        Number of cases in the study.
     ncontrol : int
-        Number of controls
+        Number of controls in the study.
     sig_level : float, optional
-        Significance level (alpha), default is 5e-8 (genome-wide significance)
+        Significance level threshold for declaring associations (default: 5e-8, standard for GWAS).
     or_to_rr : bool, optional
-        If True, converts odds ratio to relative risk using prevalence, default is False
-
+        If True, converts odds ratios to risk ratios using the disease prevalence (default: False).
+    
     Returns
     -------
-    float
-        Statistical power (between 0 and 1)
+    np.ndarray
+        Array of statistical power values for each variant, representing the probability
+        of detecting a true association at the specified significance level.
     
     Notes
     -----
@@ -85,7 +97,7 @@ def calculate_power_binary(beta, daf, prevalence: float, ncase: int, ncontrol: i
     Zhang J, Yu KF. What's the Relative Risk? JAMA. 1998;280(19):1690-1691.
     doi:10.1001/jama.280.19.1690
     """
-                
+    
     aaf = daf**2
     abf = 2 * (daf) * (1 - daf)
     bbf = (1- daf)**2
@@ -213,7 +225,44 @@ def get_beta_quantitative(
         
     return result_df[['eaf', 'beta']]  # Return only eaf and beta columns
 
-def get_beta_binary(prevalence: float = None, ncase: int = None, ncontrol: int = None, eaf_range: tuple = (0.0001,0.5), beta_range: tuple = (0.0001,5), t: float = 0, sig_level: float = 5e-8, n_matrix: int = 500, or_to_rr: bool = False):
+def get_beta_binary(prevalence: float, ncase: int, ncontrol: int, eaf_range: tuple = (0.0001,0.5), beta_range: tuple = (0.0001,5), t: float = 0, sig_level: float = 5e-8, n_matrix: int = 500, or_to_rr: bool = False):
+    """
+    Find combinations of effect allele frequencies (EAF) and effect sizes (beta) that achieve 
+    a specified statistical power for binary traits in genetic association studies.
+    
+    Parameters
+    ----------
+    prevalence : float
+        Disease prevalence in the population.
+    ncase : int
+        Number of cases in the study.
+    ncontrol : int
+        Number of controls in the study.
+    eaf_range : tuple, optional
+        Range of effect allele frequencies to consider (min, max). Default is (0.0001, 0.5).
+    beta_range : tuple, optional
+        Range of effect sizes to consider (min, max). Default is (0.0001, 5).
+    t : float, optional
+        Target power threshold. Combinations with power >= t will be returned. Default is 0.
+    sig_level : float, optional
+        Significance level (alpha) for power calculation. Default is 5e-8 (genome-wide significance).
+    n_matrix : int, optional
+        Resolution of the EAF-beta matrix. Default is 500.
+    or_to_rr : bool, optional
+        If True, converts odds ratios to relative risks using the provided prevalence.
+        If False, approximates genetic relative risk (GRR) using odds ratios. Default is False.
+    
+    Returns
+    -------
+    pandas.DataFrame
+        DataFrame containing EAF and beta combinations that achieve the target power.
+        The DataFrame has columns 'eaf' and 'beta' and is sorted by 'eaf' in descending order.
+    
+    Notes
+    -----
+    When prevalence is less than 10%, GRR is very similar to OR if or_to_rr is set to False.
+    The function uses a greedy algorithm to find EAF-beta combinations with power >= t.
+    """
     
     eafs = np.linspace(eaf_range[1],eaf_range[0],n_matrix)
     betas =  np.linspace(beta_range[0],beta_range[1],n_matrix)
