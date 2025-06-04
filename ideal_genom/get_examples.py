@@ -12,6 +12,23 @@ logger = logging.getLogger(__name__)
 
 
 def get_trumpet_quantitative_example() -> Path:
+    """
+    Downloads and extracts a quantitative GWAS summary statistics example file for generating a trumpet plot.
+    This function checks if the BBJ Height GWAS summary statistics file already exists in the local data directory.
+    If not, it downloads the file from the Human Database (DBCLS), extracts it from the zip archive,
+    decompresses the gzipped file, and saves it to the data/sumstats directory.
+    
+    Returns
+    -------
+        Path: Path to the extracted and decompressed GWAS summary statistics file
+               (2019_BBJ_Height_autosomes_BOLT.txt)
+
+    Side effects
+    ------------
+        - Creates directories if they don't exist
+        - Downloads files from the internet if necessary
+        - Extracts and decompresses files
+    """
 
     library_path = Path(__file__).resolve().parent.parent
 
@@ -41,6 +58,26 @@ def get_trumpet_quantitative_example() -> Path:
     return uncompressed_file
 
 def get_top_loci_trumpet_quantitative() -> Path:
+    """
+    Downloads and processes top genetic loci data from a GWAS study on height.
+
+    This function retrieves a dataset from the supplementary materials of a 
+    Biobank Japan (BBJ) height GWAS study published in Nature Communications 
+    (2019). It downloads an Excel file containing significant loci, extracts 
+    relevant columns, filters out X chromosome variants, and saves the 
+    processed data as a CSV file.
+
+    Returns
+    -------
+        Path: Path to the processed CSV file containing filtered top genetic loci.
+        
+    Notes
+    -----
+        - The function checks if the processed CSV already exists before downloading
+        - The original Excel file is deleted after processing
+        - Only autosomal variants are kept (X chromosome variants are filtered out)
+        - The processed file contains 'Variants' and 'New_Locus' columns
+    """
 
     library_path = Path(__file__).resolve().parent.parent
 
@@ -80,6 +117,28 @@ def get_top_loci_trumpet_quantitative() -> Path:
     return output_csv
 
 def get_top_cond_trumpet_quantitative() -> Path:
+    """
+    Downloads and processes conditional analysis data for height-associated variants from BBJ study.
+    
+    This function retrieves conditional analysis data for height-associated variants from a BBJ 
+    (BioBank Japan) 2019 study. It downloads an Excel file from the provided URL, extracts 
+    relevant columns (rsID, candidate genes, chromosome, and position), filters for autosomal 
+    variants, and saves the processed data as a tab-separated CSV file.
+    
+    The function checks if the processed CSV file already exists before downloading to avoid 
+    redundant operations. After processing, the original Excel file is deleted to save space.
+    
+    Returns
+    -------
+        Path: Path to the processed CSV file containing the top conditional analysis hits
+              for height-associated variants.
+    
+    Side effects
+    ------------
+        - Downloads an Excel file from an external URL if not already processed
+        - Creates a CSV file in the data/sumstats directory
+        - Removes the downloaded Excel file after processing
+    """
 
     library_path = Path(__file__).resolve().parent.parent
 
@@ -119,6 +178,22 @@ def get_top_cond_trumpet_quantitative() -> Path:
     return output_csv
 
 def get_trumpet_binary_example() -> Path:
+    """
+    Downloads and prepares a GWAS summary statistics file for analysis.
+    This function retrieves a specific GWAS summary statistics file (GCST90278092)
+    from the EBI FTP server. It checks if the file already exists locally before
+    downloading. After download, it decompresses the gzipped file.
+
+    Returns
+    -------
+        Path: Path to the uncompressed GWAS summary statistics file.
+    
+    Notes
+    -----
+        - The file is stored in the 'data/sumstats' directory relative to the package root
+        - If the file already exists locally, no download is performed
+        - The original gzipped file is removed after decompression
+    """
 
     library_path = Path(__file__).resolve().parent.parent
 
@@ -146,6 +221,24 @@ def get_trumpet_binary_example() -> Path:
     return uncompressed_file
 
 def get_bmi_japanese_gwas() -> tuple:
+    """
+    Downloads and prepares Japanese GWAS (Genome-Wide Association Studies) data for BMI (Body Mass Index).
+
+    This function retrieves data from the Japanese Biobank (BBJ) for both female and male subjects.
+    If the data files already exist locally, it returns their paths without downloading.
+    Otherwise, it downloads the zip archive, extracts the relevant files, and decompresses them.
+
+    Returns
+    -------
+        tuple: A tuple containing two Path objects:
+            - Path to the female BMI GWAS data file
+            - Path to the male BMI GWAS data file
+
+    Notes
+    -----
+        The data is downloaded from the Japanese Database of Clinical and Genomic Data,
+        specifically the hum0014 dataset version 6 with 158k samples.
+    """
 
     library_path = Path(__file__).resolve().parent.parent
 
@@ -182,6 +275,28 @@ def get_bmi_japanese_gwas() -> tuple:
     return uncompressed_file_f, uncompressed_file_m
 
 def get_bmi_japanese_gwas_sex_dependent() -> Path:
+    """
+    Download and process sex-dependent BMI GWAS data from the Japanese Biobank (BBJ).
+    
+    This function:
+    1. Downloads a supplementary Excel file from a 2017 Nature Genetics paper
+    2. Extracts relevant SNP information including sex-specific associations
+    3. Filters for SNPs with rs IDs
+    4. Converts the data to CSV format with columns: SNP, Sex, CHR, POS
+    5. Removes the original Excel file after processing
+    
+    The study is the BioBank Japan GWAS which analyzed sex-dependent genetic 
+    effects on BMI.
+    
+    Returns
+    -------
+        Path: Path to the processed CSV file containing the sex-dependent BMI 
+              GWAS results
+    
+    Note
+    ----
+        If the CSV file already exists, it will not be re-downloaded or processed.
+    """
 
     library_path = Path(__file__).resolve().parent.parent
 
@@ -220,5 +335,3 @@ def get_bmi_japanese_gwas_sex_dependent() -> Path:
     output_path.unlink()
 
     return output_csv
-
-    return output_path
