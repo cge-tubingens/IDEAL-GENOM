@@ -402,18 +402,48 @@ def annotate_with_ensembl(output: pd.DataFrame, chrom: str, pos: str, build: str
     
     if build in ["19", "37"]:
         logger.info(" -Assigning Gene name using Ensembl GRCh37 for protein coding genes")
-        gtf_path = prepare_gtf_path(gtf_path, is_gtf_path, Ensembl37Fetcher)
+        gtf_path = prepare_gtf_path(gtf_path, is_gtf_path, source="ensembl", build="37")
         data = prepare_genome(gtf_path, "GRCh37", "Ensembl")
 
     elif build == "38":
         logger.info(" -Assigning Gene name using Ensembl GRCh38 for protein coding genes")
-        gtf_path = prepare_gtf_path(gtf_path, is_gtf_path, Ensembl38Fetcher)
+        gtf_path = prepare_gtf_path(gtf_path, is_gtf_path, source="ensembl", build="38")
         data = prepare_genome(gtf_path, "GRCh38", "Ensembl")
 
     output.loc[:, ["LOCATION", "GENE"]] = annotate_variants(output, data, chrom, pos, "ensembl")
     return output
 
 def annotate_with_refseq(output: pd.DataFrame, chrom: str, pos: str, build: str, gtf_path: str, is_gtf_path: bool) -> pd.DataFrame:
+    """
+    Annotate genomic variants with RefSeq gene information.
+    This function adds gene and location annotations to genomic variants using NCBI RefSeq data.
+    It processes the input DataFrame and adds two new columns: 'LOCATION' and 'GENE'.
+    
+    Parameters
+    ----------
+        output (pd.DataFrame): DataFrame containing variant information to annotate.
+        chrom (str): Column name in DataFrame that contains chromosome information.
+        pos (str): Column name in DataFrame that contains position information.
+        build (str): Genome build version. Must be one of '19', '37', or '38'.
+        gtf_path (str): Path to the GTF file. If None, a default path will be used.
+        is_gtf_path (bool): If True, gtf_path is treated as a direct file path.
+                            If False, gtf_path is treated as a directory.
+    
+    Returns
+    -------
+        pd.DataFrame: The input DataFrame with added 'LOCATION' and 'GENE' columns.
+    
+    Raises
+    ------
+        TypeError: If output is not a pandas DataFrame or if gtf_path is provided but not a string.
+        ValueError: If required columns are missing from output or if build is invalid.
+    
+    Notes
+    -----
+        - For builds '19' and '37', GRCh37 RefSeq annotations are used.
+        - For build '38', GRCh38 RefSeq annotations are used.
+        - Only protein-coding genes are considered for annotation.
+    """
 
     if not isinstance(output, pd.DataFrame):
         raise TypeError("Input must be a pandas DataFrame.")
@@ -426,24 +456,61 @@ def annotate_with_refseq(output: pd.DataFrame, chrom: str, pos: str, build: str,
     
     if build in ["19", "37"]:
         logger.info(" -Assigning Gene name using NCBI refseq latest GRCh37 for protein coding genes")
-        gtf_path = prepare_gtf_path(gtf_path, is_gtf_path, lambda: RefSeqFetcher(build="37"))
+        gtf_path = prepare_gtf_path(gtf_path, is_gtf_path, source="refseq", build="37")
         data = prepare_genome(gtf_path, "GRCh37", "Refseq")
     elif build == "38":
         logger.info(" -Assigning Gene name using NCBI refseq latest GRCh38 for protein coding genes")
-        gtf_path = prepare_gtf_path(gtf_path, is_gtf_path, lambda: RefSeqFetcher(build="38"))
+        gtf_path = prepare_gtf_path(gtf_path, is_gtf_path, source="refseq", build="38")
         data = prepare_genome(gtf_path, "GRCh38", "Refseq")
     output.loc[:, ["LOCATION", "GENE"]] = annotate_variants(output, data, chrom, pos, "refseq", build)
     return output
 
-def prepare_gtf_path(gtf_path: str, is_gtf_path: bool, fetcher_class: Type[ReferenceDataFetcher]) -> str:
+def prepare_gtf_path(gtf_path: str, is_gtf_path: bool, source: str, build: str) -> str:
+    """
+    Prepares the path to a GTF (Gene Transfer Format) file for annotation purposes.
+    This function either uses a user-provided GTF file or downloads one from the
+    specified source (Ensembl or RefSeq) for the given genome build (GRCh37 or GRCh38).
+    If a download is required, it fetches the latest release, unzips it, and processes
+    it to extract all genes.
+    
+    Parameters
+    ----------
+        gtf_path (str): Path to an existing GTF file, or None if one should be downloaded.
+        is_gtf_path (bool): Flag indicating whether the provided gtf_path is valid.
+        source (str): Source database for GTF file ('ensembl' or 'refseq').
+        build (str): Genome build version ('37' or '38').
+    
+    Returns
+    -------
+        str: Path to the prepared GTF file with all genes.
+    
+    Notes
+    -----
+        - If gtf_path is None or is_gtf_path is False, a new GTF file will be downloaded.
+        - If a valid gtf_path is provided, it will be processed using gtf_to_all_genes.
+        - The function logs the actions being performed.
+    """
 
     if gtf_path is None or not is_gtf_path:
-        fetcher = fetcher_class()
+        if source == "ensembl" and build == '37':
+            logger.info(" -Downloading Ensembl GRCh37 GTF file")
+            fetcher = Ensembl37Fetcher()
+        elif source == "ensembl" and build == '38':
+            logger.info(" -Downloading Ensembl GRCh38 GTF file")
+            fetcher = Ensembl38Fetcher()
+        elif source == "refseq" and build == '37':
+            logger.info(" -Downloading RefSeq GRCh37 GTF file")
+            fetcher = RefSeqFetcher(build="37")
+        elif source == "refseq" and build == '38':
+            logger.info(" -Downloading RefSeq GRCh38 GTF file")
+            fetcher = RefSeqFetcher(build="38")
+
         fetcher.get_latest_release()
         fetcher.download_latest()
         fetcher.unzip_latest()
         fetcher.get_all_genes()
         gtf_path = fetcher.all_genes_path
+        
     else:
         logger.info(f" -Using user-provided gtf:{gtf_path}")
         gtf_path = gtf_to_all_genes(gtf_path)
