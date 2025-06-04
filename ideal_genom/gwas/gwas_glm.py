@@ -13,7 +13,7 @@ from ideal_genom.annotations import annotate_snp
 
 class GWASfixed:
 
-    def __init__(self, input_path:str, input_name:str, output_path:str, output_name:str, recompute:bool=True) -> None:
+    def __init__(self, input_path: str, input_name: str, output_path: str, output_name: str, recompute: bool = True) -> None:
         """
         Initialize the GWAS fixed model analysis.
 
@@ -56,7 +56,6 @@ class GWASfixed:
         results_dir (str): 
             Directory where the results will be saved.
         """
-
     
         # check if paths are set
         if input_path is None or output_path is None:
