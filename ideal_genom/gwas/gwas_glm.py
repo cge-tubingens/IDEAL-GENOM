@@ -2,14 +2,14 @@
 Module to perform a GWAS analysis using a fixed model.
 """
 
-import gzip
 import os
-import shutil
 
 import pandas as pd
 
 from ideal_genom.Helpers import shell_do
 from ideal_genom.annotations import annotate_snp
+
+from typing import Optional
 
 class GWASfixed:
 
@@ -175,8 +175,9 @@ class GWASfixed:
             raise FileNotFoundError(f"PCA file was not found: {os.path.join(input_path, input_name+'.eigenvec')}")
 
         # compute the number of threads to use
-        if os.cpu_count() is not None:
-            max_threads = os.cpu_count()-2  # use all available cores
+        cpu_count = os.cpu_count()
+        if cpu_count is not None:
+            max_threads = cpu_count-2  # use all available cores
         else:
             max_threads = 10
 
@@ -203,7 +204,7 @@ class GWASfixed:
 
         return out_dict
 
-    def get_top_hits(self, maf:float)->dict:
+    def get_top_hits(self, maf: float = 0.01) -> dict:
         
         """
         Get the top hits from the GWAS results.
@@ -247,8 +248,9 @@ class GWASfixed:
         step = "get_top_hits"
 
         # compute the number of threads to use
-        if os.cpu_count() is not None:
-            max_threads = os.cpu_count()-2
+        cpu_count = os.cpu_count()
+        if cpu_count is not None:
+            max_threads = cpu_count-2
         else:
             max_threads = 10
 
@@ -306,13 +308,40 @@ class GWASfixed:
 
         return out_dict
     
-    def annotate_top_hits(self, gtf_path:str=None, build:str='38', anno_source: str = "ensembl")->dict:
-
+    def annotate_top_hits(self, gtf_path: Optional[str] = None, build: str = '38', anno_source: str = "ensembl") -> dict:
         """
-        Annotate the top hits from the association analysis.
+        Annotate top SNP hits from COJO analysis with gene information.
+        This method reads the COJO joint analysis results, extracts the top SNPs, 
+        and annotates them with gene information using the specified genome build 
+        and annotation source. The annotated results are saved to a TSV file.
+        
+        Parameters
+        ----------
+        gtf_path : Optional[str], default=None
+            Path to the GTF (Gene Transfer Format) file for custom annotation.
+            If None, the annotation will use default resources.
+        build : str, default='38'
+            Genome build version to use for annotation ('38' for GRCh38, etc.).
+        anno_source : str, default="ensembl"
+            Source of annotations to use (e.g., "ensembl", "refseq").
+        
+        Returns
+        -------
+        dict
+            A dictionary containing:
+            - 'pass': Boolean indicating if the process completed successfully
+            - 'step': The name of the step ('annotate_hits')
+            - 'output': Dictionary with output file paths
+        
+        Raises
+        ------
+        FileExistsError
+            If the COJO results file is not found in the results directory.
+        
+        Notes
+        -----
+        The annotated results are saved to 'top_hits_annotated.tsv' in the results directory.
         """
-
-        import time
 
         results_dir = self.results_dir
 
@@ -333,7 +362,7 @@ class GWASfixed:
                 pos    ='bp',
                 build  =build,
                 source =anno_source,
-                gtf_path=gtf_path
+                gtf_path=gtf_path # type: ignore
             ).rename(columns={"GENE":"GENENAME"})
 
         df_hits.to_csv(os.path.join(results_dir, 'top_hits_annotated.tsv'), sep="\t", index=False)
