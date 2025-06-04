@@ -587,7 +587,7 @@ class RefSeqFetcher(ReferenceDataFetcher):
 
 class AssemblyReferenceFetcher():
 
-    def __init__(self, base_url: str, build: str, extension: str, destination_folder: Optional[str] = None, avoid_substring: list = 'extra') -> None:
+    def __init__(self, base_url: str, build: str, extension: str, destination_folder: Optional[str] = None, avoid_substring: str = 'extra') -> None:
 
         self.base_url = base_url
         self.build = build
@@ -644,6 +644,11 @@ class AssemblyReferenceFetcher():
         
         if not getattr(self, 'reference_file', None):
             raise AttributeError("`self.reference_file` is not set. Call `get_reference_url` first.")
+        
+        if self.reference_file is None:
+            raise ValueError("reference_file is None. Cannot construct file path.")
+        if self.reference_url is None:
+            raise ValueError("reference_url is None. Cannot download file.")
 
         self.destination_folder = self.get_destination_folder()
 
@@ -671,7 +676,7 @@ class AssemblyReferenceFetcher():
         if not getattr(self, 'reference_file', None):
             raise AttributeError("`self.reference_file` is not set. Call `get_reference_url` first.")
         
-        if not getattr(self, 'file_path', None):
+        if not getattr(self, 'file_path', None) or self.file_path is None:
             raise AttributeError("`self.file_path` is not set. Call `download_reference_file` first.")
         
         if self.file_path.suffix == '.fa':
