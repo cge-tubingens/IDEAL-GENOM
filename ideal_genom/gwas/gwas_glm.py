@@ -98,7 +98,7 @@ class GWASfixed:
 
         pass
 
-    def fixed_model_association_analysis(self, maf: float, mind: float, hwe: float, ci: float) -> dict:
+    def fixed_model_association_analysis(self, maf: float = 0.01, mind: float = 0.1, hwe: float = 5e-6, ci: float = 0.95) -> dict:
         """
         Perform fixed model association analysis using PLINK2.
         
