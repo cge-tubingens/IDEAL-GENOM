@@ -185,7 +185,7 @@ def qqplot_draw(df_gwas:pd.DataFrame, plots_dir: str, lambda_val: Optional[float
 
     return True
 
-def confidence_interval(n:int, conf_points:int=1500, conf_alpha:float=0.05)->np.ndarray:
+def confidence_interval(n: int, conf_points: int = 1500, conf_alpha: float = 0.05) -> np.ndarray:
 
     """
     Function to confidence intervals for the QQ plot.
