@@ -10,14 +10,79 @@ import pandas as pd
 from bs4 import BeautifulSoup
 from gtfparse import read_gtf
 from pathlib import Path
+from typing import Optional
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
         
 class ReferenceDataFetcher:
+    """
+    A class for fetching, downloading, and processing reference genome data.
+    This class provides a framework for retrieving genomic reference data from various
+    sources. It handles downloading compressed files, unzipping them, and extracting
+    gene information from GTF files.
 
-    def __init__(self, base_url: str, build: str, source: str, destination_folder: str=None) -> None:
+    Attributes
+    ----------
+    build : str
+        The genome build (e.g., 'hg38', 'GRCh38').
+    source : str
+        The data source (e.g., 'ensembl', 'ucsc').
+    base_url : str
+        The base URL to fetch data from.
+    destination_folder : Optional[str]
+        The directory to save downloaded files. If None, defaults to project_root/data/{source}_latest.
+    latest_url : Optional[str]
+        The URL of the latest release after calling get_latest_release().
+    gz_file : Optional[str]
+        Path to the downloaded compressed file.
+    gtf_file : Optional[str]
+        Path to the uncompressed GTF file.
+
+    Methods
+    -------
+    get_latest_release() -> None
+        Determine the specific URL for fetching data. Must be implemented by subclasses.
+    download_latest() -> str
+        Downloads the latest file and returns the file path.
+    get_destination_folder() -> Path
+        Determines and creates the destination folder for downloads.
+    _download_file(url: str, file_path: Path) -> None
+        Downloads a file from the given URL and saves it to file_path.
+    unzip_latest() -> str
+        Unzips the latest downloaded file and returns the path to the unzipped file.
+    get_all_genes() -> str
+        Processes the GTF file to extract all genes and saves them to a new file.
+        Returns the path to the new file.
+
+    Notes
+    -----
+    This is an abstract base class that requires subclasses to implement the
+    get_latest_release() method for specific data sources.
+    """
+
+    def __init__(self, base_url: str, build: str, source: str, destination_folder: Optional[str] = None) -> None:
+        """
+        Initialize a reference genome retrieval object.
+
+        This constructor sets up the necessary parameters for downloading reference genome files
+        from a specified source.
+
+        Parameters
+        ----------
+        base_url (str): 
+            The base URL where reference genome files are hosted.
+        build (str): 
+            The genome build/version (e.g., 'GRCh38', 'hg19').
+        source (str): 
+            The source of the genome data (e.g., 'ensembl', 'refseq').
+        destination_folder (Optional[str], optional): 
+            Directory where downloaded files will be saved. If None, files may be saved to a default location. Defaults to None.
+
+        Returns:
+            None
+        """
 
         self.build = build
         self.source = source
@@ -40,11 +105,11 @@ class ReferenceDataFetcher:
 
         Raises:
         -------
-            - AttributeError: If `self.latest_url` is not set.
-            - requests.exceptions.RequestException: If the HTTP request fails.
+            AttributeError: If `self.latest_url` is not set.
+            requests.exceptions.RequestException: If the HTTP request fails.
         """
 
-        if not getattr(self, 'latest_url', None):
+        if not self.latest_url:
             raise AttributeError("`self.latest_url` is not set. Call `get_latest_release` first.")
 
         self.destination_folder = self.get_destination_folder()
@@ -95,12 +160,12 @@ class ReferenceDataFetcher:
     def unzip_latest(self) -> str:
         """Unzips the latest downloaded file and stores it as a GTF file."""
 
-        if not getattr(self, 'latest_url', None):
+        if not self.latest_url:
             raise AttributeError("`self.latest_url` is not set. Call `get_latest_release` first.")
 
         self.destination_folder = self.get_destination_folder()
 
-        if not hasattr(self, 'gz_file') or not Path(self.gz_file).is_file():
+        if not hasattr(self, 'gz_file') or self.gz_file is None or not Path(self.gz_file).is_file():
             raise FileNotFoundError("Reference file not found")
 
         gtf_file = self.destination_folder / (Path(self.gz_file).stem)  # Removes .gz extension
@@ -124,8 +189,28 @@ class ReferenceDataFetcher:
         return str(gtf_file)
     
     def get_all_genes(self) -> str:
+        """
+        Extract all genes from the GTF file and save them to a new compressed file.
+        This method reads the GTF file specified in self.gtf_file, filters for gene features,
+        and creates a new GTF file containing only the gene entries. If the output file 
+        already exists, it will return the path without reprocessing.
+        
+        Returns
+        -------
+        str: 
+            Path to the compressed GTF file containing all genes
+        
+        Raises
+        ------
+            FileNotFoundError: If the reference GTF file (self.gtf_file) is not found
+            TypeError: If read_gtf does not return a pandas DataFrame
+        
+        Note
+        ----
+            The output file will be named based on the input GTF file with "-all_genes.gtf.gz" suffix
+        """
 
-        if not hasattr(self, 'gtf_file') or not os.path.isfile(self.gtf_file):
+        if not hasattr(self, 'gtf_file') or self.gtf_file is None or not os.path.isfile(self.gtf_file):
             raise FileNotFoundError("Reference file not found")
         
         if os.path.isfile(self.gtf_file[:-4]+"-all_genes.gtf.gz"):
@@ -133,9 +218,15 @@ class ReferenceDataFetcher:
             self.all_genes_path = self.gtf_file[:-4] + "-all_genes.gtf.gz"
             logger.info(f"File already exists: {self.all_genes_path}")
 
-            return
+            return self.all_genes_path
 
-        gtf = read_gtf(self.gtf_file, usecols=["feature", "gene_biotype", "gene_id", "gene_name"], result_type='pandas')
+        gtf = read_gtf(
+            self.gtf_file, 
+            usecols    =["feature", "gene_biotype", "gene_id", "gene_name"], 
+            result_type='pandas'
+        )
+        if not isinstance(gtf, pd.DataFrame):
+            raise TypeError("read_gtf did not return a pandas DataFrame")
 
         gene_list = gtf.loc[gtf["feature"]=="gene", "gene_id"].values
 
@@ -153,7 +244,7 @@ class ReferenceDataFetcher:
 
         all_genes_path = self.gtf_file[:-4]+"-all_genes.gtf.gz"
 
-        gtf_raw.to_csv(all_genes_path, header=None, index=None, sep="\t")
+        gtf_raw.to_csv(all_genes_path, header=False, index=False, sep="\t")
         logger.info(f"Saved all genes to: {all_genes_path}")
 
         self.all_genes_path = all_genes_path
@@ -278,7 +369,7 @@ class Ensembl37Fetcher(ReferenceDataFetcher):
 
 class RefSeqFetcher(ReferenceDataFetcher):
 
-    def __init__(self, build: str, destination_folder: str = None):
+    def __init__(self, build: str, destination_folder: Optional[str] = None):
 
         super().__init__(
             base_url = "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/vertebrate_mammalian/Homo_sapiens/all_assembly_versions/", 
@@ -364,7 +455,7 @@ class RefSeqFetcher(ReferenceDataFetcher):
 
 class AssemblyReferenceFetcher():
 
-    def __init__(self, base_url: str, build: str, extension: str, destination_folder: str = None, avoid_substring: list = 'extra') -> None:
+    def __init__(self, base_url: str, build: str, extension: str, destination_folder: Optional[str] = None, avoid_substring: list = 'extra') -> None:
 
         self.base_url = base_url
         self.build = build
@@ -378,7 +469,7 @@ class AssemblyReferenceFetcher():
         
         pass
 
-    def get_reference_url(self) -> None:
+    def get_reference_url(self) -> str:
 
         response = requests.get(self.base_url)
 
@@ -504,7 +595,7 @@ class AssemblyReferenceFetcher():
 
 class FetcherLDRegions:
 
-    def __init__(self, destination: Path = None, built: str = '38'):
+    def __init__(self, destination: Optional[Path] = None, built: str = '38'):
         """
         Initialize LDRegions object.
         This initializer sets up the destination path for LD regions files and the genome build version.
@@ -610,3 +701,5 @@ class FetcherLDRegions:
                     file.write(f"{line[0]}\t{line[1]}\t{line[2]}\t{line[3]}\n")
             self.ld_regions = out_dir / f"high-LD-regions_GRCH{self.built}.txt"
             return out_dir / f'high-LD-regions_GRCH{self.built}.txt'
+        else:
+            raise ValueError("Unsupported genome build. Only '37' and '38' are supported.")
