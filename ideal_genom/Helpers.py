@@ -29,7 +29,7 @@ def shell_do(command, print_cmd=False, log=False, return_log=False, err=False):
     if err:
         return res.stderr.decode('utf-8')
     
-def arg_parser()->dict:
+def arg_parser() -> dict:
 
     # define parser
     parser = argparse.ArgumentParser(description='Adresses to configuration files')
@@ -46,9 +46,9 @@ def arg_parser()->dict:
     # parse args and turn into dict
     args = parser.parse_args()
 
-    return args
+    return vars(args)
 
-def download_file(url:str, local_filename: str) -> None:
+def download_file(url:str, local_filename: Path) -> None:
 
     with requests.get(url, stream=True) as r:
         r.raise_for_status()
@@ -58,7 +58,7 @@ def download_file(url:str, local_filename: str) -> None:
 
     return
 
-def unzip_file_flat(in_file: str, target_file: str, out_dir: str, remove_zip: bool = False) -> Path:
+def unzip_file_flat(in_file: Path, target_file: str, out_dir: Path, remove_zip: bool = False) -> Path:
     """Extracts a specific file from a ZIP archive, decompresses it if it's a .gz file, and optionally deletes original files.
 
     Args:
@@ -86,7 +86,7 @@ def unzip_file_flat(in_file: str, target_file: str, out_dir: str, remove_zip: bo
                 print(f"Extracted: {extracted_gz_path}")
             else:
                 print(f"File {target_file} not found in the archive.")
-                return None
+                return Path()
 
         # Optionally delete the ZIP file
         if remove_zip:
@@ -100,9 +100,9 @@ def unzip_file_flat(in_file: str, target_file: str, out_dir: str, remove_zip: bo
     except Exception as e:
         print(f"Unexpected error: {e}")
 
-    return None  # Return None if extraction fails
+    return Path()  # Return None if extraction fails
 
-def extract_gz_file(gz_file: str, out_dir: str, remove_gz: bool = False) -> Path:
+def extract_gz_file(gz_file: Path, out_dir: Path, remove_gz: bool = False) -> Path:
     """Extracts a .gz file and saves the decompressed content in the same directory.
 
     Args:
