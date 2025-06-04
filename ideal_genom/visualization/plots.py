@@ -432,11 +432,11 @@ def beta_beta_draw(gwas_1: pd.DataFrame, gwas_2: pd.DataFrame, p_col: str, beta_
 
         result = stats.linregress(df[f'{beta_col}_2'], df[f'{beta_col}_2'])
 
-        logger.info(f"Regression line: y = {result.slope:.2f}x + {result.intercept:.2f}")
+        logger.info(f"Regression line: y = {result.slope:.2f}x + {result.intercept:.2f}") # type: ignore
 
         ax.plot(
             help_line, 
-            result.slope*help_line + result.intercept, 
+            result.slope*help_line + result.intercept, # type: ignore
             color    ='gray', 
             linestyle='dashed', 
             lw       =0.5
@@ -456,7 +456,7 @@ def beta_beta_draw(gwas_1: pd.DataFrame, gwas_2: pd.DataFrame, p_col: str, beta_
     # Second legend (for regression line)
     if draw_reg_line:
         reg_legend = ax.legend(
-            handles=[mlines.Line2D([], [], color='gray', linestyle='dashed', label=f"Fit: y = {result.slope:.2f}x + {result.intercept:.2f}, r={result.rvalue:.2f}, p-value={result.pvalue:.2f}")], 
+            handles=[mlines.Line2D([], [], color='gray', linestyle='dashed', label=f"Fit: y = {result.slope:.2f}x + {result.intercept:.2f}, r={result.rvalue:.2f}, p-value={result.pvalue:.2f}")], # type: ignore
             loc="lower right", 
             fontsize=7, 
             title="Regression Line"
@@ -534,7 +534,81 @@ def beta_beta_draw(gwas_1: pd.DataFrame, gwas_2: pd.DataFrame, p_col: str, beta_
 
     return True
     
-def trumpet_draw(df_gwas: pd.DataFrame, df_freq: pd.DataFrame, plot_dir: str, snp_col: str, chr_col: str, pos_col: str, maf_col: str, beta_col: str, power_ts: list, n_case: int = None, n_control: int = None, sample_size: int = None, n_col: str = '', sample_size_strategy: str = 'median', p_col: str = None, prevalence: int = None, mode: str = 'binary', p_filter: float = 5e-8, to_highlight: list = [], to_annotate: pd.DataFrame = None, gen_col: str = None, cmap: str= "cool", power_sig_level: float = 5e-8, build = '38', anno_source: str = 'ensembl', gtf_path: str = None, save_name: str = 'trumpet_plot.jpeg', scale: str = 'linear') -> bool:
+def trumpet_draw(df_gwas: pd.DataFrame, df_freq: pd.DataFrame, plot_dir: str, snp_col: str, chr_col: str, pos_col: str, maf_col: str, beta_col: str, power_ts: list, n_case: Optional[int] = None, n_control: Optional[int] = None, sample_size: Optional[int] = None, n_col: str = '', sample_size_strategy: str = 'median', p_col: Optional[str] = None, prevalence: Optional[float] = None, mode: str = 'binary', p_filter: float = 5e-8, to_highlight: list = [], to_annotate: Optional[pd.DataFrame] = None, gen_col: Optional[str] = None, cmap: str= "cool", power_sig_level: float = 5e-8, build = '38', anno_source: str = 'ensembl', gtf_path: Optional[str] = None, save_name: str = 'trumpet_plot.pdf', scale: str = 'linear') -> bool:
+    """
+    Create a trumpet plot to visualize GWAS results with power analysis.
+    A trumpet plot displays effect sizes (beta) versus minor allele frequencies (MAF) with power curves,
+    allowing for assessment of statistical power across different allele frequencies and effect sizes.
+    
+    Parameters
+    ----------
+    df_gwas : pd.DataFrame
+        DataFrame containing GWAS summary statistics.
+    df_freq : pd.DataFrame
+        DataFrame containing allele frequency information, required if MAF is not in df_gwas.
+    plot_dir : str
+        Directory to save the plot.
+    snp_col : str
+        Column name for SNP identifiers.
+    chr_col : str
+        Column name for chromosome information.
+    pos_col : str
+        Column name for genomic position.
+    maf_col : str
+        Column name for minor allele frequency.
+    beta_col : str
+        Column name for effect size.
+    power_ts : list
+        List of power thresholds to plot (float values between 0 and 1).
+    n_case : int, optional
+        Number of cases (required for binary traits).
+    n_control : int, optional
+        Number of controls (required for binary traits).
+    sample_size : int, optional
+        Sample size (required for quantitative traits if n_col not provided).
+    n_col : str, default ''
+        Column name for sample size (for quantitative traits).
+    sample_size_strategy : str, default 'median'
+        Strategy to calculate sample size when n_col is provided ('median', 'mean', 'min', 'max').
+    p_col : str, optional
+        Column name for p-values.
+    prevalence : float, optional
+        Disease prevalence (for binary traits). If not provided, will be inferred from n_case and n_control.
+    mode : str, default 'binary'
+        Analysis mode ('binary' or 'quantitative').
+    p_filter : float, default 5e-8
+        P-value threshold for filtering SNPs.
+    to_highlight : list, default []
+        List of SNP identifiers to highlight in the plot.
+    to_annotate : pd.DataFrame, optional
+        DataFrame of SNPs to annotate with gene names.
+    gen_col : str, optional
+        Column name for gene names in to_annotate DataFrame.
+    cmap : str, default "cool"
+        Colormap for power lines.
+    power_sig_level : float, default 5e-8
+        Significance level for power calculation.
+    build : str, default '38'
+        Genome build version ('38' or '37').
+    anno_source : str, default 'ensembl'
+        Source for gene annotation.
+    gtf_path : str, optional
+        Path to GTF file for annotation if not using online resources.
+    save_name : str, default 'trumpet_plot.pdf'
+        Filename for saving the plot.
+    scale : str, default 'linear'
+        Scale for x-axis ('linear' or 'log').
+    
+    Returns
+    -------
+    bool
+        True if plot was successfully created and saved.
+    
+    Notes
+    -----
+    For binary traits, either prevalence or both n_case and n_control must be provided.
+    For quantitative traits, either sample_size or n_col must be provided.
+    """
 
     if not isinstance(df_gwas, pd.DataFrame):
         raise ValueError(f"GWAS dataframe must be a pandas dataframe.")
@@ -574,19 +648,22 @@ def trumpet_draw(df_gwas: pd.DataFrame, df_freq: pd.DataFrame, plot_dir: str, sn
         elif n_case < 0 or n_control < 0:
             raise ValueError(f"Number of cases and controls must be positive.")
         if prevalence is None:
-            prevalence = n_case / (n_case + n_control)
+            if n_case + n_control > 0:
+                prevalence = n_case / (n_case + n_control)
+            else:
+                raise ValueError("The sum of n_case and n_control must be greater than zero to calculate prevalence.")
             logger.info(f"Prevalence not provided. Infering from the number of cases and controls: {prevalence:.2f}")
 
     if mode == 'quantitative':
         if n_col not in df_gwas.columns and sample_size is None:
             raise ValueError(f"Column {n_col} not present in the GWAS dataframe and sample size is unknown.")
-        elif sample_size is not None and not isinstance(sample_size, int):
+        if sample_size is not None and (not isinstance(sample_size, int) or isinstance(sample_size, float)):
             raise ValueError(f"Sample size must be an integer.")
-        elif sample_size < 0:
+        if sample_size is not None and sample_size < 0:
             raise ValueError(f"Sample size must be positive.")
         
         if n_col in df_gwas.columns:
-            if sample_size_strategy not in ['min', 'max', 'median', 'mean']:
+            if not isinstance(sample_size_strategy, str) or sample_size_strategy not in ['min', 'max', 'median', 'mean']:
                 raise ValueError(f"Sample size strategy must be either 'min', 'max', 'median' or 'mean'.")
 
     if p_filter is not None and p_col is not None:
@@ -652,9 +729,9 @@ def trumpet_draw(df_gwas: pd.DataFrame, df_freq: pd.DataFrame, plot_dir: str, sn
         elif sample_size_strategy == "max":
             sample_size = df[n_col].max() 
         elif sample_size_strategy == "mean":
-            sample_size = df[n_col].mean() 
+            sample_size = int(df[n_col].mean()) 
         else:
-            sample_size = df[n_col].median()
+            sample_size = int(df[n_col].median())
 
     # generate power lines
     if mode=='binary':
@@ -662,10 +739,10 @@ def trumpet_draw(df_gwas: pd.DataFrame, df_freq: pd.DataFrame, plot_dir: str, sn
             xpower = get_beta_binary(
                 eaf_range =maf_range,
                 beta_range=beta_range, 
-                prevalence=prevalence,
+                prevalence=prevalence, # type: ignore
                 or_to_rr  =False,
-                ncase     =n_case, 
-                ncontrol  =n_control, 
+                ncase     =n_case, # type: ignore
+                ncontrol  =n_control, # type: ignore
                 t         =t,
                 sig_level =power_sig_level,
                 n_matrix  =2000,
@@ -791,7 +868,7 @@ def trumpet_draw(df_gwas: pd.DataFrame, df_freq: pd.DataFrame, plot_dir: str, sn
 
     plt.tight_layout() 
 
-    r = fig.canvas.get_renderer()
+    r = fig.canvas.get_renderer()  # type: ignore
     fig.canvas.draw()
 
     if to_annotate is not None:
@@ -819,7 +896,7 @@ def trumpet_draw(df_gwas: pd.DataFrame, df_freq: pd.DataFrame, plot_dir: str, sn
                     pos    =pos_col,
                     build  =build,
                     source =anno_source,
-                    gtf_path=gtf_path
+                    gtf_path=gtf_path # type: ignore
                 ).rename(columns={"GENE":"GENENAME"})
 
             logger.info(f"Number of SNPs annotated: {variants_toanno.shape[0]}")
@@ -851,8 +928,8 @@ def trumpet_draw(df_gwas: pd.DataFrame, df_freq: pd.DataFrame, plot_dir: str, sn
                     x        =x,     # x-coordinates of the data point to annotate
                     y        =y,     # y-coordinates of the data point to annotate
                     text_list=texts, # list of text to annotate
-                    x_scatter=df[maf_col], # all scatter points x-coordinates
-                    y_scatter=df[beta_col],  # all scatter points y-coordinates
+                    x_scatter=df[maf_col].to_numpy(), # all scatter points x-coordinates
+                    y_scatter=df[beta_col].to_numpy(),  # all scatter points y-coordinates
                     linecolor='black',                      # color of the line connecting the text to the data point
                     textsize =8,                            # size of the text (Default to Nature standard)
                     bbox     =dict(boxstyle='round,pad=0.5', edgecolor='black', facecolor='#f0f0f0', alpha=0.5),
