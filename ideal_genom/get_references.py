@@ -586,8 +586,49 @@ class RefSeqFetcher(ReferenceDataFetcher):
         return
 
 class AssemblyReferenceFetcher():
+    """
+    AssemblyReferenceFetcher is responsible for retrieving genomic reference files.
+    This class provides functionality to locate, download, and process reference genome
+    assemblies from web servers. It handles URL construction, web scraping to find
+    appropriate files, downloading, and decompressing reference files.
+    
+    Key Features
+    -----------
+    - Web scraping to identify correct reference files based on build version
+    - Automatic download of reference genome files
+    - Decompression of gzipped reference files
+    - Management of file paths and destination directories
+    """
 
     def __init__(self, base_url: str, build: str, extension: str, destination_folder: Optional[str] = None, avoid_substring: str = 'extra') -> None:
+        """
+        Initialize a reference retriever.
+        This method sets up the configuration for retrieving reference files from a 
+        specified URL, typically for genomic data based on a particular build.
+        
+        Parameters
+        ----------
+        base_url : str
+            The base URL from which to retrieve reference files.
+        build : str
+            The genome build identifier (e.g., 'hg38', 'GRCh37').
+        extension : str
+            The file extension of the reference files to retrieve.
+        destination_folder : Optional[str], default=None
+            The folder where retrieved reference files will be saved.
+            If None, files might be saved to a default location or handled differently.
+        avoid_substring : str, default='extra'
+            A substring to avoid when processing reference files.
+        
+        Attributes
+        ----------
+        file_path : str or None
+            Path to the downloaded reference file, initialized as None.
+        reference_url : str or None
+            Complete URL to the reference file, initialized as None.
+        reference_file : str or None
+            Name or identifier of the reference file, initialized as None.
+        """
 
         self.base_url = base_url
         self.build = build
@@ -602,6 +643,21 @@ class AssemblyReferenceFetcher():
         pass
 
     def get_reference_url(self) -> str:
+        """
+        Retrieves the URL for the reference file from the base URL.
+        This method scrapes the base URL to find a link to the appropriate reference file.
+        It looks for links that contain the build version, have the correct file extension,
+        and do not contain the specified substring to avoid.
+
+        Returns
+        -------
+            str: The complete URL to the reference file.
+        
+        Raises
+        ------
+            Exception: If the base URL cannot be accessed.
+            FileNotFoundError: If no suitable reference file is found.
+        """
 
         response = requests.get(self.base_url)
 
@@ -672,6 +728,32 @@ class AssemblyReferenceFetcher():
         return str(file_path)
     
     def unzip_reference_file(self) -> str:
+        """
+        Unzips the reference genome file if it's compressed.
+        This method extracts the content of a gzipped reference genome file
+        and saves it as a FASTA file. After successful extraction, the original
+        compressed file is deleted.
+
+        Prerequisites
+        -------------
+            - self.reference_file must be set (via get_reference_url)
+            - self.file_path must be set (via download_reference_file)
+
+        Returns
+        -------
+            str: Path to the unzipped FASTA file
+        
+        Raises
+        ------
+            AttributeError: If self.reference_file or self.file_path are not set
+            OSError: If an error occurs during the unzipping process
+        
+        Notes
+        -----
+            - If the file is already unzipped (has .fa extension), returns its path
+            - If the unzipped file already exists, returns its path without re-extracting
+            - The original compressed file is deleted after successful extraction
+        """
 
         if not getattr(self, 'reference_file', None):
             raise AttributeError("`self.reference_file` is not set. Call `get_reference_url` first.")
