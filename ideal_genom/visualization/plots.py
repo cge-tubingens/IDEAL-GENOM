@@ -29,6 +29,8 @@ import textalloc as ta
 
 from matplotlib.collections import LineCollection
 
+from typing import Optional
+
 from ideal_genom.annotations import annotate_snp
 
 from ideal_genom.power_comp import get_beta_quantitative
@@ -37,7 +39,7 @@ from ideal_genom.power_comp import get_beta_binary
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
-def qqplot_draw(df_gwas:pd.DataFrame, plots_dir: str, lambda_val: float = None, pval_col: str = 'P', conf_color: str = "lightgray", save_name: str = 'qq_plot.jpeg', fig_size: tuple = (10,10)) -> bool:
+def qqplot_draw(df_gwas:pd.DataFrame, plots_dir: str, lambda_val: Optional[float] = None, pval_col: str = 'P', conf_color: str = "lightgray", save_name: str = 'qq_plot.jpeg', fig_size: tuple = (10,10)) -> bool:
     
     """
     Creates a Q-Q (Quantile-Quantile) plot from GWAS results.
@@ -102,12 +104,12 @@ def qqplot_draw(df_gwas:pd.DataFrame, plots_dir: str, lambda_val: float = None, 
 
         logger.info("Calculating genomic inflation factor (λ)...")
         
-        chi_sq = stats.chi2.isf(df_gwas[pval_col], df=1)
-        lambda_val = np.median(chi_sq) / stats.chi2.ppf(0.5, df=1)
+        chi_sq = stats.chi2.isf(df_gwas[pval_col].to_numpy(), df=1)
+        lambda_val = float(np.median(chi_sq) / stats.chi2.ppf(0.5, df=1))
 
         logger.info(f"Genomic inflation factor (λ) = {lambda_val:.6f}")
     
-    pvalues = df_gwas[pval_col].values
+    pvalues = df_gwas[pval_col].to_numpy()
     grp = None
     n = len(pvalues)
 
@@ -149,7 +151,7 @@ def qqplot_draw(df_gwas:pd.DataFrame, plots_dir: str, lambda_val: float = None, 
 
     logger.info("Plotting Q-Q plot...")
     if grp is not None:
-        unique_groups = np.unique(grp)
+        unique_groups = np.unique(np.asarray(grp))
         for group in unique_groups:
             group_mask = (grp == group)
             ax.scatter(exp_x[group_mask], log_p[group_mask], label=f'Group {group}', marker='o')
