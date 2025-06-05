@@ -1,0 +1,61 @@
+ideal\_genom package
+====================
+
+Submodules
+----------
+
+ideal\_genom.Helpers module
+---------------------------
+
+.. automodule:: ideal_genom.Helpers
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+ideal\_genom.annotations module
+-------------------------------
+
+.. automodule:: ideal_genom.annotations
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+ideal\_genom.api\_client module
+-------------------------------
+
+.. automodule:: ideal_genom.api_client
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+ideal\_genom.get\_examples module
+---------------------------------
+
+.. automodule:: ideal_genom.get_examples
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+ideal\_genom.get\_references module
+-----------------------------------
+
+.. automodule:: ideal_genom.get_references
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+ideal\_genom.power\_comp module
+-------------------------------
+
+.. automodule:: ideal_genom.power_comp
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: ideal_genom
+   :members:
+   :undoc-members:
+   :show-inheritance:

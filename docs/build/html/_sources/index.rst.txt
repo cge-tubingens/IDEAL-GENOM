@@ -12,6 +12,7 @@ Welcome to the documentation of `ideal-genom`, a Python library for genome-relat
    :maxdepth: 2
    :caption: Package Modules
 
+   ideal_genom
    ideal_genom.gwas
    ideal_genom.preprocessing
    ideal_genom.visualization

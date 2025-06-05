@@ -8,7 +8,7 @@
 
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../../src'))  # adjust path if needed
+sys.path.insert(0, os.path.abspath('../..')) # adjust path if needed
 
 
 project = 'ideal-genom'
@@ -19,15 +19,7 @@ release = '0.1.0'
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = [
-"sphinx.ext.autodoc",
-"sphinx.ext.napoleon", # for NumPy/Google-style docstrings\
-"sphinx_autodoc_typehints",
-"myst_parser", # if you use Markdown\
-]
-
-autodoc_typehints = "description"
-
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.napoleon']
 
 templates_path = ['_templates']
 exclude_patterns = []

@@ -1,0 +1,7 @@
+ideal_genom
+===========
+
+.. toctree::
+   :maxdepth: 4
+
+   ideal_genom

@@ -1,0 +1,251 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ideal_genom.power_comp &mdash; ideal-genom 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="ideal_genom.Helpers" href="Helpers.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            ideal-genom
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Standalone Modules</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="annotations.html">ideal_genom.annotations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_client.html">ideal_genom.api_client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="get_examples.html">ideal_genom.get_examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="get_references.html">ideal_genom.get_references</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Helpers.html">ideal_genom.Helpers</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">ideal_genom.power_comp</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#ideal_genom.power_comp.calculate_power_binary"><code class="docutils literal notranslate"><span class="pre">calculate_power_binary()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ideal_genom.power_comp.calculate_power_quantitative"><code class="docutils literal notranslate"><span class="pre">calculate_power_quantitative()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ideal_genom.power_comp.get_beta_binary"><code class="docutils literal notranslate"><span class="pre">get_beta_binary()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ideal_genom.power_comp.get_beta_quantitative"><code class="docutils literal notranslate"><span class="pre">get_beta_quantitative()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ideal-genom</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">ideal_genom.power_comp</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/power_comp.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-ideal_genom.power_comp">
+<span id="ideal-genom-power-comp"></span><h1>ideal_genom.power_comp<a class="headerlink" href="#module-ideal_genom.power_comp" title="Link to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="ideal_genom.power_comp.calculate_power_binary">
+<span class="sig-prename descclassname"><span class="pre">ideal_genom.power_comp.</span></span><span class="sig-name descname"><span class="pre">calculate_power_binary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">daf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prevalence</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncase</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncontrol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sig_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5e-08</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">or_to_rr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#ideal_genom.power_comp.calculate_power_binary" title="Link to this definition"></a></dt>
+<dd><p>Calculate the statistical power of genetic association tests in a case-control study with binary traits.
+This function computes the power to detect genetic associations in a case-control study design,
+assuming an additive genetic model. It accounts for allele frequencies, effect sizes,
+disease prevalence, and sample sizes to determine the probability of detecting true associations
+at a specified significance level.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>beta</strong> (<em>np.ndarray</em>) – Log odds ratios representing effect sizes of variants.</p></li>
+<li><p><strong>daf</strong> (<em>np.ndarray</em>) – Disease allele frequencies.</p></li>
+<li><p><strong>prevalence</strong> (<em>float</em>) – Disease prevalence in the population.</p></li>
+<li><p><strong>ncase</strong> (<em>int</em>) – Number of cases in the study.</p></li>
+<li><p><strong>ncontrol</strong> (<em>int</em>) – Number of controls in the study.</p></li>
+<li><p><strong>sig_level</strong> (<em>float</em><em>, </em><em>optional</em>) – Significance level threshold for declaring associations (default: 5e-8, standard for GWAS).</p></li>
+<li><p><strong>or_to_rr</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, converts odds ratios to risk ratios using the disease prevalence (default: False).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Array of statistical power values for each variant, representing the probability
+of detecting a true association at the specified significance level.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The function implements power calculation for an additive genetic model using normal
+approximation. When or_to_rr is True, it converts odds ratio to relative risk using
+the formula from Zhang and Yu (JAMA, 1998).</p>
+<p class="rubric">References</p>
+<p>Zhang J, Yu KF. What’s the Relative Risk? JAMA. 1998;280(19):1690-1691.
+doi:10.1001/jama.280.19.1690</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ideal_genom.power_comp.calculate_power_quantitative">
+<span class="sig-prename descclassname"><span class="pre">ideal_genom.power_comp.</span></span><span class="sig-name descname"><span class="pre">calculate_power_quantitative</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eaf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sig_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5e-08</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#ideal_genom.power_comp.calculate_power_quantitative" title="Link to this definition"></a></dt>
+<dd><p>Calculate statistical power for detecting genetic associations in quantitative traits.
+This function computes the statistical power for quantitative trait association tests
+based on effect sizes (beta), effect allele frequencies (EAF), sample size,
+significance level, and trait variance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>beta</strong> (<em>numpy.ndarray</em>) – Array of effect sizes (regression coefficients)</p></li>
+<li><p><strong>eaf</strong> (<em>numpy.ndarray</em>) – Array of effect allele frequencies (between 0 and 1)</p></li>
+<li><p><strong>sample_size</strong> (<em>int</em>) – Number of individuals in the study</p></li>
+<li><p><strong>sig_level</strong> (<em>float</em><em>, </em><em>optional</em>) – Significance threshold (default: 5e-8, typical for GWAS)</p></li>
+<li><p><strong>variance</strong> (<em>float</em><em>, </em><em>optional</em>) – Phenotypic variance of the trait (default: 1)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Array of statistical power values corresponding to each variant</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The calculation uses the non-central chi-square distribution to determine
+the probability of detecting true associations at the specified significance level.
+Power is calculated as 1 minus the cumulative distribution function of the
+non-central chi-square distribution with 1 degree of freedom.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ideal_genom.power_comp.get_beta_binary">
+<span class="sig-prename descclassname"><span class="pre">ideal_genom.power_comp.</span></span><span class="sig-name descname"><span class="pre">get_beta_binary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prevalence</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncase</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncontrol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eaf_range</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(0.0001,</span> <span class="pre">0.5)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta_range</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(0.0001,</span> <span class="pre">5)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sig_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5e-08</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_matrix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">500</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">or_to_rr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ideal_genom.power_comp.get_beta_binary" title="Link to this definition"></a></dt>
+<dd><p>Find combinations of effect allele frequencies (EAF) and effect sizes (beta) that achieve
+a specified statistical power for binary traits in genetic association studies.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prevalence</strong> (<em>float</em>) – Disease prevalence in the population.</p></li>
+<li><p><strong>ncase</strong> (<em>int</em>) – Number of cases in the study.</p></li>
+<li><p><strong>ncontrol</strong> (<em>int</em>) – Number of controls in the study.</p></li>
+<li><p><strong>eaf_range</strong> (<em>tuple</em><em>, </em><em>optional</em>) – Range of effect allele frequencies to consider (min, max). Default is (0.0001, 0.5).</p></li>
+<li><p><strong>beta_range</strong> (<em>tuple</em><em>, </em><em>optional</em>) – Range of effect sizes to consider (min, max). Default is (0.0001, 5).</p></li>
+<li><p><strong>t</strong> (<em>float</em><em>, </em><em>optional</em>) – Target power threshold. Combinations with power &gt;= t will be returned. Default is 0.</p></li>
+<li><p><strong>sig_level</strong> (<em>float</em><em>, </em><em>optional</em>) – Significance level (alpha) for power calculation. Default is 5e-8 (genome-wide significance).</p></li>
+<li><p><strong>n_matrix</strong> (<em>int</em><em>, </em><em>optional</em>) – Resolution of the EAF-beta matrix. Default is 500.</p></li>
+<li><p><strong>or_to_rr</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, converts odds ratios to relative risks using the provided prevalence.
+If False, approximates genetic relative risk (GRR) using odds ratios. Default is False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame containing EAF and beta combinations that achieve the target power.
+The DataFrame has columns ‘eaf’ and ‘beta’ and is sorted by ‘eaf’ in descending order.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>When prevalence is less than 10%, GRR is very similar to OR if or_to_rr is set to False.
+The function uses a greedy algorithm to find EAF-beta combinations with power &gt;= t.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ideal_genom.power_comp.get_beta_quantitative">
+<span class="sig-prename descclassname"><span class="pre">ideal_genom.power_comp.</span></span><span class="sig-name descname"><span class="pre">get_beta_quantitative</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eaf_range</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(1e-05,</span> <span class="pre">0.5)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta_range</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(1e-05,</span> <span class="pre">5)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sig_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5e-08</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_matrix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">500</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#ideal_genom.power_comp.get_beta_quantitative" title="Link to this definition"></a></dt>
+<dd><p>Calculate beta values for quantitative traits based on power threshold.</p>
+<section id="parameters">
+<h2>Parameters:<a class="headerlink" href="#parameters" title="Link to this heading"></a></h2>
+<dl class="simple">
+<dt>eaf_range<span class="classifier">Tuple[float, float]</span></dt><dd><p>Range of effect allele frequencies (min, max)</p>
+</dd>
+<dt>beta_range<span class="classifier">Tuple[float, float]</span></dt><dd><p>Range of beta values (min, max)</p>
+</dd>
+<dt>t<span class="classifier">float</span></dt><dd><p>Power threshold (0 to 1)</p>
+</dd>
+<dt>sample_size<span class="classifier">int</span></dt><dd><p>Sample size</p>
+</dd>
+<dt>sig_level<span class="classifier">float</span></dt><dd><p>Significance level</p>
+</dd>
+<dt>variance<span class="classifier">float</span></dt><dd><p>Variance</p>
+</dd>
+<dt>n_matrix<span class="classifier">int</span></dt><dd><p>Size of the grid for calculations</p>
+</dd>
+</dl>
+</section>
+<section id="returns">
+<h2>Returns:<a class="headerlink" href="#returns" title="Link to this heading"></a></h2>
+<dl class="simple">
+<dt>pd.DataFrame</dt><dd><p>DataFrame containing eaf and beta values meeting the threshold</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Helpers.html" class="btn btn-neutral float-left" title="ideal_genom.Helpers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Luis Giraldo Gonzalez Ricardo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
