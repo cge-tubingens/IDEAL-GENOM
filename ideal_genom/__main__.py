@@ -172,8 +172,7 @@ def analysis_pipe(params_dict: dict, data_dict: dict, steps_dict: dict)->None:
 
 def execute_main()->str:
 
-    args = arg_parser()
-    args_dict = vars(args)
+    args_dict = arg_parser()
 
     params_path = args_dict['path_params']
     data_path   = args_dict['file_folders']
