@@ -537,6 +537,8 @@ class RefSeqFetcher(ReferenceDataFetcher):
             version_name = "GRCh38"
         elif self.build == "37":
             version_name = "GRCh37"
+        else:
+            raise ValueError("Unsupported build version. Only 'GRCh37' and 'GRCh38' are supported.")
 
         # Find all folder names matching 'release-*'
         latest_release = ''
