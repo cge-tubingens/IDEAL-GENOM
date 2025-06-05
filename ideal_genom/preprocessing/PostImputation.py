@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Callable, List, Dict, Any, Optional
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from tqdm import tqdm
+from typing import Optional
 
 from ideal_genom.get_references import AssemblyReferenceFetcher
 
@@ -230,7 +231,11 @@ class UnzipVCF(ParallelTaskRunner):
     - This class is designed for post-imputation processing in genetic data pipelines
     """
 
-    def execute_task(self, password: Optional[str] = None) -> None:
+    def __init__(self, input_path: Path, output_path: Path, max_workers: Optional[int] = None, password: Optional[str] = None) -> None:
+        super().__init__(input_path, output_path, max_workers)
+        self.password = password
+    
+    def execute_task(self) -> None:
         """
         Execute the post-imputation unzipping task on VCF files.
 
@@ -250,7 +255,7 @@ class UnzipVCF(ParallelTaskRunner):
             This method doesn't return any value.
         """
 
-        task_args ={'password': password}
+        task_args ={'password': self.password}
 
         self._file_collector("*.zip")
 
@@ -346,7 +351,12 @@ class FilterVariants(ParallelTaskRunner):
     directory with the specified prefix added to their original filenames.
     """
 
-    def execute_task(self, r2_threshold: float, output_prefix: str = 'filtered-') -> None:
+    def __init__(self, input_path: Path, output_path: Path, max_workers: Optional[int] = None, r2_threshold: float = 0.3, output_prefix: str = 'filtered-') -> None:
+        super().__init__(input_path, output_path, max_workers)
+        self.r2_threshold = r2_threshold
+        self.output_prefix = output_prefix
+    
+    def execute_task(self) -> None:
         """
         Execute the task of filtering variants based on an R² threshold.
 
@@ -375,11 +385,11 @@ class FilterVariants(ParallelTaskRunner):
         The method uses internal methods _file_collector and _run_task to perform the filtering operation.
         """
 
-        task_args = {'r2_threshold': r2_threshold, 'output_prefix': output_prefix}
-        if not isinstance(r2_threshold, float):
-            raise TypeError(f"r2_threshold should be of type float, got {type(r2_threshold)}")
-        if not isinstance(output_prefix, str):
-            raise TypeError(f"prefix should be of type str, got {type(output_prefix)}")
+        task_args = {'r2_threshold': self.r2_threshold, 'output_prefix': self.output_prefix}
+        if not isinstance(self.r2_threshold, float):
+            raise TypeError(f"r2_threshold should be of type float, got {type(self.r2_threshold)}")
+        if not isinstance(self.output_prefix, str):
+            raise TypeError(f"prefix should be of type str, got {type(self.output_prefix)}")
 
         self._file_collector('*dose.vcf.gz')
 
@@ -476,7 +486,12 @@ class NormalizeVCF(ParallelTaskRunner):
         Normalize a single VCF file using bcftools norm with the -m -any option.
     """
 
-    def execute_task(self, output_prefix: str = 'uncompressed-') -> None:
+    def __init__(self, input_path: Path, output_path: Path, max_workers: Optional[int] = None, output_prefix: str = 'uncompressed-') -> None:
+        super().__init__(input_path, output_path, max_workers)
+        self.output_prefix = output_prefix
+
+
+    def execute_task(self) -> None:
         """
         Execute the post-imputation normalization task on VCF files.
 
@@ -497,9 +512,9 @@ class NormalizeVCF(ParallelTaskRunner):
             None
         """
 
-        task_args = {'output_prefix': output_prefix}
-        if not isinstance(output_prefix, str):
-            raise TypeError(f"prefix should be of type str, got {type(output_prefix)}")
+        task_args = {'output_prefix': self.output_prefix}
+        if not isinstance(self.output_prefix, str):
+            raise TypeError(f"prefix should be of type str, got {type(self.output_prefix)}")
 
         self._file_collector('filtered-*dose.vcf.gz')
 
@@ -589,7 +604,13 @@ class ReferenceNormalizeVCF(ParallelTaskRunner):
         normalizer.execute_task(build='38', output_prefix='normalized-')
     """
 
-    def execute_task(self, build: str = '38', output_prefix: str = 'normalized-', reference_file: Optional[Path] = None) -> None:
+    def __init__(self, input_path: Path, output_path: Path, max_workers: Optional[int] = None, build: str = '38', output_prefix: str = 'normalized-', reference_file: Optional[Path] = None) -> None:
+        super().__init__(input_path, output_path, max_workers)
+        self.build = build
+        self.output_prefix = output_prefix
+        self.reference_file = reference_file
+
+    def execute_task(self) -> None:
         """
         Execute the post-imputation normalization task with reference genome.
         This method normalizes VCF files using a reference genome. If no reference file is provided,
@@ -615,12 +636,12 @@ class ReferenceNormalizeVCF(ParallelTaskRunner):
             against the reference genome. The downloaded reference genomes come from the 1000 Genomes Project.
         """
 
-        task_args = {'output_prefix': output_prefix}
-        if not isinstance(output_prefix, str):
-            raise TypeError(f"prefix should be of type str, got {type(output_prefix)}")
         
-        if not reference_file or not reference_file.exists():
-            if build == '37':
+        if not isinstance(self.output_prefix, str):
+            raise TypeError(f"prefix should be of type str, got {type(self.output_prefix)}")
+        
+        if not self.reference_file or not self.reference_file.exists():
+            if self.build == '37':
 
                 assemb37 = AssemblyReferenceFetcher(
                         base_url='https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/reference/phase2_reference_assembly_sequence/',
@@ -630,9 +651,9 @@ class ReferenceNormalizeVCF(ParallelTaskRunner):
                 assemb37.get_reference_url()
                 assemb37.download_reference_file()
                 assemb37.unzip_reference_file()
-                reference_file = assemb37.file_path
+                self.reference_file = assemb37.file_path
 
-            elif build == '38':
+            elif self.build == '38':
 
                 assemb38 = AssemblyReferenceFetcher(
                         base_url='https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/reference/GRCh38_reference_genome/',
@@ -642,10 +663,11 @@ class ReferenceNormalizeVCF(ParallelTaskRunner):
                 assemb38.get_reference_url()
                 assemb38.download_reference_file()
                 assemb38.unzip_reference_file()
-                reference_file = assemb38.file_path
+                self.reference_file = assemb38.file_path
 
         self._file_collector('uncompressed-*dose.vcf.gz')
-        self.reference_file = reference_file
+
+        task_args = {'output_prefix': self.output_prefix}
 
         self._run_task(
             self.normalize_with_reference,
@@ -733,7 +755,11 @@ class IndexVCF(ParallelTaskRunner):
             subprocess.CalledProcessError: If the bcftools indexing command fails.
     """
 
-    def execute_task(self, pattern: str) -> None:
+    def __init__(self, input_path: Path, output_path: Path, max_workers: Optional[int] = None, pattern: str = 'normalized-*dose.vcf.gz') -> None:
+        super().__init__(input_path, output_path, max_workers)
+        self.pattern = pattern
+
+    def execute_task(self) -> None:
         """
         Execute the task of indexing VCF files.
 
@@ -751,7 +777,7 @@ class IndexVCF(ParallelTaskRunner):
 
         task_args = dict()
 
-        self._file_collector(pattern)
+        self._file_collector(self.pattern)
         self._run_task(
             self.index_vcf,
             task_args=task_args,
@@ -819,9 +845,12 @@ class AnnotateVCF(ParallelTaskRunner):
         Annotate a single VCF file using bcftools.
     """
 
+    def __init__(self, input_path: Path, output_path: Path, ref_annotation: Path, max_workers: Optional[int] = None, output_prefix: str = 'annotated-') -> None:
+        super().__init__(input_path, output_path, max_workers)
+        self.ref_annotation = ref_annotation
+        self.output_prefix = output_prefix
 
-
-    def execute_task(self, ref_annotation: Path, output_prefix: str = 'annotated-') -> None:
+    def execute_task(self) -> None:
         """
         Annotates normalized VCF files using a reference annotation file.
         This method collects all normalized VCF files matching the pattern 'normalized-*dose.vcf.gz' 
@@ -845,13 +874,13 @@ class AnnotateVCF(ParallelTaskRunner):
         None
         """
 
-        task_args = {'ref_annotation': ref_annotation, 'output_prefix': output_prefix}
-        if not isinstance(ref_annotation, Path):
-            raise TypeError(f"ref_annotation should be of type Path, got {type(ref_annotation)}")
-        if not isinstance(output_prefix, str):
-            raise TypeError(f"prefix should be of type str, got {type(output_prefix)}")
-        if not ref_annotation.exists():
-            raise FileNotFoundError(f"Reference annotation file {ref_annotation} does not exist.")
+        task_args = {'ref_annotation': self.ref_annotation, 'output_prefix': self.output_prefix}
+        if not isinstance(self.ref_annotation, Path):
+            raise TypeError(f"ref_annotation should be of type Path, got {type(self.ref_annotation)}")
+        if not isinstance(self.output_prefix, str):
+            raise TypeError(f"prefix should be of type str, got {type(self.output_prefix)}")
+        if not self.ref_annotation.exists():
+            raise FileNotFoundError(f"Reference annotation file {self.ref_annotation} does not exist.")
         
         self._file_collector('normalized-*dose.vcf.gz')
         
@@ -1039,10 +1068,11 @@ class ProcessVCF:
         
         unzipper = UnzipVCF(
             input_path = self.input_path,
-            output_path=self.process_vcf
+            output_path=self.process_vcf,
+            password   =password
         )
 
-        unzipper.execute_task(password=password)
+        unzipper.execute_task()
 
         return
 
@@ -1066,10 +1096,11 @@ class ProcessVCF:
         """
 
         filter = FilterVariants(
-            input_path = self.process_vcf,
-            output_path=self.process_vcf
+            input_path  =self.process_vcf,
+            output_path =self.process_vcf,
+            r2_threshold=r2_threshold
         )
-        filter.execute_task(r2_threshold=r2_threshold)
+        filter.execute_task()
 
         return
     
@@ -1113,9 +1144,11 @@ class ProcessVCF:
         
         reference_normalizer = ReferenceNormalizeVCF(
             input_path = self.process_vcf,
-            output_path=self.process_vcf
+            output_path=self.process_vcf,
+            build=build,
+            reference_file=reference_file
         )
-        reference_normalizer.execute_task(build=build, reference_file=reference_file)
+        reference_normalizer.execute_task()
 
         return
     
@@ -1138,9 +1171,10 @@ class ProcessVCF:
 
         indexer = IndexVCF(
             input_path = self.process_vcf,
-            output_path=self.process_vcf
+            output_path=self.process_vcf,
+            pattern=pattern
         )
-        indexer.execute_task(pattern=pattern)
+        indexer.execute_task()
 
         return
     
@@ -1164,9 +1198,11 @@ class ProcessVCF:
         
         annotator = AnnotateVCF(
             input_path = self.process_vcf,
-            output_path=self.process_vcf
+            output_path=self.process_vcf,
+            ref_annotation=ref_annotation,
+            output_prefix=output_prefix
         )
-        annotator.execute_task(ref_annotation=ref_annotation, output_prefix=output_prefix)
+        annotator.execute_task()
 
         return
     
@@ -1438,3 +1474,4 @@ class GetPLINK:
             print(f"Error running PLINK2: {e}")
 
         pass
+    
