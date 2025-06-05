@@ -17,8 +17,8 @@ def get_closest_gene(x, data: Genome, chrom: str = "CHR", pos: str = "POS", max_
     """
     Find the closest gene to a given position in the genome.
     
-    Parameters:
-    -----------
+    Parameters
+    ----------
     x : 
         SNP information.
     data (pyensembl.Genome): 
@@ -36,7 +36,7 @@ def get_closest_gene(x, data: Genome, chrom: str = "CHR", pos: str = "POS", max_
     build (str, optional): 
         The genome build version, used when source is "refseq". Default is "38".
     
-    Returns:
+    Returns
     -------
     tuple: 
         A tuple containing the distance to the closest gene and the gene name(s). If no gene is found, returns the distance and "intergenic".
