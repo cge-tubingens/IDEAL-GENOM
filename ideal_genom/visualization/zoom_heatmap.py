@@ -1,6 +1,7 @@
 import os
 import time
 import matplotlib
+from matplotlib import cm
 import logging
 
 import matplotlib.pyplot as plt
@@ -14,7 +15,7 @@ from ideal_genom.annotations import annotate_snp, gtf_to_all_genes
 from ideal_genom.get_references import Ensembl37Fetcher, Ensembl38Fetcher
 
 from pyensembl import Genome
-from typing import Optional
+from typing import Optional, Union
 
 from itertools import cycle
 
@@ -26,7 +27,7 @@ from ideal_genom.Helpers import shell_do
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s", force=True)
 logger = logging.getLogger(__name__)
 
-def filter_sumstats(data_df: pd.DataFrame, lead_snp: str, snp_col: str, p_col: str, pos_col: str, chr_col: str, pval_threshold: float = 5e-8, radius: float = 10e6) -> pd.DataFrame:
+def filter_sumstats(data_df: pd.DataFrame, lead_snp: str, snp_col: str, p_col: str, pos_col: str, chr_col: str, pval_threshold: float = 5e-8, radius: Union[float, int] = 10e6) -> pd.DataFrame:
     """
     Filter GWAS summary statistics based on a lead SNP, p-value threshold and genomic region.
     This function filters a DataFrame containing GWAS summary statistics to return variants
@@ -446,7 +447,62 @@ def get_ld_matrix(data_df: pd.DataFrame, snp_col: str, pos_col: str, bfile_folde
         
     return out_dict
 
-def get_zoomed_data(data_df:pd.DataFrame, lead_snp:str, snp_col:str, p_col:str, pos_col:str, chr_col:str, output_folder:str,pval_threshold:float=5e-6, radius:int=1e6, build: str='38', anno_source: str='ensembl', gtf_path: str = None, batch_size:int=100, request_persec:int=15)->pd.DataFrame:
+def get_zoomed_data(data_df: pd.DataFrame, lead_snp: str, snp_col: str, p_col: str, pos_col: str, chr_col: str, output_folder: str, pval_threshold: float = 5e-6, radius: Union[float, int] = 1e6, build: str = '38', anno_source: str = 'ensembl', gtf_path: Optional[str] = None, batch_size: int = 100, request_persec: int = 15) -> pd.DataFrame:
+    """
+    Filter and annotate SNP data around a lead SNP within a specified radius.
+    This function filters significant SNPs in a region around a lead SNP and annotates them with gene
+    names and functional consequences. The position values are scaled to Megabase pairs (Mbp).
+    
+    Parameters
+    ----------
+    data_df : pd.DataFrame
+        Input DataFrame containing SNP data
+    lead_snp : str
+        Identifier of the lead SNP to center the region around
+    snp_col : str
+        Name of the column containing SNP identifiers
+    p_col : str
+        Name of the column containing p-values
+    pos_col : str
+        Name of the column containing position information
+    chr_col : str
+        Name of the column containing chromosome information
+    output_folder : str
+        Path to the output folder (must exist)
+    pval_threshold : float, optional
+        P-value threshold for significance filtering (default: 5e-6)
+    radius : Union[float, int], optional
+        Radius around the lead SNP in base pairs (default: 1e6)
+    build : str, optional
+        Genome build version ('38' or '37') (default: '38')
+    anno_source : str, optional
+        Source for annotations ('ensembl' or other supported sources) (default: 'ensembl')
+    gtf_path : str, optional
+        Path to GTF file for annotations (default: None)
+    batch_size : int, optional
+        Number of SNPs to process in each batch (default: 100)
+    request_persec : int, optional
+        Number of API requests per second allowed (default: 15)
+    
+    Returns
+    -------
+    pd.DataFrame
+        Filtered and annotated DataFrame with added Mbp column and removed duplicates
+    
+    Raises
+    ------
+    TypeError
+        If input parameters are not of the expected types
+    FileNotFoundError
+        If output_folder does not exist
+    ValueError
+        If no significant SNPs are found in the specified region
+    
+    Notes
+    -----
+    The function removes duplicate SNPs, keeping the first occurrence only.
+    Position values are converted to Megabase pairs in the output DataFrame.
+    """
 
     if not isinstance(data_df, pd.DataFrame):
         raise TypeError("data_df must be a pandas DataFrame.")
@@ -462,8 +518,9 @@ def get_zoomed_data(data_df:pd.DataFrame, lead_snp:str, snp_col:str, p_col:str, 
         raise TypeError("chr_col must be a string.")
     if not isinstance(pval_threshold, float):
         raise TypeError("pval_threshold must be a float.")
-    if not isinstance(radius, int):
-        raise TypeError("radius must be an integer.")
+    if not isinstance(radius, float) and not isinstance(radius, int):
+        raise TypeError("radius must be a float or an integer.")
+        
     
     if os.path.isdir(output_folder) is not True:
         raise FileNotFoundError(f"Folder {output_folder} not found.")
@@ -510,7 +567,63 @@ def get_zoomed_data(data_df:pd.DataFrame, lead_snp:str, snp_col:str, p_col:str, 
 
     return annotated
 
-def draw_zoomed_heatmap(data_df:pd.DataFrame, lead_snp:str, snp_col:str, p_col:str, pos_col:str, chr_col:str, output_folder:str, pval_threshold:float=5e-6, radius:int=1e6, build: str ='38', gtf_path:str=None, anno_source: str = "ensembl", batch_size:int=100, bfile_folder:str=None, bfile_name:str=None, effect_dict:dict={}, extension:str='jpeg', request_persec:int=15)->None:
+def draw_zoomed_heatmap(data_df: pd.DataFrame, lead_snp: str, snp_col: str, p_col: str, pos_col: str, chr_col: str, output_folder: str, bfile_folder: str, bfile_name: str, pval_threshold: float = 5e-6, radius: Union[int, float] = 1e6, build: str ='38', gtf_path: Optional[str] = None, anno_source: str = "ensembl", batch_size: int = 100, effect_dict: dict = dict(), extension: str = 'pdf', request_persec: int = 15) -> bool:
+    """
+    Creates a zoomed heatmap visualization around a lead SNP showing LD patterns and gene annotations.
+    This function generates a three-panel plot:
+    1. Association plot with SNPs colored by functional consequences
+    2. Gene track showing gene locations and orientations
+    3. LD heatmap showing correlation patterns between SNPs
+    
+    Parameters
+    ----------
+    data_df : pd.DataFrame
+        Input DataFrame containing GWAS summary statistics
+    lead_snp : str
+        Identifier of the lead SNP to center the plot around
+    snp_col : str
+        Column name containing SNP identifiers
+    p_col : str 
+        Column name containing p-values
+    pos_col : str
+        Column name containing genomic positions
+    chr_col : str
+        Column name containing chromosome numbers
+    output_folder : str
+        Path to save output files
+    bfile_folder : str
+        Folder containing PLINK binary files
+    bfile_name : str
+        Base name of PLINK binary files (without extensions)
+    pval_threshold : float, optional
+        P-value threshold for significance, default 5e-6
+    radius : Union[int, float], optional
+        Distance in base pairs to plot around lead SNP, default 1e6
+    build : str, optional
+        Genome build version, default '38'
+    gtf_path : str, optional
+        Path to custom GTF file, default None
+    anno_source : str, optional
+        Source for gene annotations ('ensembl' or 'refseq'), default 'ensembl'
+    batch_size : int, optional
+        Batch size for API requests, default 100
+    effect_dict : dict, optional
+        Dictionary mapping functional effects to display names, default empty dict
+    extension : str, optional
+        File extension for output plot, default 'pdf'
+    request_persec : int, optional
+        Number of API requests per second allowed, default 15
+    
+    Returns
+    -------
+    bool
+        True if plot was generated successfully
+    
+    Notes
+    -----
+    Required input DataFrame must contain columns for SNP IDs, p-values, positions and chromosomes.
+    PLINK binary files (.bed, .bim, .fam) must exist in specified folder.
+    """
 
     annotated = get_zoomed_data(
         data_df       =data_df,
@@ -536,9 +649,9 @@ def draw_zoomed_heatmap(data_df:pd.DataFrame, lead_snp:str, snp_col:str, p_col:s
 
     region = (annotated['Mbp'].min() - 0.05, annotated['Mbp'].max() + 0.05)
 
-    print('\n')
-    print(effects)
-    print('\n')
+    logger.info(f" - Region for zoom plot: {region}")
+    logger.info(f" - Lead SNP: {lead_snp}")
+    logger.info(f" - Number of SNPs in the region: {annotated.shape[0]}")
 
     genes = get_gene_information(
         genes   =annotated['GENENAME'].unique().tolist(),
@@ -625,6 +738,7 @@ def draw_zoomed_heatmap(data_df:pd.DataFrame, lead_snp:str, snp_col:str, p_col:s
     main = annotated[(annotated['Hue'] != 'other') & (annotated['Hue'] != 'Lead Variant')]
 
     annotated_lead = False
+    lead = pd.DataFrame()
     
     for k, effect in enumerate(main['Hue'].unique()):
         subset = main[main['Hue'] == effect]
@@ -637,6 +751,9 @@ def draw_zoomed_heatmap(data_df:pd.DataFrame, lead_snp:str, snp_col:str, p_col:s
     if annotated_lead is False:
         lead = annotated[annotated[snp_col] == lead_snp]
         ax1.scatter(lead['Mbp'], lead['log10p'], s=30, color='red', label='Lead SNP'+f'{lead["Functional_Consequence"].values[0]}', marker='d')
+
+    if lead.empty:
+        raise ValueError(f"Lead SNP {lead_snp} not found in the data.")
    
     chr = lead[chr_col].values[0]
 
@@ -662,13 +779,13 @@ def draw_zoomed_heatmap(data_df:pd.DataFrame, lead_snp:str, snp_col:str, p_col:s
             color = 'black'
 
         if strand == '+':
-            arrow = FancyArrow(start, y, length, 0, width=0.001, head_width=0.03, head_length=0.01, color=color)
+            arrow = FancyArrow(start, y, length, 0, width=0.001, head_width=0.03, head_length=0.01, color=color) # type: ignore
             ax2.add_patch(arrow)
-            ax2.text(start + 0.5 * length, y + 0.05, symbol, ha='center', size=9)
+            ax2.text(start + 0.5 * length, y + 0.05, symbol, ha='center', size=9) # type: ignore
         elif strand == '-':
-            arrow_neg = FancyArrow(end, y, -length, 0, width=0.001, head_width=0.03, head_length=0.01, color=color)
+            arrow_neg = FancyArrow(end, y, -length, 0, width=0.001, head_width=0.03, head_length=0.01, color=color) # type: ignore
             ax2.add_patch(arrow_neg)
-            ax2.text(start + 0.5 * length, y + 0.05, symbol, ha='center', size=9)
+            ax2.text(start + 0.5 * length, y + 0.05, symbol, ha='center', size=9) # type: ignore
 
     ax2.set_ylim(0, 1.2)
     ax2.set_xlim(region)
@@ -676,7 +793,7 @@ def draw_zoomed_heatmap(data_df:pd.DataFrame, lead_snp:str, snp_col:str, p_col:s
 
     base = ax3.transData # to rotate triangle
     rotation = transforms.Affine2D().rotate_deg(180+90+45)
-    cmap=matplotlib.cm.Reds
+    cmap = cm.get_cmap('Reds')
     im=ax3.imshow(ldm, cmap=cmap, transform=rotation+base,aspect='auto')
     ax3.set_xlim([2, 1.41*N])
     ax3.set_ylim([1*N, 2])
