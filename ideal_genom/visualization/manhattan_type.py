@@ -19,6 +19,7 @@ import textalloc as ta
 
 from matplotlib.axes import Axes
 from matplotlib.backend_bases import RendererBase
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from typing import Optional
 
 from ideal_genom.annotations import annotate_snp
@@ -505,8 +506,6 @@ def manhattan_type_annotate(axes: Axes, data: pd.DataFrame, variants_toanno: pd.
             priority_strategy=42,
             plot_kwargs=dict(linestyle=':')
         )
-
-    text_objs = allocate[2]
         
     return axes
 
@@ -543,8 +542,8 @@ def miami_draw_anno_lines(renderer:RendererBase, axes:Axes, texts:list, variants
 
         anno = text_obj.get_text()
 
-        data_x = variants_toanno.loc[variants_toanno['GENENAME'] == anno, 'rel_pos'].values[0]
-        data_y = variants_toanno.loc[variants_toanno['GENENAME'] == anno, 'log10p'].values[0]
+        data_x = variants_toanno.loc[variants_toanno['GENENAME'] == anno, 'rel_pos'].values[0]  # type: ignore
+        data_y = variants_toanno.loc[variants_toanno['GENENAME'] == anno, 'log10p'].values[0] # type: ignore
 
         closest_point = data_coords[0]
         for point in data_coords:
@@ -561,7 +560,7 @@ def miami_draw_anno_lines(renderer:RendererBase, axes:Axes, texts:list, variants
 
     return axes
 
-def miami_draw(df_top: pd.DataFrame, df_bottom: pd.DataFrame, snp_col: str, chr_col: str, pos_col: str, p_col: str, plots_dir: str, top_highlights: list = [], top_annotations: pd.DataFrame=pd.DataFrame(), bottom_highlights: list = [], bottom_annotations: pd.DataFrame = pd.DataFrame(), top_gen_col: str = None, bottom_gen_col: str = None, gtf_path: str = None, source: str = "ensemble", build: str = '38', save_name: str = 'miami_plot.jpeg', legend_top: str = 'top GWAS', legend_bottom: str = 'bottom GWAS', dpi: int = 500)->bool:
+def miami_draw(df_top: pd.DataFrame, df_bottom: pd.DataFrame, snp_col: str, chr_col: str, pos_col: str, p_col: str, plots_dir: str, top_highlights: list = [], top_annotations: pd.DataFrame=pd.DataFrame(), bottom_highlights: list = [], bottom_annotations: pd.DataFrame = pd.DataFrame(), top_gen_col: Optional[str] = None, bottom_gen_col: Optional[str] = None, gtf_path: Optional[str] = None, source: str = "ensemble", build: str = '38', save_name: str = 'miami_plot.jpeg', legend_top: str = 'top GWAS', legend_bottom: str = 'bottom GWAS', dpi: int = 400) -> bool:
     
     """
     Draws a Miami plot (a combination of two Manhattan plots) for visualizing GWAS results.
@@ -719,6 +718,10 @@ def miami_draw(df_top: pd.DataFrame, df_bottom: pd.DataFrame, snp_col: str, chr_
     top = set(top_highlights)
     bottom = set(bottom_highlights)
 
+    both = []
+    top_only = []
+    bottom_only = []
+
     if len(top_highlights)>0 or len(bottom_highlights)>0:
 
         both = list(top.intersection(bottom))
@@ -770,9 +773,12 @@ def miami_draw(df_top: pd.DataFrame, df_bottom: pd.DataFrame, snp_col: str, chr_
     # adjust layout
     plt.tight_layout()
 
-    # render and draw the figure without showing it 
-    r = fig.canvas.get_renderer()
+    # render and draw the figure without showing it
+    canvas = FigureCanvas(fig)
+    fig.set_canvas(canvas)
+    
     fig.canvas.draw()
+    r = canvas.get_renderer()
 
     if top_annotations.shape[0]>0:
         
@@ -796,11 +802,11 @@ def miami_draw(df_top: pd.DataFrame, df_bottom: pd.DataFrame, snp_col: str, chr_
                     pos    =pos_col,
                     build  =build,
                     source =source,
-                    gtf_path=gtf_path
+                    gtf_path=gtf_path # type: ignore
                 ).rename(columns={"GENE":"GENENAME"})
 
         # annotate upper plot
-        ax_upper, texts_upper = manhattan_type_annotate(
+        ax_upper = manhattan_type_annotate(
             axes           =ax_upper, 
             data           =plot_data['upper'], 
             variants_toanno=top_variants_toanno, 
@@ -831,12 +837,12 @@ def miami_draw(df_top: pd.DataFrame, df_bottom: pd.DataFrame, snp_col: str, chr_
                     pos    =pos_col,
                     build  =build,
                     source =source,
-                    gtf_path=gtf_path
+                    gtf_path=gtf_path # type: ignore
                 ).rename(columns={"GENE":"GENENAME"})
 
         
         # annotate lower plot
-        ax_lower, texts_lower = manhattan_type_annotate(
+        ax_lower= manhattan_type_annotate(
             axes           =ax_lower, 
             data           =plot_data['lower'], 
             variants_toanno=bottom_variants_toanno, 
