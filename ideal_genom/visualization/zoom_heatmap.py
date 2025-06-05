@@ -86,7 +86,51 @@ def filter_sumstats(data_df: pd.DataFrame, lead_snp: str, snp_col: str, p_col: s
 
     return df_filtered
 
-def snp_annotations(data_df:pd.DataFrame, snp_col:str, pos_col:str, chr_col:str, build:str='38', anno_source: str = 'ensembl', gtf_path:str=None, batch_size:int=100, request_persec:int=15) -> pd.DataFrame:
+def snp_annotations(data_df: pd.DataFrame, snp_col: str, pos_col: str, chr_col: str, build: str = '38', anno_source: str = 'ensembl', gtf_path: Optional[str] = None, batch_size: int = 100, request_persec: int = 15) -> pd.DataFrame:
+    """
+    Annotate SNPs with gene names and functional consequences using Ensembl databases.
+    This function takes a DataFrame containing SNP information and adds gene name annotations
+    and functional consequence annotations using Ensembl VEP (Variant Effect Predictor) API.
+    
+    Parameters
+    ----------
+    data_df : pd.DataFrame
+        Input DataFrame containing SNP information
+    snp_col : str
+        Name of column containing SNP IDs
+    pos_col : str 
+        Name of column containing genomic positions
+    chr_col : str
+        Name of column containing chromosome numbers
+    build : str, optional
+        Genome build version ('38', '37', or '19'), by default '38'
+    anno_source : str, optional
+        Source for annotations ('ensembl'), by default 'ensembl'
+    gtf_path : str, optional
+        Path to GTF file for annotations, by default None
+    batch_size : int, optional
+        Number of SNPs to process in each API request batch, by default 100
+    request_persec : int, optional
+        Maximum number of API requests per second, by default 15
+    
+    Returns
+    -------
+    pd.DataFrame
+        Input DataFrame augmented with gene name and functional consequence annotations.
+        Added columns:
+        - GENENAME: Gene name from Ensembl
+        - Functional_Consequence: Most severe consequence from VEP
+    
+    Raises
+    ------
+    ValueError
+        If specified genome build version is not supported
+    
+    Notes
+    -----
+    Supports genome builds 19/37 and 38 using different Ensembl REST API endpoints.
+    Implements rate limiting and batch processing for API requests.
+    """
 
     variants_toanno = annotate_snp(
             insumstats=data_df,
@@ -94,7 +138,7 @@ def snp_annotations(data_df:pd.DataFrame, snp_col:str, pos_col:str, chr_col:str,
             pos    =pos_col,
             build  =build,
             source =anno_source,
-            gtf_path=gtf_path
+            gtf_path=gtf_path # type: ignore
         ).rename(columns={"GENE":"GENENAME"})
     
     
@@ -165,6 +209,8 @@ def snp_annotations(data_df:pd.DataFrame, snp_col:str, pos_col:str, chr_col:str,
                 print("Failed to get response.")
 
             time.sleep(5)
+    else:
+        raise ValueError(f"Unsupported build version: {build}. Supported versions are '19', '37', and '38'.")
 
     logger.info(" - Finished annotating SNPs with functional consequences.")
     logger.info(f'df_vep shape: {df_vep.shape}')
@@ -172,7 +218,7 @@ def snp_annotations(data_df:pd.DataFrame, snp_col:str, pos_col:str, chr_col:str,
 
     variants_toanno = variants_toanno.merge(df_vep, on=snp_col, how='left')
     
-    return variants_toanno#.drop(columns=['LOCATION'], inplace=False)
+    return variants_toanno
 
 def get_gene_information(genes:list, gtf_path:str=None, build: str = "38", anno_source: str='ensembl')->pd.DataFrame:
 
