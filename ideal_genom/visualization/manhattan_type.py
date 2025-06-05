@@ -378,7 +378,7 @@ def manhattan_draw(data_df: pd.DataFrame, snp_col: str, chr_col: str, pos_col: s
 
     return True
 
-def miami_process_data(data_top:pd.DataFrame, data_bottom:pd.DataFrame, chr_col:str, pos_col:str, p_col:str)->dict:
+def miami_process_data(data_top: pd.DataFrame, data_bottom: pd.DataFrame, chr_col: str, pos_col: str, p_col: str) -> dict:
     
     """
     Processes Miami plot data by preparing, computing relative positions, and splitting the data.
