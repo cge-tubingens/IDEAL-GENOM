@@ -30,9 +30,9 @@ def analysis_pipe(params_dict: dict, data_dict: dict, steps_dict: dict)->None:
             'unzip_chrom'  : (vcf_processer.execute_unzip, {'password': post_imputation_params['zip_pwd']}),
             'filter_by_R2' : (vcf_processer.execute_filter, {'r2_threshold': post_imputation_params['r2_thres']}),
             'normalize'    : (vcf_processer.execute_normalize, {}),
-            'normalize_ref': (vcf_processer, {'build': post_imputation_params['build'], 'ref_genome': post_imputation_params['ref_genome']}),
+            'normalize_ref': (vcf_processer.execute_reference_normalize, {'build': post_imputation_params['build'], 'ref_genome': post_imputation_params['ref_genome']}),
             'index'        : (vcf_processer.execute_index, {}),
-            'annotate'     : (vcf_processer.execute_annotate, {'annotations_file': post_imputation_params['ref_annotation']}),
+            'annotate'     : (vcf_processer.execute_annotate, {'ref_annotation': Path(post_imputation_params['ref_annotation'])}),
             'concatenate'  : (vcf_processer.execute_concatenate, {'output_name': 'concat-'+data_dict['output_prefix']})
         }
 
