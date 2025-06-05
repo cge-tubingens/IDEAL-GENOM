@@ -19,10 +19,11 @@ import textalloc as ta
 
 from matplotlib.axes import Axes
 from matplotlib.backend_bases import RendererBase
+from typing import Optional
 
 from ideal_genom.annotations import annotate_snp
 
-def compute_relative_pos(data:pd.DataFrame, chr_col:str='CHR', pos_col:str='POS', p_col:str='p')->pd.DataFrame:
+def compute_relative_pos(data: pd.DataFrame, chr_col: str = 'CHR', pos_col: str = 'POS', p_col: str = 'p') -> pd.DataFrame:
     
     """
     Compute the relative position of probes/SNPs across chromosomes and add a -log10(p-value) column.
@@ -74,7 +75,7 @@ def compute_relative_pos(data:pd.DataFrame, chr_col:str='CHR', pos_col:str='POS'
 
     return data
 
-def find_chromosomes_center(data:pd.DataFrame, chr_col:str='CHR', chr_pos_col:str='rel_pos')->pd.DataFrame:
+def find_chromosomes_center(data: pd.DataFrame, chr_col: str = 'CHR', chr_pos_col: str = 'rel_pos') -> pd.DataFrame:
     
     """
     Calculate the center positions of chromosomes in a given DataFrame. This function takes a DataFrame containing chromosome data and calculates the center position for each chromosome based on the specified chromosome column and chromosome position column.
@@ -114,7 +115,7 @@ def find_chromosomes_center(data:pd.DataFrame, chr_col:str='CHR', chr_pos_col:st
 
     return axis_center
 
-def manhattan_process_data(data_df:pd.DataFrame, chr_col:str='CHR', pos_col:str='POS', p_col:str='p')->dict:
+def manhattan_process_data(data_df: pd.DataFrame, chr_col: str = 'CHR', pos_col: str = 'POS', p_col: str = 'p') -> dict:
     
     """
     Processes the input DataFrame to prepare data for a Manhattan plot.
@@ -132,10 +133,10 @@ def manhattan_process_data(data_df:pd.DataFrame, chr_col:str='CHR', pos_col:str=
 
     Returns:
     --------
-        dict: A dictionary containing processed data for the Manhattan plot with the following keys:
-            - 'data' (pd.DataFrame): The processed DataFrame with relative positions and log-transformed p-values.
-            - 'axis' (dict): The center positions of each chromosome for plotting.
-            - 'maxp' (float): The maximum log-transformed p-value.
+    dict: A dictionary containing processed data for the Manhattan plot with the following keys:
+        - 'data' (pd.DataFrame): The processed DataFrame with relative positions and log-transformed p-values.
+        - 'axis' (dict): The center positions of each chromosome for plotting.
+        - 'maxp' (float): The maximum log-transformed p-value.
     """
 
     if not isinstance(data_df, pd.DataFrame):
@@ -166,7 +167,7 @@ def manhattan_process_data(data_df:pd.DataFrame, chr_col:str='CHR', pos_col:str=
 
     return manhattan_data
 
-def manhattan_draw(data_df:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, p_col:str, plot_dir:str, to_highlight:pd.DataFrame=pd.DataFrame(), highlight_hue:str='hue', to_annotate:pd.DataFrame=pd.DataFrame(), gen_col:str=None, build:str='38', anno_source='ensembl', gtf_path:str=None, save_name:str='manhattan_plot.jpeg', genome_line: float = 5e-8, suggestive_line: str = 1e-5, yaxis_margin: float = 10, dpi: int = 500)->bool:
+def manhattan_draw(data_df: pd.DataFrame, snp_col: str, chr_col: str, pos_col: str, p_col: str, plot_dir: str, to_highlight: pd.DataFrame = pd.DataFrame(), highlight_hue: str = 'hue', to_annotate: pd.DataFrame = pd.DataFrame(), gen_col: Optional[str] = None, build: str = '38', anno_source = 'ensembl', gtf_path: Optional[str] = None, save_name: str = 'manhattan_plot.pdf', genome_line: float = 5e-8, suggestive_line: float = 1e-5, yaxis_margin: float = 10, dpi: int = 400) -> bool:
 
     """
     Draws a Manhattan plot for visualizing GWAS results.
@@ -356,10 +357,10 @@ def manhattan_draw(data_df:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, 
                     pos       =pos_col,
                     build     =build,
                     source    =anno_source,
-                    gtf_path  =gtf_path
+                    gtf_path  =gtf_path  # type: ignore
                 ).rename(columns={"GENE":"GENENAME"})
 
-        ax, texts = manhattan_type_annotate(
+        ax = manhattan_type_annotate(
             axes           =ax, 
             data           =plot_data['data'], 
             variants_toanno=variants_toanno, 
@@ -367,7 +368,6 @@ def manhattan_draw(data_df:pd.DataFrame, snp_col:str, chr_col:str, pos_col:str, 
             suggestive_line=suggestive_line, 
             genome_line    =genome_line
         )
-
 
     # save the plot
 
