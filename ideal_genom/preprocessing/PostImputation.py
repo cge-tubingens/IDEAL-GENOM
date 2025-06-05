@@ -200,6 +200,7 @@ class ParallelTaskRunner:
                         future.result()
                     except Exception as e:
                         logger.error(f"Task failed with args {args}: {e}")
+                        raise
                     pbar.update(1)
 
         elapsed = time.time() - start_time
@@ -302,9 +303,10 @@ class UnzipVCF(ParallelTaskRunner):
                 password_bytes = bytes(password, 'utf-8')
                 zf.setpassword(password_bytes)
             
-            if zf.testzip() is not None:
-                logger.error(f"Corrupted ZIP file: {zip_path}")
-                return
+            corrupted_file = zf.testzip()
+            if corrupted_file is not None:
+                logger.error(f"Corrupted file in ZIP archive {zip_path}: {corrupted_file}")
+                raise zipfile.BadZipFile(f"Corrupted file in ZIP archive {zip_path}: {corrupted_file}")
             else:
                 logger.info(f"Extracting {zip_path}...")
             
@@ -315,8 +317,15 @@ class UnzipVCF(ParallelTaskRunner):
                 
                 target_path = os.path.join(self.output_path, os.path.basename(member))
                 
-                with zf.open(member) as source, open(target_path, 'wb') as target:
-                    target.write(source.read())
+                try:
+                    with zf.open(member) as source, open(target_path, 'wb') as target:
+                        target.write(source.read())
+                except RuntimeError as e:
+                    if "password" in str(e).lower():
+                        logger.error(f"Bad password for file '{member}' in archive {zip_path}")
+                        raise zipfile.BadZipFile(f"Bad password for file '{member}' in archive {zip_path}") from e
+                    else:
+                        raise
 
         logger.info(f"Successfully extracted {zip_path}")
         pass
