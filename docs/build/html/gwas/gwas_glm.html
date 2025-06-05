@@ -1,0 +1,298 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GWAS with Generalized Linear Models (GLM) &mdash; ideal-genom 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="GWAS with Generalized Linear Mixed Models (GLMM)" href="gwas_glmm.html" />
+    <link rel="prev" title="ideal-genom documentation" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            ideal-genom
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">GWAS with Generalized Linear Models (GLM)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#ideal_genom.gwas.gwas_glm.GWASfixed"><code class="docutils literal notranslate"><span class="pre">GWASfixed</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ideal_genom.gwas.gwas_glm.GWASfixed.__init__"><code class="docutils literal notranslate"><span class="pre">GWASfixed.__init__()</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#ideal_genom.gwas.gwas_glm.GWASfixed.input_path"><code class="docutils literal notranslate"><span class="pre">GWASfixed.input_path</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ideal_genom.gwas.gwas_glm.GWASfixed.output_path"><code class="docutils literal notranslate"><span class="pre">GWASfixed.output_path</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ideal_genom.gwas.gwas_glm.GWASfixed.input_name"><code class="docutils literal notranslate"><span class="pre">GWASfixed.input_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ideal_genom.gwas.gwas_glm.GWASfixed.output_name"><code class="docutils literal notranslate"><span class="pre">GWASfixed.output_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ideal_genom.gwas.gwas_glm.GWASfixed.recompute"><code class="docutils literal notranslate"><span class="pre">GWASfixed.recompute</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ideal_genom.gwas.gwas_glm.GWASfixed.results_dir"><code class="docutils literal notranslate"><span class="pre">GWASfixed.results_dir</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#ideal_genom.gwas.gwas_glm.GWASfixed.annotate_top_hits"><code class="docutils literal notranslate"><span class="pre">GWASfixed.annotate_top_hits()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ideal_genom.gwas.gwas_glm.GWASfixed.fixed_model_association_analysis"><code class="docutils literal notranslate"><span class="pre">GWASfixed.fixed_model_association_analysis()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ideal_genom.gwas.gwas_glm.GWASfixed.get_top_hits"><code class="docutils literal notranslate"><span class="pre">GWASfixed.get_top_hits()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="gwas_glmm.html">GWAS with Generalized Linear Mixed Models (GLMM)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../preprocessing/PostImputation.html">PostImputation Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../preprocessing/preparatory.html">Preparatory Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../annotations.html">ideal_genom.annotations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_client.html">ideal_genom.api_client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_examples.html">ideal_genom.get_examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_references.html">ideal_genom.get_references</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Helpers.html">ideal_genom.Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../power_comp.html">ideal_genom.power_comp</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ideal-genom</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">GWAS with Generalized Linear Models (GLM)</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/gwas/gwas_glm.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-ideal_genom.gwas.gwas_glm">
+<span id="gwas-with-generalized-linear-models-glm"></span><h1>GWAS with Generalized Linear Models (GLM)<a class="headerlink" href="#module-ideal_genom.gwas.gwas_glm" title="Link to this heading"></a></h1>
+<p>Module to perform a GWAS analysis using a fixed model.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="ideal_genom.gwas.gwas_glm.GWASfixed">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ideal_genom.gwas.gwas_glm.</span></span><span class="sig-name descname"><span class="pre">GWASfixed</span></span><a class="headerlink" href="#ideal_genom.gwas.gwas_glm.GWASfixed" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ideal_genom.gwas.gwas_glm.GWASfixed.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recompute</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#ideal_genom.gwas.gwas_glm.GWASfixed.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialize the GWAS fixed model analysis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>(</strong><strong>str</strong><strong>)</strong> (<em>output_name</em>) – Path to the input directory containing PLINK files.</p></li>
+<li><p><strong>(</strong><strong>str</strong><strong>)</strong> – Base name of the input PLINK files (without extensions).</p></li>
+<li><p><strong>(</strong><strong>str</strong><strong>)</strong> – Path to the output directory where results will be saved.</p></li>
+<li><p><strong>(</strong><strong>str</strong><strong>)</strong> – Base name for the output files.</p></li>
+<li><p><strong>(</strong><strong>bool</strong><strong>)</strong> (<em>recompute</em>) – Flag indicating whether to recompute the analysis if results already exist. Default is True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError:</strong> – If input_path, output_path, input_name, or output_name are not provided.</p></li>
+<li><p><strong>FileNotFoundError:</strong> – If the specified input_path or output_path does not exist.</p></li>
+<li><p><strong>FileNotFoundError:</strong> – If the required PLINK files (.bed, .bim, .fam) are not found in the input_path.</p></li>
+<li><p><strong>TypeError:</strong> – If input_name or output_name are not strings, or if recompute is not a boolean.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ideal_genom.gwas.gwas_glm.GWASfixed.input_path">
+<span class="sig-name descname"><span class="pre">input_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ideal_genom.gwas.gwas_glm.GWASfixed.input_path" title="Link to this definition"></a></dt>
+<dd><p>Path to the input directory.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ideal_genom.gwas.gwas_glm.GWASfixed.output_path">
+<span class="sig-name descname"><span class="pre">output_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ideal_genom.gwas.gwas_glm.GWASfixed.output_path" title="Link to this definition"></a></dt>
+<dd><p>Path to the output directory.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ideal_genom.gwas.gwas_glm.GWASfixed.input_name">
+<span class="sig-name descname"><span class="pre">input_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ideal_genom.gwas.gwas_glm.GWASfixed.input_name" title="Link to this definition"></a></dt>
+<dd><p>Base name of the input PLINK files.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ideal_genom.gwas.gwas_glm.GWASfixed.output_name">
+<span class="sig-name descname"><span class="pre">output_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ideal_genom.gwas.gwas_glm.GWASfixed.output_name" title="Link to this definition"></a></dt>
+<dd><p>Base name for the output files.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ideal_genom.gwas.gwas_glm.GWASfixed.recompute">
+<span class="sig-name descname"><span class="pre">recompute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ideal_genom.gwas.gwas_glm.GWASfixed.recompute" title="Link to this definition"></a></dt>
+<dd><p>Flag indicating whether to recompute the analysis.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ideal_genom.gwas.gwas_glm.GWASfixed.results_dir">
+<span class="sig-name descname"><span class="pre">results_dir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ideal_genom.gwas.gwas_glm.GWASfixed.results_dir" title="Link to this definition"></a></dt>
+<dd><p>Directory where the results will be saved.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ideal_genom.gwas.gwas_glm.GWASfixed.annotate_top_hits">
+<span class="sig-name descname"><span class="pre">annotate_top_hits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gtf_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">build</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'38'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anno_source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'ensembl'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#ideal_genom.gwas.gwas_glm.GWASfixed.annotate_top_hits" title="Link to this definition"></a></dt>
+<dd><p>Annotate top SNP hits from COJO analysis with gene information.
+This method reads the COJO joint analysis results, extracts the top SNPs,
+and annotates them with gene information using the specified genome build
+and annotation source. The annotated results are saved to a TSV file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gtf_path</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em><em>, </em><em>default=None</em>) – Path to the GTF (Gene Transfer Format) file for custom annotation.
+If None, the annotation will use default resources.</p></li>
+<li><p><strong>build</strong> (<em>str</em><em>, </em><em>default='38'</em>) – Genome build version to use for annotation (‘38’ for GRCh38, etc.).</p></li>
+<li><p><strong>anno_source</strong> (<em>str</em><em>, </em><em>default=&quot;ensembl&quot;</em>) – Source of annotations to use (e.g., “ensembl”, “refseq”).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary containing:
+- ‘pass’: Boolean indicating if the process completed successfully
+- ‘step’: The name of the step (‘annotate_hits’)
+- ‘output’: Dictionary with output file paths</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>FileExistsError</strong> – If the COJO results file is not found in the results directory.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The annotated results are saved to ‘top_hits_annotated.tsv’ in the results directory.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ideal_genom.gwas.gwas_glm.GWASfixed.fixed_model_association_analysis">
+<span class="sig-name descname"><span class="pre">fixed_model_association_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">maf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mind</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hwe</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ci</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.95</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#ideal_genom.gwas.gwas_glm.GWASfixed.fixed_model_association_analysis" title="Link to this definition"></a></dt>
+<dd><p>Perform fixed model association analysis using PLINK2.</p>
+<p>This method performs a fixed model association analysis on genomic data using PLINK2. It checks the validity of the input parameters, ensures necessary files exist, and executes the PLINK2 command to perform the analysis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>(</strong><strong>float</strong><strong>)</strong> (<em>ci</em>) – Minor allele frequency threshold. Must be between 0 and 0.5.</p></li>
+<li><p><strong>(</strong><strong>float</strong><strong>)</strong> – Individual missingness threshold. Must be between 0 and 1.</p></li>
+<li><p><strong>(</strong><strong>float</strong><strong>)</strong> – Hardy-Weinberg equilibrium threshold. Must be between 0 and 1.</p></li>
+<li><p><strong>(</strong><strong>float</strong><strong>)</strong> – Confidence interval threshold. Must be between 0 and 1.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary containing the status of the process, the step name, and the output directory.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError:</strong> – If any of the input parameters are not of type float.</p></li>
+<li><p><strong>ValueError:</strong> – If any of the input parameters are out of their respective valid ranges.</p></li>
+<li><p><strong>FileNotFoundError:</strong> – If the required PCA file is not found.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ideal_genom.gwas.gwas_glm.GWASfixed.get_top_hits">
+<span class="sig-name descname"><span class="pre">get_top_hits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">maf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.01</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#ideal_genom.gwas.gwas_glm.GWASfixed.get_top_hits" title="Link to this definition"></a></dt>
+<dd><p>Get the top hits from the GWAS results.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>(</strong><strong>float</strong><strong>)</strong> (<em>maf</em>) – Minor allele frequency threshold. Must be a float between 0 and 0.5.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary containing the process status, step name, and output directory.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – If maf is not of type float.:</p></li>
+<li><p><strong>ValueError</strong> – If maf is not between 0 and 0.5.:</p></li>
+<li><p><strong>The function performs the following steps:</strong> – <ol class="arabic simple">
+<li><p>Validates the type and range of the maf parameter.
+    2. Computes the number of threads to use based on the available CPU cores.
+    3. Loads the results of the association analysis and renames columns according to GCTA requirements.
+    4. Prepares a .ma file with the necessary columns.
+    5. If recompute is True, constructs and executes a GCTA command to perform conditional and joint analysis.
+    6. Returns a dictionary with the process status, step name, and output directory.</p></li>
+</ol>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="ideal-genom documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gwas_glmm.html" class="btn btn-neutral float-right" title="GWAS with Generalized Linear Mixed Models (GLMM)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Luis Giraldo Gonzalez Ricardo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

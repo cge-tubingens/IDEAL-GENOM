@@ -19,6 +19,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="ideal_genom.Helpers" href="Helpers.html" />
     <link rel="prev" title="ideal_genom.get_examples" href="get_examples.html" /> 
 </head>
 
@@ -41,17 +42,23 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Package Modules</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="ideal_genom.html">ideal_genom package</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Standalone Modules</span></p>
+              <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="gwas/gwas_glm.html">GWAS with Generalized Linear Models (GLM)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwas/gwas_glmm.html">GWAS with Generalized Linear Mixed Models (GLMM)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="preprocessing/PostImputation.html">PostImputation Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="preprocessing/preparatory.html">Preparatory Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="annotations.html">ideal_genom.annotations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api_client.html">ideal_genom.api_client</a></li>
 <li class="toctree-l1"><a class="reference internal" href="get_examples.html">ideal_genom.get_examples</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">ideal_genom.get_references</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#ideal_genom.get_references.AssemblyReferenceFetcher"><code class="docutils literal notranslate"><span class="pre">AssemblyReferenceFetcher</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ideal_genom.get_references.AssemblyReferenceFetcher.__init__"><code class="docutils literal notranslate"><span class="pre">AssemblyReferenceFetcher.__init__()</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#ideal_genom.get_references.AssemblyReferenceFetcher.file_path"><code class="docutils literal notranslate"><span class="pre">AssemblyReferenceFetcher.file_path</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ideal_genom.get_references.AssemblyReferenceFetcher.reference_url"><code class="docutils literal notranslate"><span class="pre">AssemblyReferenceFetcher.reference_url</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ideal_genom.get_references.AssemblyReferenceFetcher.reference_file"><code class="docutils literal notranslate"><span class="pre">AssemblyReferenceFetcher.reference_file</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#ideal_genom.get_references.AssemblyReferenceFetcher.download_reference_file"><code class="docutils literal notranslate"><span class="pre">AssemblyReferenceFetcher.download_reference_file()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#ideal_genom.get_references.AssemblyReferenceFetcher.get_destination_folder"><code class="docutils literal notranslate"><span class="pre">AssemblyReferenceFetcher.get_destination_folder()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#ideal_genom.get_references.AssemblyReferenceFetcher.get_reference_url"><code class="docutils literal notranslate"><span class="pre">AssemblyReferenceFetcher.get_reference_url()</span></code></a></li>
@@ -64,6 +71,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#ideal_genom.get_references.Ensembl37Fetcher.source"><code class="docutils literal notranslate"><span class="pre">Ensembl37Fetcher.source</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#ideal_genom.get_references.Ensembl37Fetcher.latest_url"><code class="docutils literal notranslate"><span class="pre">Ensembl37Fetcher.latest_url</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#ideal_genom.get_references.Ensembl37Fetcher.get_latest_release"><code class="docutils literal notranslate"><span class="pre">Ensembl37Fetcher.get_latest_release()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ideal_genom.get_references.Ensembl37Fetcher.__init__"><code class="docutils literal notranslate"><span class="pre">Ensembl37Fetcher.__init__()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">Ensembl37Fetcher.get_latest_release()</span></code></a></li>
 </ul>
 </li>
@@ -73,10 +81,17 @@
 <li class="toctree-l3"><a class="reference internal" href="#ideal_genom.get_references.Ensembl38Fetcher.source"><code class="docutils literal notranslate"><span class="pre">Ensembl38Fetcher.source</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#ideal_genom.get_references.Ensembl38Fetcher.latest_url"><code class="docutils literal notranslate"><span class="pre">Ensembl38Fetcher.latest_url</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#ideal_genom.get_references.Ensembl38Fetcher.get_latest_release"><code class="docutils literal notranslate"><span class="pre">Ensembl38Fetcher.get_latest_release()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ideal_genom.get_references.Ensembl38Fetcher.__init__"><code class="docutils literal notranslate"><span class="pre">Ensembl38Fetcher.__init__()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id1"><code class="docutils literal notranslate"><span class="pre">Ensembl38Fetcher.get_latest_release()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#ideal_genom.get_references.FetcherLDRegions"><code class="docutils literal notranslate"><span class="pre">FetcherLDRegions</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ideal_genom.get_references.FetcherLDRegions.__init__"><code class="docutils literal notranslate"><span class="pre">FetcherLDRegions.__init__()</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#ideal_genom.get_references.FetcherLDRegions.destination"><code class="docutils literal notranslate"><span class="pre">FetcherLDRegions.destination</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ideal_genom.get_references.FetcherLDRegions.built"><code class="docutils literal notranslate"><span class="pre">FetcherLDRegions.built</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ideal_genom.get_references.FetcherLDRegions.ld_regions"><code class="docutils literal notranslate"><span class="pre">FetcherLDRegions.ld_regions</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#ideal_genom.get_references.FetcherLDRegions.get_ld_regions"><code class="docutils literal notranslate"><span class="pre">FetcherLDRegions.get_ld_regions()</span></code></a></li>
 </ul>
 </li>
@@ -86,7 +101,8 @@
 <li class="toctree-l3"><a class="reference internal" href="#ideal_genom.get_references.RefSeqFetcher.source"><code class="docutils literal notranslate"><span class="pre">RefSeqFetcher.source</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#ideal_genom.get_references.RefSeqFetcher.latest_url"><code class="docutils literal notranslate"><span class="pre">RefSeqFetcher.latest_url</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#ideal_genom.get_references.RefSeqFetcher.get_latest_release"><code class="docutils literal notranslate"><span class="pre">RefSeqFetcher.get_latest_release()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id5"><code class="docutils literal notranslate"><span class="pre">RefSeqFetcher.get_latest_release()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ideal_genom.get_references.RefSeqFetcher.__init__"><code class="docutils literal notranslate"><span class="pre">RefSeqFetcher.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2"><code class="docutils literal notranslate"><span class="pre">RefSeqFetcher.get_latest_release()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#ideal_genom.get_references.ReferenceDataFetcher"><code class="docutils literal notranslate"><span class="pre">ReferenceDataFetcher</span></code></a><ul>
@@ -103,15 +119,18 @@
 <li class="toctree-l3"><a class="reference internal" href="#ideal_genom.get_references.ReferenceDataFetcher._download_file"><code class="docutils literal notranslate"><span class="pre">ReferenceDataFetcher._download_file()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#ideal_genom.get_references.ReferenceDataFetcher.unzip_latest"><code class="docutils literal notranslate"><span class="pre">ReferenceDataFetcher.unzip_latest()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#ideal_genom.get_references.ReferenceDataFetcher.get_all_genes"><code class="docutils literal notranslate"><span class="pre">ReferenceDataFetcher.get_all_genes()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id8"><code class="docutils literal notranslate"><span class="pre">ReferenceDataFetcher.download_latest()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id10"><code class="docutils literal notranslate"><span class="pre">ReferenceDataFetcher.get_all_genes()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id11"><code class="docutils literal notranslate"><span class="pre">ReferenceDataFetcher.get_destination_folder()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id12"><code class="docutils literal notranslate"><span class="pre">ReferenceDataFetcher.get_latest_release()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id13"><code class="docutils literal notranslate"><span class="pre">ReferenceDataFetcher.unzip_latest()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ideal_genom.get_references.ReferenceDataFetcher.__init__"><code class="docutils literal notranslate"><span class="pre">ReferenceDataFetcher.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3"><code class="docutils literal notranslate"><span class="pre">ReferenceDataFetcher.download_latest()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5"><code class="docutils literal notranslate"><span class="pre">ReferenceDataFetcher.get_all_genes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id6"><code class="docutils literal notranslate"><span class="pre">ReferenceDataFetcher.get_destination_folder()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id7"><code class="docutils literal notranslate"><span class="pre">ReferenceDataFetcher.get_latest_release()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id8"><code class="docutils literal notranslate"><span class="pre">ReferenceDataFetcher.unzip_latest()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="Helpers.html">ideal_genom.Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="power_comp.html">ideal_genom.power_comp</a></li>
 </ul>
 
         </div>
@@ -142,7 +161,7 @@
 <span id="ideal-genom-get-references"></span><h1>ideal_genom.get_references<a class="headerlink" href="#module-ideal_genom.get_references" title="Link to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="ideal_genom.get_references.AssemblyReferenceFetcher">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ideal_genom.get_references.</span></span><span class="sig-name descname"><span class="pre">AssemblyReferenceFetcher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">build</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extension</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">destination_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avoid_substring</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'extra'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ideal_genom.get_references.AssemblyReferenceFetcher" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ideal_genom.get_references.</span></span><span class="sig-name descname"><span class="pre">AssemblyReferenceFetcher</span></span><a class="headerlink" href="#ideal_genom.get_references.AssemblyReferenceFetcher" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>AssemblyReferenceFetcher is responsible for retrieving genomic reference files.
 This class provides functionality to locate, download, and process reference genome
@@ -157,17 +176,68 @@ appropriate files, downloading, and decompressing reference files.</p>
 <li><p>Management of file paths and destination directories</p></li>
 </ul>
 <dl class="py method">
+<dt class="sig sig-object py" id="ideal_genom.get_references.AssemblyReferenceFetcher.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">build</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extension</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">destination_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avoid_substring</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'extra'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#ideal_genom.get_references.AssemblyReferenceFetcher.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialize a reference retriever.
+This method sets up the configuration for retrieving reference files from a
+specified URL, typically for genomic data based on a particular build.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>base_url</strong> (<em>str</em>) – The base URL from which to retrieve reference files.</p></li>
+<li><p><strong>build</strong> (<em>str</em>) – The genome build identifier (e.g., ‘hg38’, ‘GRCh37’).</p></li>
+<li><p><strong>extension</strong> (<em>str</em>) – The file extension of the reference files to retrieve.</p></li>
+<li><p><strong>destination_folder</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em><em>, </em><em>default=None</em>) – The folder where retrieved reference files will be saved.
+If None, files might be saved to a default location or handled differently.</p></li>
+<li><p><strong>avoid_substring</strong> (<em>str</em><em>, </em><em>default='extra'</em>) – A substring to avoid when processing reference files.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ideal_genom.get_references.AssemblyReferenceFetcher.file_path">
+<span class="sig-name descname"><span class="pre">file_path</span></span><a class="headerlink" href="#ideal_genom.get_references.AssemblyReferenceFetcher.file_path" title="Link to this definition"></a></dt>
+<dd><p>Path to the downloaded reference file, initialized as None.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ideal_genom.get_references.AssemblyReferenceFetcher.reference_url">
+<span class="sig-name descname"><span class="pre">reference_url</span></span><a class="headerlink" href="#ideal_genom.get_references.AssemblyReferenceFetcher.reference_url" title="Link to this definition"></a></dt>
+<dd><p>Complete URL to the reference file, initialized as None.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ideal_genom.get_references.AssemblyReferenceFetcher.reference_file">
+<span class="sig-name descname"><span class="pre">reference_file</span></span><a class="headerlink" href="#ideal_genom.get_references.AssemblyReferenceFetcher.reference_file" title="Link to this definition"></a></dt>
+<dd><p>Name or identifier of the reference file, initialized as None.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="ideal_genom.get_references.AssemblyReferenceFetcher.download_reference_file">
 <span class="sig-name descname"><span class="pre">download_reference_file</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#ideal_genom.get_references.AssemblyReferenceFetcher.download_reference_file" title="Link to this definition"></a></dt>
 <dd><p>Downloads the reference assembly sequence file from base_url to <cite>self.destination_folder</cite>.</p>
 <section id="raises">
 <h3>Raises:<a class="headerlink" href="#raises" title="Link to this heading"></a></h3>
-<blockquote>
-<div><ul class="simple">
+<ul class="simple">
 <li><p>AttributeError: If <cite>self.latest_url</cite> is not set.</p></li>
 <li><p>requests.exceptions.RequestException: If the HTTP request fails.</p></li>
 </ul>
-</div></blockquote>
 </section>
 </dd></dl>
 
@@ -209,12 +279,10 @@ and saves it as a FASTA file. After successful extraction, the original
 compressed file is deleted.</p>
 <section id="prerequisites">
 <h3>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading"></a></h3>
-<blockquote>
-<div><ul class="simple">
+<ul class="simple">
 <li><p>self.reference_file must be set (via get_reference_url)</p></li>
 <li><p>self.file_path must be set (via download_reference_file)</p></li>
 </ul>
-</div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>str</strong></p>
@@ -243,8 +311,8 @@ compressed file is deleted.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="ideal_genom.get_references.Ensembl37Fetcher">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ideal_genom.get_references.</span></span><span class="sig-name descname"><span class="pre">Ensembl37Fetcher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">destination_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ideal_genom.get_references.Ensembl37Fetcher" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#ideal_genom.get_references.ReferenceDataFetcher" title="ideal_genom.get_references.ReferenceDataFetcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReferenceDataFetcher</span></code></a></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ideal_genom.get_references.</span></span><span class="sig-name descname"><span class="pre">Ensembl37Fetcher</span></span><a class="headerlink" href="#ideal_genom.get_references.Ensembl37Fetcher" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="ideal_genom.html#ideal_genom.get_references.ReferenceDataFetcher" title="ideal_genom.get_references.ReferenceDataFetcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReferenceDataFetcher</span></code></a></p>
 <p>A class for fetching reference genome data from Ensembl’s GRCh37 (hg19) repository.
 This class specializes the ReferenceDataFetcher to work specifically with
 Ensembl’s GRCh37 human genome build. It provides functionality to automatically
@@ -303,6 +371,20 @@ available for GRCh37, and locates the chromosome GTF file for human genome data.
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="ideal_genom.get_references.Ensembl37Fetcher.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">destination_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ideal_genom.get_references.Ensembl37Fetcher.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialize a reference genome downloader for Ensembl GRCh37.
+This constructor configures the downloader to retrieve data from Ensembl’s GRCh37
+repository.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>destination_folder</strong> (<em>str</em><em>, </em><em>optional</em>) – The folder where downloaded files will be stored. If None, a default
+location will be used based on the parent class implementation.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="id0">
 <span class="sig-name descname"><span class="pre">get_latest_release</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
 <dd><p>Fetches the URL of the latest GTF file for Homo sapiens GRCh37 from Ensembl.
@@ -331,8 +413,8 @@ This method:
 
 <dl class="py class">
 <dt class="sig sig-object py" id="ideal_genom.get_references.Ensembl38Fetcher">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ideal_genom.get_references.</span></span><span class="sig-name descname"><span class="pre">Ensembl38Fetcher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">destination_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ideal_genom.get_references.Ensembl38Fetcher" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#ideal_genom.get_references.ReferenceDataFetcher" title="ideal_genom.get_references.ReferenceDataFetcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReferenceDataFetcher</span></code></a></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ideal_genom.get_references.</span></span><span class="sig-name descname"><span class="pre">Ensembl38Fetcher</span></span><a class="headerlink" href="#ideal_genom.get_references.Ensembl38Fetcher" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="ideal_genom.html#ideal_genom.get_references.ReferenceDataFetcher" title="ideal_genom.get_references.ReferenceDataFetcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReferenceDataFetcher</span></code></a></p>
 <p>A fetcher class for downloading human genome reference data from Ensembl, specifically for GRCh38 (build 38).
 This class provides functionality to download and access the latest GTF (Gene Transfer Format)
 annotation files for the human genome from the Ensembl FTP server. It automatically
@@ -388,26 +470,95 @@ determines the most recent release available and handles the download process.</
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="ideal_genom.get_references.Ensembl38Fetcher.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">destination_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ideal_genom.get_references.Ensembl38Fetcher.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialize the Ensembl human genome reference downloader.
+This class downloads human genome reference data from the Ensembl FTP server,
+specifically for homo sapiens (human) GTF files from the current release.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>destination_folder</strong> (<em>str</em><em>, </em><em>optional</em>) – Directory where the downloaded files will be saved. If None, a default
+location will be used (typically determined by the parent class).</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This downloader is configured to use:
+- GRCh38 (build 38) human genome assembly
+- Ensembl as the data source
+- The current GTF release from Ensembl</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="id1">
 <span class="sig-name descname"><span class="pre">get_latest_release</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
 <dd><p>Fetches the latest GTF file dynamically from the specified base URL.</p>
 <p>This method sends a GET request to the base URL, parses the HTML response to find the latest GTF file link, and sets the <cite>latest_url</cite> attribute to the full URL of the latest GTF file.</p>
-<section id="id2">
-<h2>Raises:<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
-<p>FileNotFoundError: If no GTF file is found in the HTML response.</p>
-</section>
-<section id="returns">
-<h2>Returns:<a class="headerlink" href="#returns" title="Link to this heading"></a></h2>
-<p>None</p>
-</section>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>FileNotFoundError</strong> – If no GTF file is found in the HTML response.:</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="ideal_genom.get_references.FetcherLDRegions">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ideal_genom.get_references.</span></span><span class="sig-name descname"><span class="pre">FetcherLDRegions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">destination</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">built</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'38'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ideal_genom.get_references.FetcherLDRegions" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ideal_genom.get_references.</span></span><span class="sig-name descname"><span class="pre">FetcherLDRegions</span></span><a class="headerlink" href="#ideal_genom.get_references.FetcherLDRegions" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ideal_genom.get_references.FetcherLDRegions.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">destination</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">built</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'38'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ideal_genom.get_references.FetcherLDRegions.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialize LDRegions object.
+This initializer sets up the destination path for LD regions files and the genome build version.
+If no destination is provided, it defaults to a ‘data/ld_regions_files’ directory relative to
+the parent directory of the current file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>destination</strong> (<em>Path</em><em>, </em><em>optional</em>) – Path where LD region files will be stored. If None, uses default path.</p></li>
+<li><p><strong>built</strong> (<em>str</em><em>, </em><em>optional</em>) – Genome build version, defaults to ‘38’.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ideal_genom.get_references.FetcherLDRegions.destination">
+<span class="sig-name descname"><span class="pre">destination</span></span><a class="headerlink" href="#ideal_genom.get_references.FetcherLDRegions.destination" title="Link to this definition"></a></dt>
+<dd><p>Directory path where LD region files are stored</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Path</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ideal_genom.get_references.FetcherLDRegions.built">
+<span class="sig-name descname"><span class="pre">built</span></span><a class="headerlink" href="#ideal_genom.get_references.FetcherLDRegions.built" title="Link to this definition"></a></dt>
+<dd><p>Genome build version being used</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ideal_genom.get_references.FetcherLDRegions.ld_regions">
+<span class="sig-name descname"><span class="pre">ld_regions</span></span><a class="headerlink" href="#ideal_genom.get_references.FetcherLDRegions.ld_regions" title="Link to this definition"></a></dt>
+<dd><p>Placeholder for LD regions data, initially set to None</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="ideal_genom.get_references.FetcherLDRegions.get_ld_regions">
 <span class="sig-name descname"><span class="pre">get_ld_regions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Path</span></span></span><a class="headerlink" href="#ideal_genom.get_references.FetcherLDRegions.get_ld_regions" title="Link to this definition"></a></dt>
@@ -415,38 +566,32 @@ determines the most recent release available and handles the download process.</
 This method handles the retrieval of high Linkage Disequilibrium (LD) regions for
 different genome builds (37 or 38). For build 37, it downloads the regions from a
 GitHub repository. For build 38, it creates the file from predefined coordinates.</p>
-<section id="id3">
-<h2>Returns:<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
-<dl class="simple">
-<dt>Path: Path to the created/downloaded LD regions file. Returns empty Path if</dt><dd><p>download fails for build 37.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Path</strong></p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Path to the created/downloaded LD regions file. Returns empty Path if download fails for build 37.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>None explicitly</strong><strong>, </strong><strong>but may raise standard I/O related exceptions.</strong> – </p>
 </dd>
 </dl>
-</section>
-<section id="id4">
-<h2>Raises:<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
-<blockquote>
-<div><p>None explicitly, but may raise standard I/O related exceptions.</p>
-</div></blockquote>
-</section>
-<section id="notes">
-<h2>Notes:<a class="headerlink" href="#notes" title="Link to this heading"></a></h2>
-<blockquote>
-<div><ul class="simple">
+<p class="rubric">Notes</p>
+<ul class="simple">
 <li><p>For build 37: Downloads from genepi-freiburg/gwas repository</p></li>
 <li><p>For build 38: Creates file from hardcoded coordinates from GWAS-pipeline</p></li>
 <li><p>Files are named as ‘high-LD-regions_GRCh{build}.txt’</p></li>
 <li><p>Creates destination directory if it doesn’t exist</p></li>
 </ul>
-</div></blockquote>
-</section>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="ideal_genom.get_references.RefSeqFetcher">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ideal_genom.get_references.</span></span><span class="sig-name descname"><span class="pre">RefSeqFetcher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">build</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">destination_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ideal_genom.get_references.RefSeqFetcher" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#ideal_genom.get_references.ReferenceDataFetcher" title="ideal_genom.get_references.ReferenceDataFetcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReferenceDataFetcher</span></code></a></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ideal_genom.get_references.</span></span><span class="sig-name descname"><span class="pre">RefSeqFetcher</span></span><a class="headerlink" href="#ideal_genom.get_references.RefSeqFetcher" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="ideal_genom.html#ideal_genom.get_references.ReferenceDataFetcher" title="ideal_genom.get_references.ReferenceDataFetcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReferenceDataFetcher</span></code></a></p>
 <p>A class for fetching and downloading reference genome data from NCBI’s RefSeq repository.
 This class extends ReferenceDataFetcher to specifically handle downloading human
 genome reference files from the RefSeq database. It supports different genome
@@ -506,25 +651,42 @@ download process.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id5">
-<span class="sig-name descname"><span class="pre">get_latest_release</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#id5" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="ideal_genom.get_references.RefSeqFetcher.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">build</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">destination_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ideal_genom.get_references.RefSeqFetcher.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialize a RefSeq genome reference downloader.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>(</strong><strong>str</strong><strong>)</strong> (<em>build</em>)</p></li>
+<li><p><strong>(</strong><strong>Optional</strong><strong>[</strong><strong>str</strong><strong>]</strong> (<em>destination_folder</em>) – reference files will be stored. If None, files will be stored in the default
+location. Defaults to None.</p></li>
+<li><p><strong>optional</strong><strong>)</strong> (<em>Directory path where the downloaded</em>) – reference files will be stored. If None, files will be stored in the default
+location. Defaults to None.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">get_latest_release</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
 <dd><p>Fetches the latest GTF file dynamically from the specified base URL.</p>
 <p>This method sends a GET request to the base URL, parses the HTML response to find the latest GTF file link, and sets the <cite>latest_url</cite> attribute to the full URL of the latest GTF file.</p>
-<section id="id6">
-<h2>Raises:<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
-<p>FileNotFoundError: If no GTF file is found in the HTML response.</p>
-</section>
-<section id="id7">
-<h2>Returns:<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
-<p>None</p>
-</section>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>FileNotFoundError</strong> – If no GTF file is found in the HTML response.:</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="ideal_genom.get_references.ReferenceDataFetcher">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ideal_genom.get_references.</span></span><span class="sig-name descname"><span class="pre">ReferenceDataFetcher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">build</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">destination_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ideal_genom.get_references.ReferenceDataFetcher" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ideal_genom.get_references.</span></span><span class="sig-name descname"><span class="pre">ReferenceDataFetcher</span></span><a class="headerlink" href="#ideal_genom.get_references.ReferenceDataFetcher" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A class for fetching, downloading, and processing reference genome data.
 This class provides a framework for retrieving genomic reference data from various
@@ -648,11 +810,31 @@ Returns the path to the new file.</p>
 <p>This is an abstract base class that requires subclasses to implement the
 get_latest_release() method for specific data sources.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="id8">
-<span class="sig-name descname"><span class="pre">download_latest</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#id8" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="ideal_genom.get_references.ReferenceDataFetcher.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">build</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">destination_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#ideal_genom.get_references.ReferenceDataFetcher.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialize a reference genome retrieval object.</p>
+<p>This constructor sets up the necessary parameters for downloading reference genome files
+from a specified source.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>(</strong><strong>str</strong><strong>)</strong> (<em>source</em>) – The base URL where reference genome files are hosted.</p></li>
+<li><p><strong>(</strong><strong>str</strong><strong>)</strong> – The genome build/version (e.g., ‘GRCh38’, ‘hg19’).</p></li>
+<li><p><strong>(</strong><strong>str</strong><strong>)</strong> – The source of the genome data (e.g., ‘ensembl’, ‘refseq’).</p></li>
+<li><p><strong>(</strong><strong>Optional</strong><strong>[</strong><strong>str</strong><strong>]</strong> (<em>destination_folder</em>) – Directory where downloaded files will be saved. If None, files may be saved to a default location. Defaults to None.</p></li>
+<li><p><strong>optional</strong><strong>)</strong> – Directory where downloaded files will be saved. If None, files may be saved to a default location. Defaults to None.</p></li>
+<li><p><strong>Returns</strong> – None</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">download_latest</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
 <dd><p>Downloads the latest file from <cite>self.latest_url</cite> to <cite>self.destination_folder</cite>.</p>
-<section id="id9">
-<h2>Raises:<a class="headerlink" href="#id9" title="Link to this heading"></a></h2>
+<section id="id4">
+<h2>Raises:<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
 <blockquote>
 <div><p>AttributeError: If <cite>self.latest_url</cite> is not set.
 requests.exceptions.RequestException: If the HTTP request fails.</p>
@@ -661,8 +843,8 @@ requests.exceptions.RequestException: If the HTTP request fails.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id10">
-<span class="sig-name descname"><span class="pre">get_all_genes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#id10" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id5">
+<span class="sig-name descname"><span class="pre">get_all_genes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#id5" title="Link to this definition"></a></dt>
 <dd><p>Extract all genes from the GTF file and save them to a new compressed file.
 This method reads the GTF file specified in self.gtf_file, filters for gene features,
 and creates a new GTF file containing only the gene entries. If the output file
@@ -688,20 +870,20 @@ already exists, it will return the path without reprocessing.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id11">
-<span class="sig-name descname"><span class="pre">get_destination_folder</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Path</span></span></span><a class="headerlink" href="#id11" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id6">
+<span class="sig-name descname"><span class="pre">get_destination_folder</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Path</span></span></span><a class="headerlink" href="#id6" title="Link to this definition"></a></dt>
 <dd><p>Determine the destination folder for downloads.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id12">
-<span class="sig-name descname"><span class="pre">get_latest_release</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#id12" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id7">
+<span class="sig-name descname"><span class="pre">get_latest_release</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#id7" title="Link to this definition"></a></dt>
 <dd><p>Determine the specific URL for fetching data.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id13">
-<span class="sig-name descname"><span class="pre">unzip_latest</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#id13" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id8">
+<span class="sig-name descname"><span class="pre">unzip_latest</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#id8" title="Link to this definition"></a></dt>
 <dd><p>Unzips the latest downloaded file and stores it as a GTF file.</p>
 </dd></dl>
 
@@ -714,6 +896,7 @@ already exists, it will return the path without reprocessing.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="get_examples.html" class="btn btn-neutral float-left" title="ideal_genom.get_examples" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Helpers.html" class="btn btn-neutral float-right" title="ideal_genom.Helpers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -19,7 +19,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="ideal_genom.annotations" href="annotations.html" /> 
+    <link rel="next" title="GWAS with Generalized Linear Models (GLM)" href="gwas/gwas_glm.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -41,8 +41,12 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Standalone Modules</span></p>
+              <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="gwas/gwas_glm.html">GWAS with Generalized Linear Models (GLM)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwas/gwas_glmm.html">GWAS with Generalized Linear Mixed Models (GLMM)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="preprocessing/PostImputation.html">PostImputation Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="preprocessing/preparatory.html">Preparatory Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="annotations.html">ideal_genom.annotations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api_client.html">ideal_genom.api_client</a></li>
 <li class="toctree-l1"><a class="reference internal" href="get_examples.html">ideal_genom.get_examples</a></li>
@@ -79,16 +83,84 @@
 <h1>ideal-genom documentation<a class="headerlink" href="#ideal-genom-documentation" title="Link to this heading"></a></h1>
 <p>Welcome to the documentation of <cite>ideal-genom</cite>, a Python library for genome-related analysis.</p>
 <div class="toctree-wrapper compound">
-</div>
-<div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">Standalone Modules</span></p>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="annotations.html">ideal_genom.annotations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api_client.html">ideal_genom.api_client</a></li>
-<li class="toctree-l1"><a class="reference internal" href="get_examples.html">ideal_genom.get_examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="get_references.html">ideal_genom.get_references</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Helpers.html">ideal_genom.Helpers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="power_comp.html">ideal_genom.power_comp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwas/gwas_glm.html">GWAS with Generalized Linear Models (GLM)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="gwas/gwas_glm.html#ideal_genom.gwas.gwas_glm.GWASfixed"><code class="docutils literal notranslate"><span class="pre">GWASfixed</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="gwas/gwas_glmm.html">GWAS with Generalized Linear Mixed Models (GLMM)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="gwas/gwas_glmm.html#ideal_genom.gwas.gwas_glmm.GWASrandom"><code class="docutils literal notranslate"><span class="pre">GWASrandom</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="preprocessing/PostImputation.html">PostImputation Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.AnnotateVCF"><code class="docutils literal notranslate"><span class="pre">AnnotateVCF</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.FilterVariants"><code class="docutils literal notranslate"><span class="pre">FilterVariants</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.GetPLINK"><code class="docutils literal notranslate"><span class="pre">GetPLINK</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.IndexVCF"><code class="docutils literal notranslate"><span class="pre">IndexVCF</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.NormalizeVCF"><code class="docutils literal notranslate"><span class="pre">NormalizeVCF</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.ParallelTaskRunner"><code class="docutils literal notranslate"><span class="pre">ParallelTaskRunner</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.ProcessVCF"><code class="docutils literal notranslate"><span class="pre">ProcessVCF</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.ReferenceNormalizeVCF"><code class="docutils literal notranslate"><span class="pre">ReferenceNormalizeVCF</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.UnzipVCF"><code class="docutils literal notranslate"><span class="pre">UnzipVCF</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="preprocessing/preparatory.html">Preparatory Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="preprocessing/preparatory.html#ideal_genom.preprocessing.preparatory.Preparatory"><code class="docutils literal notranslate"><span class="pre">Preparatory</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="annotations.html">ideal_genom.annotations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="annotations.html#ideal_genom.annotations.annotate_snp"><code class="docutils literal notranslate"><span class="pre">annotate_snp()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="annotations.html#ideal_genom.annotations.annotate_variants"><code class="docutils literal notranslate"><span class="pre">annotate_variants()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="annotations.html#ideal_genom.annotations.annotate_with_ensembl"><code class="docutils literal notranslate"><span class="pre">annotate_with_ensembl()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="annotations.html#ideal_genom.annotations.annotate_with_refseq"><code class="docutils literal notranslate"><span class="pre">annotate_with_refseq()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="annotations.html#ideal_genom.annotations.get_chr_to_NC"><code class="docutils literal notranslate"><span class="pre">get_chr_to_NC()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="annotations.html#ideal_genom.annotations.get_closest_gene"><code class="docutils literal notranslate"><span class="pre">get_closest_gene()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="annotations.html#ideal_genom.annotations.get_number_to_chr"><code class="docutils literal notranslate"><span class="pre">get_number_to_chr()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="annotations.html#ideal_genom.annotations.gtf_to_all_genes"><code class="docutils literal notranslate"><span class="pre">gtf_to_all_genes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="annotations.html#ideal_genom.annotations.prepare_genome"><code class="docutils literal notranslate"><span class="pre">prepare_genome()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="annotations.html#ideal_genom.annotations.prepare_gtf_path"><code class="docutils literal notranslate"><span class="pre">prepare_gtf_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api_client.html">ideal_genom.api_client</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api_client.html#ideal_genom.api_client.GeneEnsemblRestClient"><code class="docutils literal notranslate"><span class="pre">GeneEnsemblRestClient</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_client.html#ideal_genom.api_client.VEPEnsemblRestClient"><code class="docutils literal notranslate"><span class="pre">VEPEnsemblRestClient</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="get_examples.html">ideal_genom.get_examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="get_examples.html#ideal_genom.get_examples.get_bmi_japanese_gwas"><code class="docutils literal notranslate"><span class="pre">get_bmi_japanese_gwas()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="get_examples.html#ideal_genom.get_examples.get_bmi_japanese_gwas_sex_dependent"><code class="docutils literal notranslate"><span class="pre">get_bmi_japanese_gwas_sex_dependent()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="get_examples.html#ideal_genom.get_examples.get_top_cond_trumpet_quantitative"><code class="docutils literal notranslate"><span class="pre">get_top_cond_trumpet_quantitative()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="get_examples.html#ideal_genom.get_examples.get_top_loci_trumpet_quantitative"><code class="docutils literal notranslate"><span class="pre">get_top_loci_trumpet_quantitative()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="get_examples.html#ideal_genom.get_examples.get_trumpet_binary_example"><code class="docutils literal notranslate"><span class="pre">get_trumpet_binary_example()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="get_examples.html#ideal_genom.get_examples.get_trumpet_quantitative_example"><code class="docutils literal notranslate"><span class="pre">get_trumpet_quantitative_example()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="get_references.html">ideal_genom.get_references</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="get_references.html#ideal_genom.get_references.AssemblyReferenceFetcher"><code class="docutils literal notranslate"><span class="pre">AssemblyReferenceFetcher</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="get_references.html#ideal_genom.get_references.Ensembl37Fetcher"><code class="docutils literal notranslate"><span class="pre">Ensembl37Fetcher</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="get_references.html#ideal_genom.get_references.Ensembl38Fetcher"><code class="docutils literal notranslate"><span class="pre">Ensembl38Fetcher</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="get_references.html#ideal_genom.get_references.FetcherLDRegions"><code class="docutils literal notranslate"><span class="pre">FetcherLDRegions</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="get_references.html#ideal_genom.get_references.RefSeqFetcher"><code class="docutils literal notranslate"><span class="pre">RefSeqFetcher</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="get_references.html#ideal_genom.get_references.ReferenceDataFetcher"><code class="docutils literal notranslate"><span class="pre">ReferenceDataFetcher</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Helpers.html">ideal_genom.Helpers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Helpers.html#ideal_genom.Helpers.arg_parser"><code class="docutils literal notranslate"><span class="pre">arg_parser()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="Helpers.html#ideal_genom.Helpers.delete_temp_files"><code class="docutils literal notranslate"><span class="pre">delete_temp_files()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="Helpers.html#ideal_genom.Helpers.download_file"><code class="docutils literal notranslate"><span class="pre">download_file()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="Helpers.html#ideal_genom.Helpers.extract_gz_file"><code class="docutils literal notranslate"><span class="pre">extract_gz_file()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="Helpers.html#ideal_genom.Helpers.shell_do"><code class="docutils literal notranslate"><span class="pre">shell_do()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="Helpers.html#ideal_genom.Helpers.unzip_file_flat"><code class="docutils literal notranslate"><span class="pre">unzip_file_flat()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="power_comp.html">ideal_genom.power_comp</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="power_comp.html#ideal_genom.power_comp.calculate_power_binary"><code class="docutils literal notranslate"><span class="pre">calculate_power_binary()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="power_comp.html#ideal_genom.power_comp.calculate_power_quantitative"><code class="docutils literal notranslate"><span class="pre">calculate_power_quantitative()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="power_comp.html#ideal_genom.power_comp.get_beta_binary"><code class="docutils literal notranslate"><span class="pre">get_beta_binary()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="power_comp.html#ideal_genom.power_comp.get_beta_quantitative"><code class="docutils literal notranslate"><span class="pre">get_beta_quantitative()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </div>
 </section>
@@ -97,7 +169,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="annotations.html" class="btn btn-neutral float-right" title="ideal_genom.annotations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="gwas/gwas_glm.html" class="btn btn-neutral float-right" title="GWAS with Generalized Linear Models (GLM)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

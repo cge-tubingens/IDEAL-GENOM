@@ -1,14 +1,3 @@
-"""
-Module to prepare data for the GWAS and another advanced analysis.
-
-The module provides a class to perform data preparation for advanced analysis.
-
-Classes:
---------
-Preparatory:
-    Class to perform data preparation for downstream analysis.
-"""
-
 import os
 import psutil
 import logging
@@ -31,7 +20,8 @@ class Preparatory:
         
         This class handles the initialization and validation of paths and files needed for genomic data preprocessing.
         It checks for the existence of required PLINK files and sets up the directory structure for output results.
-        Parameters:
+        
+        Parameters
         ----------
         input_path (str | Path): 
             Directory path containing input PLINK files
@@ -46,20 +36,15 @@ class Preparatory:
         built (str, optional): 
             Genome build version. Must be either '38' or '37'. Defaults to '38'
         
-        Raises:
-        -------
-            ValueError: If input_path, output_path, input_name, or output_name are not set,
-                       or if built is not '38' or '37'
-            TypeError: If input_path, output_path are not str or Path objects,
-                       if input_name, output_name are not str objects,
-                       or if built is not a str object
-            FileNotFoundError: If input_path or output_path don't exist,
-                              or if required PLINK files (.bed, .bim, .fam) are not found
+        Raises
+        ------
+        ValueError: If input_path, output_path, input_name, or output_name are not set, or if built is not '38' or '37'
+        TypeError: If input_path, output_path are not str or Path objects, if input_name, output_name are not str objects, or if built is not a str object
+        FileNotFoundError: If input_path or output_path don't exist, or if required PLINK files (.bed, .bim, .fam) are not found
         
         Note:
         -----
-            If high_ld_file is not found, it will be automatically fetched from the package
-            using the FetcherLDRegions class.
+        If high_ld_file is not found, it will be automatically fetched from the package using the FetcherLDRegions class.
         """
         
         # check if paths are set

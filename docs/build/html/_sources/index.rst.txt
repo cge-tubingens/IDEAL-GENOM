@@ -10,17 +10,12 @@ Welcome to the documentation of `ideal-genom`, a Python library for genome-relat
 
 .. toctree::
    :maxdepth: 2
-   :caption: Package Modules
+   :caption: API Reference
 
-   ideal_genom
-   ideal_genom.gwas
-   ideal_genom.preprocessing
-   ideal_genom.visualization
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Standalone Modules
-
+   gwas/gwas_glm.rst
+   gwas/gwas_glmm.rst
+   preprocessing/PostImputation.rst
+   preprocessing/preparatory.rst
    annotations
    api_client
    get_examples

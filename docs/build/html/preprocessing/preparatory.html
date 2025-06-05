@@ -1,0 +1,232 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Preparatory Module &mdash; ideal-genom 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ideal_genom.annotations" href="../annotations.html" />
+    <link rel="prev" title="PostImputation Module" href="PostImputation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            ideal-genom
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../gwas/gwas_glm.html">GWAS with Generalized Linear Models (GLM)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gwas/gwas_glmm.html">GWAS with Generalized Linear Mixed Models (GLMM)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PostImputation.html">PostImputation Module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Preparatory Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#ideal_genom.preprocessing.preparatory.Preparatory"><code class="docutils literal notranslate"><span class="pre">Preparatory</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ideal_genom.preprocessing.preparatory.Preparatory.__init__"><code class="docutils literal notranslate"><span class="pre">Preparatory.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ideal_genom.preprocessing.preparatory.Preparatory.execute_ld_prunning"><code class="docutils literal notranslate"><span class="pre">Preparatory.execute_ld_prunning()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ideal_genom.preprocessing.preparatory.Preparatory.execute_pc_decomposition"><code class="docutils literal notranslate"><span class="pre">Preparatory.execute_pc_decomposition()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../annotations.html">ideal_genom.annotations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_client.html">ideal_genom.api_client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_examples.html">ideal_genom.get_examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_references.html">ideal_genom.get_references</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Helpers.html">ideal_genom.Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../power_comp.html">ideal_genom.power_comp</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ideal-genom</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Preparatory Module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/preprocessing/preparatory.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-ideal_genom.preprocessing.preparatory">
+<span id="preparatory-module"></span><h1>Preparatory Module<a class="headerlink" href="#module-ideal_genom.preprocessing.preparatory" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="ideal_genom.preprocessing.preparatory.Preparatory">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ideal_genom.preprocessing.preparatory.</span></span><span class="sig-name descname"><span class="pre">Preparatory</span></span><a class="headerlink" href="#ideal_genom.preprocessing.preparatory.Preparatory" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ideal_genom.preprocessing.preparatory.Preparatory.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high_ld_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">built</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'38'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#ideal_genom.preprocessing.preparatory.Preparatory.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialize the preparatory class for genomic data processing.</p>
+<p>This class handles the initialization and validation of paths and files needed for genomic data preprocessing.
+It checks for the existence of required PLINK files and sets up the directory structure for output results.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Path</strong><strong>)</strong> (<em>high_ld_file</em><em> (</em><em>str</em><em> |</em>) – Directory path containing input PLINK files</p></li>
+<li><p><strong>(</strong><strong>str</strong><strong>)</strong> (<em>output_name</em>) – Base name of input PLINK files (without extension)</p></li>
+<li><p><strong>Path</strong><strong>)</strong> – Directory path for output files</p></li>
+<li><p><strong>(</strong><strong>str</strong><strong>)</strong> – Base name for output files (without extension)</p></li>
+<li><p><strong>Path</strong><strong>)</strong> – Path to the high LD regions file</p></li>
+<li><p><strong>(</strong><strong>str</strong> (<em>built</em>) – Genome build version. Must be either ‘38’ or ‘37’. Defaults to ‘38’</p></li>
+<li><p><strong>optional</strong><strong>)</strong> – Genome build version. Must be either ‘38’ or ‘37’. Defaults to ‘38’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – If input_path, output_path, input_name, or output_name are not set, or if built is not ‘38’ or ‘37’:</p></li>
+<li><p><strong>TypeError</strong> – If input_path, output_path are not str or Path objects, if input_name, output_name are not str objects, or if built is not a str object:</p></li>
+<li><p><strong>FileNotFoundError</strong> – If input_path or output_path don’t exist, or if required PLINK files (.bed, .bim, .fam) are not found:</p></li>
+<li><p><strong>Note:</strong> – </p></li>
+<li><p><strong>-----</strong> – </p></li>
+<li><p><strong>If high_ld_file is not found</strong><strong>, </strong><strong>it will be automatically fetched from the package using the FetcherLDRegions class.</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ideal_genom.preprocessing.preparatory.Preparatory.execute_ld_prunning">
+<span class="sig-name descname"><span class="pre">execute_ld_prunning</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mind</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geno</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hwe</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ind_pair</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[50,</span> <span class="pre">5,</span> <span class="pre">0.2]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">memory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threads</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#ideal_genom.preprocessing.preparatory.Preparatory.execute_ld_prunning" title="Link to this definition"></a></dt>
+<dd><p>Execute LD (Linkage Disequilibrium) pruning on genetic data using PLINK.</p>
+<p>This method performs LD pruning in two steps:
+1. Excludes high LD regions and identifies independent SNPs
+2. Extracts the identified independent SNPs</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mind</strong> (<em>float</em><em>, </em><em>optional</em><em> (</em><em>default=0.2</em><em>)</em>) – Missing rate per individual threshold. Excludes individuals with missing rate higher than threshold.</p></li>
+<li><p><strong>maf</strong> (<em>float</em><em>, </em><em>optional</em><em> (</em><em>default=0.01</em><em>)</em>) – Minor allele frequency threshold. Must be between 0 and 0.5.</p></li>
+<li><p><strong>geno</strong> (<em>float</em><em>, </em><em>optional</em><em> (</em><em>default=0.1</em><em>)</em>) – Missing rate per SNP threshold. Must be between 0 and 1.</p></li>
+<li><p><strong>hwe</strong> (<em>float</em><em>, </em><em>optional</em><em> (</em><em>default=5e-6</em><em>)</em>) – Hardy-Weinberg equilibrium exact test p-value threshold. Must be between 0 and 1.</p></li>
+<li><p><strong>ind_pair</strong> (<em>list</em><em>, </em><em>optional</em><em> (</em><em>default=</em><em>[</em><em>50</em><em>, </em><em>5</em><em>, </em><em>0.2</em><em>]</em><em>)</em>) – Parameters for pairwise pruning: [window size(variants), step size(variants), r^2 threshold]</p></li>
+<li><p><strong>memory</strong> (<em>int</em><em>, </em><em>optional</em><em> (</em><em>default=None</em><em>)</em>) – Memory in MB to allocate. If None, uses 2/3 of available system memory.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The results are saved to disk and the pruned file path is stored in self.pruned_file</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – If mind, maf, geno, or hwe are not float</p></li>
+<li><p><strong>ValueError</strong> – If maf is not between 0 and 0.5
+    If geno is not between 0 and 1
+    If hwe is not between 0 and 1</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Uses PLINK software for the pruning operations.
+Operates on chromosomes 1-22 only.
+Automatically determines optimal thread count based on system CPU cores.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ideal_genom.preprocessing.preparatory.Preparatory.execute_pc_decomposition">
+<span class="sig-name descname"><span class="pre">execute_pc_decomposition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pca</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threads</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#ideal_genom.preprocessing.preparatory.Preparatory.execute_pc_decomposition" title="Link to this definition"></a></dt>
+<dd><p>Execute PCA decomposition on pruned PLINK binary files.</p>
+<p>This method performs Principal Component Analysis (PCA) on the pruned genotype data
+using PLINK software. It requires the existence of pruned binary PLINK files
+(.bed, .bim, .fam) and generates PCA eigenvectors and eigenvalues.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pca</strong> (<em>int</em><em>, </em><em>default=10</em>) – Number of principal components to compute. Must be greater than 0.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TypeError</strong> – If pca parameter is not an integer.</p></li>
+<li><p><strong>ValueError</strong> – If pca parameter is less than 1.</p></li>
+<li><p><strong>FileNotFoundError</strong> – If any of the required pruned PLINK files (.bed, .bim, .fam) are not found.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The method automatically determines the optimal number of threads to use based on
+CPU count, reserving 2 cores for other processes. If CPU count cannot be determined,
+it defaults to 10 threads.</p>
+<p>The output files will be created in the same directory as the input files, using
+the input name as prefix with extensions .eigenvec and .eigenval.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="PostImputation.html" class="btn btn-neutral float-left" title="PostImputation Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../annotations.html" class="btn btn-neutral float-right" title="ideal_genom.annotations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Luis Giraldo Gonzalez Ricardo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
