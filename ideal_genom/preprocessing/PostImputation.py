@@ -645,7 +645,6 @@ class ReferenceNormalizeVCF(ParallelTaskRunner):
             against the reference genome. The downloaded reference genomes come from the 1000 Genomes Project.
         """
 
-        
         if not isinstance(self.output_prefix, str):
             raise TypeError(f"prefix should be of type str, got {type(self.output_prefix)}")
         
@@ -1133,7 +1132,7 @@ class ProcessVCF:
 
         return
     
-    def execute_reference_normalize(self, build: str = '38', reference_file: Optional[Path] = None) -> None:
+    def execute_reference_normalize(self, build: str = '38', ref_genome: Optional[Path] = None) -> None:
         """
         Normalize the VCF file against a reference genome.
         This method creates a ReferenceNormalizeVCF object and executes the normalization 
@@ -1155,7 +1154,7 @@ class ProcessVCF:
             input_path =self.process_vcf,
             output_path=self.process_vcf,
             build      =build,
-            reference_file=reference_file
+            reference_file=ref_genome
         )
         reference_normalizer.execute_task()
 
@@ -1206,10 +1205,10 @@ class ProcessVCF:
         """
         
         annotator = AnnotateVCF(
-            input_path = self.process_vcf,
-            output_path=self.process_vcf,
+            input_path    =self.process_vcf,
+            output_path   =self.process_vcf,
             ref_annotation=ref_annotation,
-            output_prefix=output_prefix
+            output_prefix =output_prefix
         )
         annotator.execute_task()
 
