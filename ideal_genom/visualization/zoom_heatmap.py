@@ -14,6 +14,7 @@ from ideal_genom.annotations import annotate_snp, gtf_to_all_genes
 from ideal_genom.get_references import Ensembl37Fetcher, Ensembl38Fetcher
 
 from pyensembl import Genome
+from typing import Optional
 
 from itertools import cycle
 
@@ -25,10 +26,44 @@ from ideal_genom.Helpers import shell_do
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s", force=True)
 logger = logging.getLogger(__name__)
 
-def filter_sumstats(data_df:pd.DataFrame, lead_snp:str, snp_col:str, p_col:str, pos_col:str, chr_col:str, pval_threshold:float=5e-8, radius:int=10e6) -> pd.DataFrame:
+def filter_sumstats(data_df: pd.DataFrame, lead_snp: str, snp_col: str, p_col: str, pos_col: str, chr_col: str, pval_threshold: float = 5e-8, radius: float = 10e6) -> pd.DataFrame:
     """
-    Filter the summary statistics data frame to only include SNPs with p-value less than the threshold
-    and the lead SNP
+    Filter GWAS summary statistics based on a lead SNP, p-value threshold and genomic region.
+    This function filters a DataFrame containing GWAS summary statistics to return variants
+    within a specified genomic region around a lead SNP that meet a p-value significance threshold.
+    
+    Parameters
+    ----------
+    data_df : pandas.DataFrame
+        DataFrame containing GWAS summary statistics
+    lead_snp : str
+        Identifier of the lead SNP to center the region on
+    snp_col : str
+        Name of column containing SNP identifiers
+    p_col : str
+        Name of column containing p-values
+    pos_col : str
+        Name of column containing genomic positions
+    chr_col : str
+        Name of column containing chromosome numbers/identifiers
+    pval_threshold : float, optional
+        P-value significance threshold for filtering variants (default: 5e-8)
+    radius : float, optional
+        Size of region to include around lead SNP in base pairs (default: 10Mb)
+    
+    Returns
+    -------
+    pandas.DataFrame
+        Filtered DataFrame containing only variants that:
+        - Are on the same chromosome as lead SNP
+        - Meet p-value threshold
+        - Fall within specified region around lead SNP
+        Also includes calculated -log10(p-value) column
+    
+    Notes
+    -----
+    The function adds a 'log10p' column containing -log10 transformed p-values
+    to the filtered DataFrame before returning it.
     """
 
     lead_chr = data_df[data_df[snp_col]==lead_snp][chr_col].values[0]
