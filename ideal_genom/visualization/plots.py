@@ -750,7 +750,7 @@ def trumpet_draw(df_gwas: pd.DataFrame, df_freq: pd.DataFrame, plot_dir: str, sn
 
             xpower2   = xpower.copy()
             xpower2['beta']= -xpower2['beta'] 
-            xpower2['beta']= xpower2['beta'] 
+            xpower2['beta']= xpower2['beta']
             xpower['beta'] = xpower['beta'] 
             lines     = LineCollection([xpower2,xpower], label=t,color=output_hex_colors[i])
 
