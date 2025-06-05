@@ -1143,9 +1143,9 @@ class ProcessVCF:
         """
         
         reference_normalizer = ReferenceNormalizeVCF(
-            input_path = self.process_vcf,
+            input_path =self.process_vcf,
             output_path=self.process_vcf,
-            build=build,
+            build      =build,
             reference_file=reference_file
         )
         reference_normalizer.execute_task()
