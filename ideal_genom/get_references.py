@@ -308,12 +308,12 @@ class Ensembl38Fetcher(ReferenceDataFetcher):
 
         This method sends a GET request to the base URL, parses the HTML response to find the latest GTF file link, and sets the `latest_url` attribute to the full URL of the latest GTF file.
         
-        Raises:
+        Raises
         ------
         FileNotFoundError: If no GTF file is found in the HTML response.
         
-        Returns:
-        --------
+        Returns
+        -------
         None
         """
 
@@ -402,14 +402,14 @@ class Ensembl37Fetcher(ReferenceDataFetcher):
         
         Raises
         ------
-            Exception: If the base URL cannot be accessed
-            Exception: If no release folders are found
-            Exception: If the latest release folder cannot be accessed
-            FileNotFoundError: If the GTF file is not found in the latest release
+        Exception: If the base URL cannot be accessed
+        Exception: If no release folders are found
+        Exception: If the latest release folder cannot be accessed
+        FileNotFoundError: If the GTF file is not found in the latest release
         
         Returns
         -------
-            None
+        None
         """
 
         response = requests.get(self.base_url)
@@ -516,12 +516,12 @@ class RefSeqFetcher(ReferenceDataFetcher):
 
         This method sends a GET request to the base URL, parses the HTML response to find the latest GTF file link, and sets the `latest_url` attribute to the full URL of the latest GTF file.
         
-        Raises:
+        Raises
         ------
         FileNotFoundError: If no GTF file is found in the HTML response.
         
-        Returns:
-        --------
+        Returns
+        -------
         None
         """
 
@@ -595,7 +595,7 @@ class AssemblyReferenceFetcher():
     appropriate files, downloading, and decompressing reference files.
     
     Key Features
-    -----------
+    ------------
     - Web scraping to identify correct reference files based on build version
     - Automatic download of reference genome files
     - Decompression of gzipped reference files
@@ -653,12 +653,12 @@ class AssemblyReferenceFetcher():
 
         Returns
         -------
-            str: The complete URL to the reference file.
+        str: The complete URL to the reference file.
         
         Raises
         ------
-            Exception: If the base URL cannot be accessed.
-            FileNotFoundError: If no suitable reference file is found.
+        Exception: If the base URL cannot be accessed.
+        FileNotFoundError: If no suitable reference file is found.
         """
 
         response = requests.get(self.base_url)
@@ -693,8 +693,8 @@ class AssemblyReferenceFetcher():
 
         Raises:
         -------
-            - AttributeError: If `self.latest_url` is not set.
-            - requests.exceptions.RequestException: If the HTTP request fails.
+        - AttributeError: If `self.latest_url` is not set.
+        - requests.exceptions.RequestException: If the HTTP request fails.
         """
 
         if not getattr(self, 'reference_url', None):
@@ -738,23 +738,23 @@ class AssemblyReferenceFetcher():
 
         Prerequisites
         -------------
-            - self.reference_file must be set (via get_reference_url)
-            - self.file_path must be set (via download_reference_file)
+        - self.reference_file must be set (via get_reference_url)
+        - self.file_path must be set (via download_reference_file)
 
         Returns
         -------
-            str: Path to the unzipped FASTA file
+        str: Path to the unzipped FASTA file
         
         Raises
         ------
-            AttributeError: If self.reference_file or self.file_path are not set
-            OSError: If an error occurs during the unzipping process
+        AttributeError: If self.reference_file or self.file_path are not set
+        OSError: If an error occurs during the unzipping process
         
         Notes
         -----
-            - If the file is already unzipped (has .fa extension), returns its path
-            - If the unzipped file already exists, returns its path without re-extracting
-            - The original compressed file is deleted after successful extraction
+        - If the file is already unzipped (has .fa extension), returns its path
+        - If the unzipped file already exists, returns its path without re-extracting
+        - The original compressed file is deleted after successful extraction
         """
 
         if not getattr(self, 'reference_file', None):
@@ -857,21 +857,20 @@ class FetcherLDRegions:
         different genome builds (37 or 38). For build 37, it downloads the regions from a
         GitHub repository. For build 38, it creates the file from predefined coordinates.
         
-        Returns:
-        --------
-        Path: Path to the created/downloaded LD regions file. Returns empty Path if
-              download fails for build 37.
-        
-        Raises:
+        Returns
         -------
+        Path: Path to the created/downloaded LD regions file. Returns empty Path if download fails for build 37.
+        
+        Raises
+        ------
             None explicitly, but may raise standard I/O related exceptions.
         
-        Notes:
+        Notes
         -----
-            - For build 37: Downloads from genepi-freiburg/gwas repository
-            - For build 38: Creates file from hardcoded coordinates from GWAS-pipeline
-            - Files are named as 'high-LD-regions_GRCh{build}.txt'
-            - Creates destination directory if it doesn't exist
+        - For build 37: Downloads from genepi-freiburg/gwas repository
+        - For build 38: Creates file from hardcoded coordinates from GWAS-pipeline
+        - Files are named as 'high-LD-regions_GRCh{build}.txt'
+        - Creates destination directory if it doesn't exist
         """
 
         self.destination.mkdir(parents=True, exist_ok=True)

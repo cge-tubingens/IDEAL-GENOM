@@ -1,7 +1,3 @@
-"""
-Module to perform a GWAS analysis using a random effect model.
-"""
-
 import os
 import pandas as pd
 
@@ -16,7 +12,7 @@ class GWASrandom:
     def __init__(self, input_path:str, input_name:str, output_path:str, output_name:str, recompute:bool = True) -> None:
         
         """
-        Initializes the GWAS random effect model analysis.
+        Initializes the GWAS analysis with a Generalized Linear Mixed Model.
         
         Parameters:
         -----------
@@ -29,7 +25,7 @@ class GWASrandom:
         output_name (str): 
             Base name for the output files.
         recompute (bool): 
-        Flag indicating whether to recompute the analysis if results already exist. Default is True.
+            Flag indicating whether to recompute the analysis if results already exist. Default is True.
         
         Raises:
         -------

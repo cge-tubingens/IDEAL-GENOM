@@ -1,7 +1,3 @@
-"""
-Module to perform a GWAS analysis using a fixed model.
-"""
-
 import os
 
 import pandas as pd
@@ -17,8 +13,8 @@ class GWASfixed:
         """
         Initialize the GWAS fixed model analysis.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         input_path (str): 
             Path to the input directory containing PLINK files.
         input_name (str): 
@@ -30,8 +26,8 @@ class GWASfixed:
         recompute (bool): 
             Flag indicating whether to recompute the analysis if results already exist. Default is True.
         
-        Raises:
-        -------
+        Raises
+        ------
         ValueError: 
             If input_path, output_path, input_name, or output_name are not provided.
         FileNotFoundError: 
@@ -41,8 +37,8 @@ class GWASfixed:
         TypeError: 
             If input_name or output_name are not strings, or if recompute is not a boolean.
         
-        Attributes:
-        ------------
+        Attributes
+        ----------
         input_path (str): 
             Path to the input directory.
         output_path (str): 
@@ -104,8 +100,8 @@ class GWASfixed:
         
         This method performs a fixed model association analysis on genomic data using PLINK2. It checks the validity of the input parameters, ensures necessary files exist, and executes the PLINK2 command to perform the analysis.
 
-        Parameters:
-        ------------
+        Parameters
+        ----------
         maf (float): 
             Minor allele frequency threshold. Must be between 0 and 0.5.
         mind (float): 
@@ -115,13 +111,13 @@ class GWASfixed:
         ci (float): 
             Confidence interval threshold. Must be between 0 and 1.
         
-        Returns:
+        Returns
         -------
         dict: 
             A dictionary containing the status of the process, the step name, and the output directory.
         
-        Raises:
-        -------
+        Raises
+        ------
         TypeError: 
             If any of the input parameters are not of type float.
         ValueError: 
@@ -209,18 +205,18 @@ class GWASfixed:
         """
         Get the top hits from the GWAS results.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         maf (float): 
             Minor allele frequency threshold. Must be a float between 0 and 0.5.
 
-        Returns:
-        --------
+        Returns
+        -------
         dict: 
             A dictionary containing the process status, step name, and output directory.
 
-        Raises:
-        -------
+        Raises
+        ------
         TypeError: If maf is not of type float.
         ValueError: If maf is not between 0 and 0.5.
 
