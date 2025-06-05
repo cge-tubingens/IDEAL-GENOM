@@ -430,7 +430,7 @@ def miami_process_data(data_top: pd.DataFrame, data_bottom: pd.DataFrame, chr_co
 
     return miami_data
 
-def manhattan_type_annotate(axes:Axes, data:pd.DataFrame, variants_toanno:pd.DataFrame, max_x_axis:float, suggestive_line:float, genome_line:float)->Axes:
+def manhattan_type_annotate(axes: Axes, data: pd.DataFrame, variants_toanno: pd.DataFrame, max_x_axis: float, suggestive_line: float, genome_line: float) -> Axes:
     
     """
     Annotates a Manhattan plot with gene names.
@@ -464,7 +464,7 @@ def manhattan_type_annotate(axes:Axes, data:pd.DataFrame, variants_toanno:pd.Dat
         raise TypeError("data must be a pandas DataFrame.")
     if not isinstance(variants_toanno, pd.DataFrame):
         raise TypeError("variants_toanno must be a pandas DataFrame.")
-    if not isinstance(max_x_axis, (int, float, np.int64, np.float64)):
+    if not isinstance(max_x_axis, (int, float, np.integer, np.floating)):
         raise TypeError("max_x_axis must be an integer or float.")
     if not isinstance(suggestive_line, float):
         raise TypeError("suggestive_line must be a float.")
@@ -488,8 +488,8 @@ def manhattan_type_annotate(axes:Axes, data:pd.DataFrame, variants_toanno:pd.Dat
             x        =x,     # x-coordinates of the data point to annotate
             y        =y,     # y-coordinates of the data point to annotate
             text_list=texts, # list of text to annotate
-            x_scatter=data['rel_pos'], # all scatter points x-coordinates
-            y_scatter=data['log10p'],  # all scatter points y-coordinates
+            x_scatter=data['rel_pos'].to_numpy(), # all scatter points x-coordinates
+            y_scatter=data['log10p'].to_numpy(),  # all scatter points y-coordinates
             linecolor='black',                      # color of the line connecting the text to the data point
             textsize =8,                            # size of the text (Default to Nature standard)
             bbox     =dict(boxstyle='round,pad=0.3', edgecolor='black', facecolor='#f0f0f0', alpha=0.5),
@@ -508,7 +508,7 @@ def manhattan_type_annotate(axes:Axes, data:pd.DataFrame, variants_toanno:pd.Dat
 
     text_objs = allocate[2]
         
-    return axes, text_objs
+    return axes
 
 def miami_draw_anno_lines(renderer:RendererBase, axes:Axes, texts:list, variants_toanno:pd.DataFrame):
     
