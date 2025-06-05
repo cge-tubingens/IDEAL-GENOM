@@ -220,7 +220,48 @@ def snp_annotations(data_df: pd.DataFrame, snp_col: str, pos_col: str, chr_col: 
     
     return variants_toanno
 
-def get_gene_information(genes:list, gtf_path:str=None, build: str = "38", anno_source: str='ensembl')->pd.DataFrame:
+def get_gene_information(genes:list, gtf_path: Optional[str] = None, build: str = "38", anno_source: str = 'ensembl') -> pd.DataFrame:
+    """
+    Retrieves genomic information for a list of genes using Ensembl annotation.
+    This function fetches start position, end position, strand, and length information
+    for each gene in the provided list using either Ensembl GRCh37 or GRCh38 annotations.
+    
+    Parameters
+    ----------
+    genes : list
+        List of gene IDs (Ensembl format)
+    gtf_path : str, optional
+        Path to a custom GTF file. If None, will download and use Ensembl GTF.
+    build : str, default "38"
+        Human genome build version. Supported values: "19", "37", "38"
+        Note: "19" and "37" are equivalent.
+    anno_source : str, default "ensembl"
+        Source of genome annotations. Currently only supports "ensembl"
+    
+    Returns
+    -------
+    pandas.DataFrame
+        DataFrame containing gene information with columns:
+        - gene: gene ID
+        - start: gene start position
+        - end: gene end position
+        - strand: gene strand
+        - length: gene length
+    
+    Raises
+    ------
+    ValueError
+        If unsupported build version or annotation source is provided
+    FileNotFoundError
+        If provided GTF file path does not exist
+    TypeError
+        If provided GTF path is not a string
+    
+    Notes
+    -----
+    When gtf_path is None, the function will automatically download and process
+    the appropriate Ensembl GTF file based on the specified build version.
+    """
 
     if anno_source == "ensembl":
 
@@ -237,20 +278,28 @@ def get_gene_information(genes:list, gtf_path:str=None, build: str = "38", anno_
                 nsmbl37.unzip_latest()
                 nsmbl37.get_all_genes()
 
-                gtf_path = nsmbl37.protein_coding_path
+                gtf_path = nsmbl37.gtf_file
 
             else:
+                if not os.path.isfile(gtf_path):
+                    raise FileNotFoundError(f"Provided GTF path {gtf_path} does not exist.")
+                if not isinstance(gtf_path, str):
+                    raise TypeError(f"Provided GTF path {gtf_path} is not a string.")
                 print(" -Using user-provided gtf:{}".format(gtf_path))
                 
                 gtf_path = gtf_to_all_genes(gtf_path)
 
-            gtf_db_path = gtf_path[:-2]+"db"
+            gtf_db_path = gtf_path[:-2]+"db" # type: ignore
             
-            data = Genome(
-                reference_name='GRCh37',
-                annotation_name='Ensembl',
-                gtf_path_or_url=gtf_path
-            )
+            try:
+                data = Genome(
+                    reference_name='GRCh38',
+                    annotation_name='Ensembl',
+                    gtf_path_or_url=gtf_path
+                )
+            except Exception as e:
+                logger.error(f"Error initializing Genome with GTF path {gtf_path}: {e}")
+                raise
 
             if os.path.isfile(gtf_db_path) is False:
 
@@ -277,12 +326,21 @@ def get_gene_information(genes:list, gtf_path:str=None, build: str = "38", anno_
             
             gtf_db_path = gtf_path[:-2]+"db"
 
-            data = Genome(
-                reference_name='GRCh38',
-                annotation_name='Ensembl',
-                gtf_path_or_url=gtf_path
-            )
+            try:
+                data = Genome(
+                    reference_name='GRCh38',
+                    annotation_name='Ensembl',
+                    gtf_path_or_url=gtf_path
+                )
+            except Exception as e:
+                logger.error(f"Error initializing Genome with GTF path {gtf_path}: {e}")
+                raise
+        else:
+            raise ValueError(f"Unsupported build version: {build}. Supported versions are '19', '37', and '38'.")
 
+    else:
+        raise ValueError(f"Unsupported annotation source: {anno_source}. Supported sources are 'ensembl'.")
+    
     gene_info = {
         'gene':genes,
         'start':[],
@@ -302,10 +360,44 @@ def get_gene_information(genes:list, gtf_path:str=None, build: str = "38", anno_
             gene_info['end'].append(None)
             gene_info['strand'].append(None)
             gene_info['length'].append(None)
+    
 
     return pd.DataFrame(gene_info)
 
-def get_ld_matrix(data_df:pd.DataFrame, snp_col:str, pos_col:str, bfile_folder:str, bfile_name:str, output_path:str)->dict:
+def get_ld_matrix(data_df: pd.DataFrame, snp_col: str, pos_col: str, bfile_folder: str, bfile_name: str, output_path: str) -> dict:
+    """
+    Calculate LD matrix using PLINK for a set of SNPs.
+    This function takes a DataFrame containing SNP information and calculates the LD (Linkage Disequilibrium)
+    matrix using PLINK. The SNPs are first sorted by position, and then PLINK is used to compute
+    pairwise r2 values between SNPs.
+    
+    Parameters
+    ----------
+    data_df : pd.DataFrame 
+        DataFrame containing SNP information
+    snp_col : str 
+        Name of the column containing SNP IDs
+    pos_col : str 
+        Name of the column containing SNP positions
+    bfile_folder : str 
+        Path to the folder containing PLINK binary files
+    bfile_name : str 
+        Base name of the PLINK binary files (without extensions)
+    output_path : str 
+        Path where output files will be saved
+    
+    Returns
+    -------
+    dict: Dictionary containing:
+        - 'pass' (bool): True if process completed successfully
+        - 'step' (str): Name of the processing step ('get_ld_matrix')
+        - 'output' (dict): Dictionary with output file paths
+    
+    Raises
+    ------
+        FileNotFoundError: If any required files or directories are not found
+        ValueError: If specified columns are not found in the DataFrame
+    """
 
     if os.path.exists(output_path) is not True:
         raise FileNotFoundError(f"File {output_path} not found.")
