@@ -35,10 +35,10 @@ def arg_parser() -> dict:
     parser = argparse.ArgumentParser(description='Adresses to configuration files')
 
     # parameters of quality control
-    parser.add_argument('--path_params', type=str, nargs='?', default=None, const=None, help='Full path to the JSON file containing genotype quality control parameters.')
+    parser.add_argument('--path-params', type=str, nargs='?', default=None, const=None, help='Full path to the JSON file containing genotype quality control parameters.')
 
     # path to data and names of files
-    parser.add_argument('--file_folders', type=str, nargs='?', default=None, const=None, help='Full path to the JSON file containing folder names and locations for genotype quality control data.')
+    parser.add_argument('--file-folders', type=str, nargs='?', default=None, const=None, help='Full path to the JSON file containing folder names and locations for genotype quality control data.')
 
     # path to steps of the pipeline to be executed
     parser.add_argument('--steps', type=str, nargs='?', default=None, const=None, help='Full path to the JSON file containing the pipeline steps to be executed.')
