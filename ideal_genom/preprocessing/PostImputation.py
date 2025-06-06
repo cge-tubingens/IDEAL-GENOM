@@ -264,7 +264,7 @@ class UnzipVCF(ParallelTaskRunner):
 
         return
     
-    def unzip_files(self, zip_path: Path, password: str) -> None:
+    def unzip_files(self, zip_path: Path, password: Optional[str] = None, output_prefix: str = 'unzipped-') -> None:
         """
         Extract files from a password-protected zip archive.
         This method extracts all non-directory files from the specified zip archive
@@ -275,8 +275,10 @@ class UnzipVCF(ParallelTaskRunner):
         ----------
         zip_path : Path
             Path to the zip file to be extracted
-        password : str
-            Password for the zip file, None if the file is not password-protected
+        password : Optional[str], optional
+            Password for the zip file, None if the file is not password-protected. Defaults to None.
+        output_prefix : str, optional
+            Prefix to add to extracted filenames. Defaults to 'unzipped-'.
         
         Returns
         -------
@@ -284,45 +286,71 @@ class UnzipVCF(ParallelTaskRunner):
         
         Raises
         ------
-        No exceptions are explicitly raised, but logging errors occur if the zip file is corrupted
+        zipfile.BadZipFile
+            If the zip file is corrupted or password is incorrect
+        FileNotFoundError
+            If the zip file does not exist
+        PermissionError
+            If there are insufficient permissions to read the zip file or write to output directory
         
         Notes
         -----
         Files are extracted to the output_path directory of the class instance.
         Only files (not directories) are extracted from the archive.
         File paths are not preserved - all files are placed directly in output_path.
+        The output_prefix is added to the beginning of each extracted filename.
         """
         
-        with zipfile.ZipFile(zip_path, 'r') as zf:
-
-            if password is not None:
-                password_bytes = bytes(password, 'utf-8')
-                zf.setpassword(password_bytes)
-            
-            corrupted_file = zf.testzip()
-            if corrupted_file is not None:
-                logger.error(f"Corrupted file in ZIP archive {zip_path}: {corrupted_file}")
-                raise zipfile.BadZipFile(f"Corrupted file in ZIP archive {zip_path}: {corrupted_file}")
-            else:
-                logger.info(f"Extracting {zip_path}...")
-            
-            for member in zf.namelist():
+        # Validate input file exists
+        if not zip_path.exists():
+            raise FileNotFoundError(f"Zip file {zip_path} does not exist")
+        
+        if not zip_path.is_file():
+            raise ValueError(f"Path {zip_path} is not a file")
+        
+        try:
+            with zipfile.ZipFile(zip_path, 'r') as zf:
                 
-                if zf.getinfo(member).is_dir():
-                    continue
+                if password is not None:
+                    password_bytes = bytes(password, 'utf-8')
+                    zf.setpassword(password_bytes)
                 
-                target_path = os.path.join(self.output_path, os.path.basename(member))
+                corrupted_file = zf.testzip()
+                if corrupted_file is not None:
+                    logger.error(f"Corrupted file in ZIP archive {zip_path}: {corrupted_file}")
+                    raise zipfile.BadZipFile(f"Corrupted file in ZIP archive {zip_path}: {corrupted_file}")
+                else:
+                    logger.info(f"Extracting {zip_path}...")
                 
-                try:
-                    with zf.open(member) as source, open(target_path, 'wb') as target:
-                        target.write(source.read())
-                except RuntimeError as e:
-                    if "password" in str(e).lower():
-                        logger.error(f"Bad password for file '{member}' in archive {zip_path}")
-                        raise zipfile.BadZipFile(f"Bad password for file '{member}' in archive {zip_path}") from e
-                    else:
+                for member in zf.namelist():
+                    
+                    if zf.getinfo(member).is_dir():
+                        continue
+                    
+                    # Use the output_prefix parameter
+                    filename = output_prefix + os.path.basename(member)
+                    target_path = os.path.join(self.output_path, filename)
+                    
+                    try:
+                        with zf.open(member) as source, open(target_path, 'wb') as target:
+                            target.write(source.read())
+                    except RuntimeError as e:
+                        if "password" in str(e).lower():
+                            logger.error(f"Bad password for file '{member}' in archive {zip_path}")
+                            raise zipfile.BadZipFile(f"Bad password for file '{member}' in archive {zip_path}") from e
+                        else:
+                            raise
+                    except PermissionError as e:
+                        logger.error(f"Permission denied when extracting '{member}' to '{target_path}': {e}")
                         raise
-
+                    
+        except zipfile.BadZipFile as e:
+            logger.error(f"Invalid or corrupted zip file {zip_path}: {e}")
+            raise
+        except PermissionError as e:
+            logger.error(f"Permission denied accessing zip file {zip_path}: {e}")
+            raise
+        
         logger.info(f"Successfully extracted {zip_path}")
         pass
 
@@ -396,7 +424,7 @@ class FilterVariants(ParallelTaskRunner):
         if not isinstance(self.output_prefix, str):
             raise TypeError(f"prefix should be of type str, got {type(self.output_prefix)}")
 
-        self._file_collector('*dose.vcf.gz')
+        self._file_collector('unzipped-*dose.vcf.gz')
 
         self._run_task(
             self.filter_variants,
