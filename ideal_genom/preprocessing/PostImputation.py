@@ -476,7 +476,9 @@ class FilterVariants(ParallelTaskRunner):
         if not isinstance(output_prefix, str):
             raise TypeError(f"output_prefix should be of type str, got {type(output_prefix)}")
         
-        output_file = self.output_path / (output_prefix + input_file.name)
+        base_name = input_file.name.split('-')[1]
+        
+        output_file = self.output_path / (output_prefix + base_name)
 
         logger.info(f"Filtering {input_file} with R2 > {r2_threshold}")
         logger.info(f"Output file: {output_file}")
