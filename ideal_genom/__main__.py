@@ -5,9 +5,12 @@ from ideal_genom.Helpers import arg_parser
 
 from ideal_genom.preprocessing.preparatory import Preparatory
 from ideal_genom.preprocessing.PostImputation import ProcessVCF, GetPLINK
+from ideal_genom.gwas.gwas_glm import GWASfixed
 from ideal_genom.gwas.gwas_glmm import GWASrandom
 
-def analysis_pipe(params_dict: dict, data_dict: dict, steps_dict: dict) -> None:
+from pathlib import Path
+
+def analysis_pipe(params_dict: dict, data_dict: dict, steps_dict: dict)->None:
 
     post_imputation_params = params_dict['post_imputation']
     preparatory_params     = params_dict['preparatory']
@@ -17,24 +20,20 @@ def analysis_pipe(params_dict: dict, data_dict: dict, steps_dict: dict) -> None:
     if steps_dict['pos_imputation']:
 
         # instantiate the PostImputation class
-        post_imp = PostImputation(
-            input_path = data_dict['input_directory'],
-            output_path= data_dict['output_directory'],
-            output_name= data_dict['output_prefix'],
-            dependables= data_dict['dependables'],
+        vcf_processer = ProcessVCF(
+            input_path = Path(data_dict['input_directory']),
+            output_path= Path(data_dict['output_directory'])
         )
 
         # pipeline steps
-        post_imp_steps = {
-            'unzip_chrom'  : (post_imp.execute_unzip_chromosome_files, {'password': post_imputation_params['zip_password']}),
-            'filter_by_R2' : (post_imp.execute_filter_variants, {'r2_threshold': post_imputation_params['r2_threshold']}),
-            'normalize'    : (post_imp.execute_normalize_vcf, {}),
-            'normalize_ref': (post_imp.execute_normalize_with_reference, {'reference_genome': post_imputation_params['ref_vcf']}),
-            'index'        : (post_imp.execute_index_vcf, {}),
-            'annotate'     : (post_imp.execute_annotate_vcf, {'annotations_file': post_imputation_params['ref_annotation']}),
-            'concatenate'  : (post_imp.execute_concat_vcf, {}),
-            'get_plink'    : (post_imp.get_plink_files, {}),
-            'clean_up'     : (post_imp.cleanup, {})
+        vcf_processer_steps = {
+            'unzip_chrom'  : (vcf_processer.execute_unzip, {'password': post_imputation_params['zip_pwd']}),
+            'filter_by_R2' : (vcf_processer.execute_filter, {'r2_threshold': post_imputation_params['r2_thres']}),
+            'normalize'    : (vcf_processer.execute_normalize, {}),
+            'normalize_ref': (vcf_processer.execute_reference_normalize, {'build': post_imputation_params['build'], 'ref_genome': post_imputation_params['ref_genome']}),
+            'index'        : (vcf_processer.execute_index, {}),
+            'annotate'     : (vcf_processer.execute_annotate, {'ref_annotation': Path(post_imputation_params['ref_annotation'])}),
+            'concatenate'  : (vcf_processer.execute_concatenate, {'output_name': 'concat-'+data_dict['output_prefix']})
         }
 
         step_description = {
@@ -44,14 +43,33 @@ def analysis_pipe(params_dict: dict, data_dict: dict, steps_dict: dict) -> None:
             'normalize_ref': 'Normalize VCF files with reference genome',
             'index'       : 'Index VCF files',
             'annotate'    : 'Annotate VCF files',
-            'concatenate' : 'Concatenate VCF files',
-            'get_plink'   : 'Get PLINK files',
-            'clean_up'    : 'Remove intermediate files'
+            'concatenate' : 'Concatenate VCF files'
         }
 
-        for name, (func, params) in post_imp_steps.items():
+        for name, (func, params) in vcf_processer_steps.items():
             print(f"\033[1m{step_description[name]}.\033[0m")
-            func(*params)
+            func(**params)
+
+        get_plink = GetPLINK(
+            input_path = Path(data_dict['output_directory']),
+            output_path= Path(data_dict['output_directory']),
+            input_name = data_dict['output_prefix']+'.vcf.gz',
+            output_name= data_dict['output_prefix'],
+        )
+
+        get_plink_steps = {
+            'plink_conversion': (get_plink.convert_vcf_to_plink, {'double_id': post_imputation_params['double_id']}),
+            'update_fam'      : (get_plink.update_fam, {'for_fam_update_file': Path(post_imputation_params['for_fam_update_file'])}),
+        }
+
+        step_description = {
+            'plink_conversion': 'Convert VCF to PLINK format',
+            'update_fam': 'Update sex and phenotype in FAM file',
+        }
+
+        for name, (func, params) in get_plink_steps.items():
+            print(f"\033[1m{step_description[name]}.\033[0m")
+            func(**params)
 
         print("\033[1mPost-imputation steps completed.\033[0m")
 
@@ -62,7 +80,7 @@ def analysis_pipe(params_dict: dict, data_dict: dict, steps_dict: dict) -> None:
             input_name  =data_dict['input_prefix'],
             output_path =data_dict['output_directory'],
             output_name =data_dict['output_prefix'],
-            dependables =data_dict['dependables'],
+            high_ld_file= data_dict['high_ld_file'],
         )
 
         # pipeline steps
@@ -133,7 +151,7 @@ def analysis_pipe(params_dict: dict, data_dict: dict, steps_dict: dict) -> None:
         gwas_steps = {
             'aux_files'  : (gwas_glmm.prepare_aux_files, {}),
             'compute_grm': (gwas_glmm.compute_grm, {}),
-            'run_gwas'   : (gwas_glmm.run_gwas_random, {'maf' :gwas_glmm_params['maf']}),
+            'run_gwas'   : (gwas_glmm.run_gwas_glmm, {'maf' :gwas_glmm_params['maf']}),
             'top_hits'   : (gwas_glmm.get_top_hits, {'maf' :gwas_glmm_params['maf']})
         }
 
@@ -154,8 +172,7 @@ def analysis_pipe(params_dict: dict, data_dict: dict, steps_dict: dict) -> None:
 
 def execute_main()->str:
 
-    args = arg_parser()
-    args_dict = vars(args)
+    args_dict = arg_parser()
 
     params_path = args_dict['path_params']
     data_path   = args_dict['file_folders']
