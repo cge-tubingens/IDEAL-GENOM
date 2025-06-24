@@ -164,37 +164,65 @@ def manhattan_process_data(data_df: pd.DataFrame, chr_col: str = 'CHR', pos_col:
 
 def manhattan_draw(data_df: pd.DataFrame, snp_col: str, chr_col: str, pos_col: str, p_col: str, plot_dir: str, to_highlight: pd.DataFrame = pd.DataFrame(), highlight_hue: str = 'hue', to_annotate: pd.DataFrame = pd.DataFrame(), gen_col: Optional[str] = None, build: str = '38', anno_source = 'ensembl', gtf_path: Optional[str] = None, save_name: str = 'manhattan_plot.png', upper_cap: Optional[float] = None, genome_line: float = 5e-8, suggestive_line: float = 1e-5, yaxis_margin: float = 10, dpi: int = 400) -> bool:
     """
-    Draws a Manhattan plot for visualizing GWAS results.
-
-    Parameters:
-    -----------
+    Generate a Manhattan plot for genomic data.
+    This function creates a Manhattan plot for visualizing the statistical significance of genetic
+    variants across the genome, typically used in Genome-Wide Association Studies (GWAS).
+    The plot shows -log10(p-values) against genomic positions, organized by chromosome.
+    
+    Parameters
+    ----------
     data_df : pd.DataFrame
-        The input DataFrame containing genomic data.
-    snp_col : str    
-        The column name for SNP identifiers.
+        DataFrame containing the SNP data to be plotted.
+    snp_col : str
+        Column name in data_df that contains the SNP identifiers.
     chr_col : str
-        The column name for chromosome identifiers.
+        Column name in data_df that contains the chromosome information.
     pos_col : str
-        The column name for base pair positions.
+        Column name in data_df that contains the position information.
     p_col : str
-        The column name for p-values.
+        Column name in data_df that contains the p-values.
     plot_dir : str
-        The directory where the plot will be saved.
-    to_highlight : list, optional
-        A list of SNP identifiers to highlight in the plot. Default is an empty list.
-    to_annotate : list, optional
-        A list of SNP identifiers to annotate in the plot. Default is an empty list.
-    build : str, optional
-        The genome build version. Default is '38'.
+        Directory path where the plot will be saved.
+    to_highlight : pd.DataFrame, optional
+        DataFrame containing SNPs to be highlighted in the plot.
+    highlight_hue : str, default='hue'
+        Column name in to_highlight to be used for color-coding highlighted SNPs.
+    to_annotate : pd.DataFrame, optional
+        DataFrame containing SNPs to be annotated in the plot.
+    gen_col : str, optional
+        Column name for gene information to be used in annotation.
+    build : str, default='38'
+        Genome build version ('38' for GRCh38, etc.).
+    anno_source : str, default='ensembl'
+        Source for gene annotation information.
     gtf_path : str, optional
-        The path to the GTF file for gene annotation. If None, the file will be downloaded. Default is None.
-    save_name : str, optional
-        The name of the file to save the plot as. Default is 'manhattan_plot.jpeg'.
-
-    Returns:
-    --------
+        Path to a GTF file for gene annotation if not using online sources.
+    save_name : str, default='manhattan_plot.png'
+        Filename for the saved plot.
+    upper_cap : float, optional
+        Upper limit for log10(p-values) to be capped at.
+    genome_line : float, default=5e-8
+        P-value threshold for genome-wide significance line.
+    suggestive_line : float, default=1e-5
+        P-value threshold for suggestive significance line.
+    yaxis_margin : float, default=10
+        Additional margin to add to the y-axis maximum.
+    dpi : int, default=400
+        Resolution of the saved image in dots per inch.
+    
+    Returns
+    -------
     bool
-        True if the plot is successfully created and saved, False otherwise.
+        True if the plot was successfully created and saved.
+    
+    Raises
+    ------
+    TypeError
+        If input data is not a pandas DataFrame or to_highlight/to_annotate are not of correct type.
+    ValueError
+        If required columns are not found in the input DataFrame.
+    FileNotFoundError
+        If the specified plot directory does not exist.
     """
 
     if not isinstance(data_df, pd.DataFrame):
