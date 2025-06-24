@@ -324,8 +324,11 @@ def annotate_snp(insumstats: pd.DataFrame, gtf_path: str, chrom: str = "CHR", po
         raise ValueError("Build must be one of '19', '37', or '38'.")
     if source not in ["ensembl", "refseq"]:
         raise ValueError("Source must be either 'ensembl' or 'refseq'.")
-    if not isinstance(gtf_path, str):
-        raise TypeError("GTF path must be a string.")
+    if gtf_path:
+        if not isinstance(gtf_path, str):
+            raise TypeError("GTF path must be a string or None.")
+    else:
+        gtf_path = ''
     
     output = insumstats.copy()
     
