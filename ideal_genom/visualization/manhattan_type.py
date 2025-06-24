@@ -162,8 +162,7 @@ def manhattan_process_data(data_df: pd.DataFrame, chr_col: str = 'CHR', pos_col:
 
     return manhattan_data
 
-def manhattan_draw(data_df: pd.DataFrame, snp_col: str, chr_col: str, pos_col: str, p_col: str, plot_dir: str, to_highlight: pd.DataFrame = pd.DataFrame(), highlight_hue: str = 'hue', to_annotate: pd.DataFrame = pd.DataFrame(), gen_col: Optional[str] = None, build: str = '38', anno_source = 'ensembl', gtf_path: Optional[str] = None, save_name: str = 'manhattan_plot.pdf', genome_line: float = 5e-8, suggestive_line: float = 1e-5, yaxis_margin: float = 10, dpi: int = 400) -> bool:
-
+def manhattan_draw(data_df: pd.DataFrame, snp_col: str, chr_col: str, pos_col: str, p_col: str, plot_dir: str, to_highlight: pd.DataFrame = pd.DataFrame(), highlight_hue: str = 'hue', to_annotate: pd.DataFrame = pd.DataFrame(), gen_col: Optional[str] = None, build: str = '38', anno_source = 'ensembl', gtf_path: Optional[str] = None, save_name: str = 'manhattan_plot.png', upper_cap: Optional[float] = None, genome_line: float = 5e-8, suggestive_line: float = 1e-5, yaxis_margin: float = 10, dpi: int = 400) -> bool:
     """
     Draws a Manhattan plot for visualizing GWAS results.
 
@@ -222,6 +221,8 @@ def manhattan_draw(data_df: pd.DataFrame, snp_col: str, chr_col: str, pos_col: s
         raise ValueError(f"Column '{pos_col}' not found in the input DataFrame.")
     if p_col not in data_df.columns:
         raise ValueError(f"Column '{p_col}' not found in the input DataFrame.")
+    if not isinstance(upper_cap, (type(None), float, int)):
+        raise TypeError("upper_cap must be a float or None.")
     
     if not os.path.exists(plot_dir):
         raise FileNotFoundError(f"Directory '{plot_dir}' not found.")
@@ -239,6 +240,11 @@ def manhattan_draw(data_df: pd.DataFrame, snp_col: str, chr_col: str, pos_col: s
         pos_col=pos_col,
         p_col  =p_col
     )
+
+    if upper_cap:
+        # Cap the log10(p) values at the specified upper limit
+        plot_data['data'] = plot_data['data'][plot_data['data']['log10p'] <= upper_cap].reset_index(drop=True)
+        plot_data['maxp'] = np.ceil(upper_cap)
 
     max_x_axis = plot_data['data']['rel_pos'].max()
 
