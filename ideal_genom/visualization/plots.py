@@ -536,7 +536,7 @@ def beta_beta_draw(gwas_1: pd.DataFrame, gwas_2: pd.DataFrame, p_col: str, beta_
 
     return True
     
-def trumpet_draw(df_gwas: pd.DataFrame, df_freq: pd.DataFrame, plot_dir: str, snp_col: str, chr_col: str, pos_col: str, maf_col: str, beta_col: str, power_ts: list, n_case: Optional[int] = None, n_control: Optional[int] = None, sample_size: Optional[int] = None, n_col: str = '', sample_size_strategy: str = 'median', p_col: Optional[str] = None, prevalence: Optional[float] = None, mode: str = 'binary', p_filter: float = 5e-8, to_highlight: list = [], to_annotate: Optional[pd.DataFrame] = None, gen_col: Optional[str] = None, cmap: str= "cool", power_sig_level: float = 5e-8, build = '38', anno_source: str = 'ensembl', gtf_path: Optional[str] = None, save_name: str = 'trumpet_plot.pdf', scale: str = 'linear') -> bool:
+def trumpet_draw(df_gwas: pd.DataFrame, plot_dir: str, snp_col: str, chr_col: str, pos_col: str, maf_col: str, beta_col: str, power_ts: list,  df_freq: Optional[pd.DataFrame] = None, n_case: Optional[int] = None, n_control: Optional[int] = None, sample_size: Optional[int] = None, n_col: str = '', sample_size_strategy: str = 'median', p_col: Optional[str] = None, prevalence: Optional[float] = None, mode: str = 'binary', p_filter: Optional[float] = 5e-8, to_highlight: list = [], to_annotate: Optional[pd.DataFrame] = None, gen_col: Optional[str] = None, cmap: str= "cool", power_sig_level: float = 5e-8, build = '38', anno_source: str = 'ensembl', gtf_path: Optional[str] = None, save_name: str = 'trumpet_plot.pdf', scale: str = 'linear') -> bool:
     """
     Create a trumpet plot to visualize GWAS results with power analysis.
     A trumpet plot displays effect sizes (beta) versus minor allele frequencies (MAF) with power curves,
@@ -699,6 +699,8 @@ def trumpet_draw(df_gwas: pd.DataFrame, df_freq: pd.DataFrame, plot_dir: str, sn
             raise ValueError(f"to_highlight must be a list of strings.")
 
     if maf_col not in gwas_df.columns:
+        if df_freq is None:
+            raise ValueError(f"Column {maf_col} not present in the GWAS dataframe and no frequency dataframe provided.")
         df = pd.merge(gwas_df, df_freq, on=snp_col, how='inner')
     else:
         df = gwas_df.copy()
