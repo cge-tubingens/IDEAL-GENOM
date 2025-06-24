@@ -220,9 +220,9 @@ def get_trumpet_binary_example() -> Path:
 
     return uncompressed_file
 
-def get_bmi_japanese_gwas() -> tuple:
+def get_height_japanese_gwas() -> tuple:
     """
-    Downloads and prepares Japanese GWAS (Genome-Wide Association Studies) data for BMI (Body Mass Index).
+    Downloads and prepares Japanese GWAS (Genome-Wide Association Studies) data for height.
 
     This function retrieves data from the Japanese Biobank (BBJ) for both female and male subjects.
     If the data files already exist locally, it returns their paths without downloading.
@@ -231,13 +231,14 @@ def get_bmi_japanese_gwas() -> tuple:
     Returns
     -------
         tuple: A tuple containing two Path objects:
-            - Path to the female BMI GWAS data file
-            - Path to the male BMI GWAS data file
+            - Path to the female height GWAS data file
+            - Path to the male height GWAS data file
 
     Notes
     -----
-        The data is downloaded from the Japanese Database of Clinical and Genomic Data,
+        - The data is downloaded from the Japanese Database of Clinical and Genomic Data,
         specifically the hum0014 dataset version 6 with 158k samples.
+        - Akiyama, Masato, et al. Characterizing rare and low-frequency height-asssociated variants in the Japanese population. *Nature Communications* **10**, (2019): 4393. https://doi.org/10.1038/s41467-019-12276-5
     """
 
     library_path = Path(__file__).resolve().parent.parent
