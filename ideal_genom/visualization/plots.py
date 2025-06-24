@@ -39,7 +39,7 @@ from ideal_genom.power_comp import get_beta_binary
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
-def qqplot_draw(df_gwas:pd.DataFrame, plots_dir: str, lambda_val: Optional[float] = None, pval_col: str = 'P', conf_color: str = "lightgray", save_name: str = 'qq_plot.jpeg', fig_size: tuple = (10,10)) -> bool:
+def qqplot_draw(df_gwas:pd.DataFrame, plots_dir: str, lambda_val: Optional[float] = None, pval_col: str = 'P', conf_color: str = "lightgray", save_name: str = 'qq_plot.jpeg', fig_size: tuple = (10,10), dpi=500) -> bool:
     
     """
     Creates a Q-Q (Quantile-Quantile) plot from GWAS results.
@@ -63,6 +63,8 @@ def qqplot_draw(df_gwas:pd.DataFrame, plots_dir: str, lambda_val: Optional[float
         Filename to save the plot
     fig_size : tuple, default=(10,10)
         Figure dimensions as (width, height) in inches
+    dpi : int, default=500
+        Dots per inch for the saved figure resolution
 
     Returns
     -------
@@ -178,7 +180,7 @@ def qqplot_draw(df_gwas:pd.DataFrame, plots_dir: str, lambda_val: Optional[float
         bbox=dict(facecolor='white', alpha=0.5)
     )
 
-    plt.savefig(os.path.join(plots_dir, save_name), dpi=500)
+    plt.savefig(os.path.join(plots_dir, save_name), dpi=dpi)
     plt.show()
 
     logger.info(f"Q-Q plot saved as {save_name} in {plots_dir}")
