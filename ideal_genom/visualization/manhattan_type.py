@@ -1,5 +1,6 @@
 import os
 import warnings
+import logging
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -13,6 +14,9 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from typing import Optional
 
 from ideal_genom.annotations import annotate_snp
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logger = logging.getLogger(__name__)
 
 def compute_relative_pos(data: pd.DataFrame, chr_col: str = 'CHR', pos_col: str = 'POS', p_col: str = 'p') -> pd.DataFrame:
     
@@ -341,6 +345,8 @@ def manhattan_draw(data_df: pd.DataFrame, snp_col: str, chr_col: str, pos_col: s
                 .reset_index(drop=True)
             
             if (variants_toanno.empty is not True):
+
+                logger.info(f"Type of gtf_path is {type(gtf_path)}")
             
                 variants_toanno = annotate_snp(
                     insumstats=variants_toanno,
