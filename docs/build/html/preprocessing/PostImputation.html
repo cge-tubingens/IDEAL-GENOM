@@ -1195,7 +1195,7 @@ Default is None.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="id21">
-<span class="sig-name descname"><span class="pre">unzip_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zip_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#id21" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">unzip_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zip_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'unzipped-'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#id21" title="Link to this definition"></a></dt>
 <dd><p>Extract files from a password-protected zip archive.
 This method extracts all non-directory files from the specified zip archive
 to the class’s output_path directory. If the zip file is password-protected,
@@ -1204,20 +1204,26 @@ provide the password as a parameter.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>zip_path</strong> (<em>Path</em>) – Path to the zip file to be extracted</p></li>
-<li><p><strong>password</strong> (<em>str</em>) – Password for the zip file, None if the file is not password-protected</p></li>
+<li><p><strong>password</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – Password for the zip file, None if the file is not password-protected. Defaults to None.</p></li>
+<li><p><strong>output_prefix</strong> (<em>str</em><em>, </em><em>optional</em>) – Prefix to add to extracted filenames. Defaults to ‘unzipped-‘.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>No exceptions are explicitly raised</strong><strong>, </strong><strong>but logging errors occur if the zip file is corrupted</strong> – </p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>zipfile.BadZipFile</strong> – If the zip file is corrupted or password is incorrect</p></li>
+<li><p><strong>FileNotFoundError</strong> – If the zip file does not exist</p></li>
+<li><p><strong>PermissionError</strong> – If there are insufficient permissions to read the zip file or write to output directory</p></li>
+</ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
 <p>Files are extracted to the output_path directory of the class instance.
 Only files (not directories) are extracted from the archive.
-File paths are not preserved - all files are placed directly in output_path.</p>
+File paths are not preserved - all files are placed directly in output_path.
+The output_prefix is added to the beginning of each extracted filename.</p>
 </dd></dl>
 
 </dd></dl>

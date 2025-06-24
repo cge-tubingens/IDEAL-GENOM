@@ -51,8 +51,8 @@
 <li class="toctree-l1"><a class="reference internal" href="annotations.html">ideal_genom.annotations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api_client.html">ideal_genom.api_client</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">ideal_genom.get_examples</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#ideal_genom.get_examples.get_bmi_japanese_gwas"><code class="docutils literal notranslate"><span class="pre">get_bmi_japanese_gwas()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#ideal_genom.get_examples.get_bmi_japanese_gwas_sex_dependent"><code class="docutils literal notranslate"><span class="pre">get_bmi_japanese_gwas_sex_dependent()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ideal_genom.get_examples.get_height_japanese_gwas"><code class="docutils literal notranslate"><span class="pre">get_height_japanese_gwas()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#ideal_genom.get_examples.get_top_cond_trumpet_quantitative"><code class="docutils literal notranslate"><span class="pre">get_top_cond_trumpet_quantitative()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#ideal_genom.get_examples.get_top_loci_trumpet_quantitative"><code class="docutils literal notranslate"><span class="pre">get_top_loci_trumpet_quantitative()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#ideal_genom.get_examples.get_trumpet_binary_example"><code class="docutils literal notranslate"><span class="pre">get_trumpet_binary_example()</span></code></a></li>
@@ -91,31 +91,6 @@
   <section id="module-ideal_genom.get_examples">
 <span id="ideal-genom-get-examples"></span><h1>ideal_genom.get_examples<a class="headerlink" href="#module-ideal_genom.get_examples" title="Link to this heading"></a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="ideal_genom.get_examples.get_bmi_japanese_gwas">
-<span class="sig-prename descclassname"><span class="pre">ideal_genom.get_examples.</span></span><span class="sig-name descname"><span class="pre">get_bmi_japanese_gwas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#ideal_genom.get_examples.get_bmi_japanese_gwas" title="Link to this definition"></a></dt>
-<dd><p>Downloads and prepares Japanese GWAS (Genome-Wide Association Studies) data for BMI (Body Mass Index).</p>
-<p>This function retrieves data from the Japanese Biobank (BBJ) for both female and male subjects.
-If the data files already exist locally, it returns their paths without downloading.
-Otherwise, it downloads the zip archive, extracts the relevant files, and decompresses them.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><p><strong>tuple</strong> –</p>
-<ul class="simple">
-<li><p>Path to the female BMI GWAS data file</p></li>
-<li><p>Path to the male BMI GWAS data file</p></li>
-</ul>
-</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>A tuple containing two Path objects:</p>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>The data is downloaded from the Japanese Database of Clinical and Genomic Data,
-specifically the hum0014 dataset version 6 with 158k samples.</p>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="ideal_genom.get_examples.get_bmi_japanese_gwas_sex_dependent">
 <span class="sig-prename descclassname"><span class="pre">ideal_genom.get_examples.</span></span><span class="sig-name descname"><span class="pre">get_bmi_japanese_gwas_sex_dependent</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Path</span></span></span><a class="headerlink" href="#ideal_genom.get_examples.get_bmi_japanese_gwas_sex_dependent" title="Link to this definition"></a></dt>
 <dd><p>Download and process sex-dependent BMI GWAS data from the Japanese Biobank (BBJ).</p>
@@ -139,6 +114,33 @@ effects on BMI.</p>
 <p class="admonition-title">Note</p>
 <p>If the CSV file already exists, it will not be re-downloaded or processed.</p>
 </div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ideal_genom.get_examples.get_height_japanese_gwas">
+<span class="sig-prename descclassname"><span class="pre">ideal_genom.get_examples.</span></span><span class="sig-name descname"><span class="pre">get_height_japanese_gwas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#ideal_genom.get_examples.get_height_japanese_gwas" title="Link to this definition"></a></dt>
+<dd><p>Downloads and prepares Japanese GWAS (Genome-Wide Association Studies) data for height.</p>
+<p>This function retrieves data from the Japanese Biobank (BBJ) for both female and male subjects.
+If the data files already exist locally, it returns their paths without downloading.
+Otherwise, it downloads the zip archive, extracts the relevant files, and decompresses them.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><p><strong>tuple</strong> –</p>
+<ul class="simple">
+<li><p>Path to the female height GWAS data file</p></li>
+<li><p>Path to the male height GWAS data file</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple containing two Path objects:</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>The data is downloaded from the Japanese Database of Clinical and Genomic Data, specifically the hum0014 dataset version 6 with 158k samples.</p></li>
+<li><p>Akiyama, Masato, et al. Characterizing rare and low-frequency height-asssociated variants in the Japanese population. <em>Nature Communications</em> <strong>10</strong>, (2019): 4393. <a class="reference external" href="https://doi.org/10.1038/s41467-019-12276-5">https://doi.org/10.1038/s41467-019-12276-5</a></p></li>
+</ul>
 </dd></dl>
 
 <dl class="py function">
