@@ -117,6 +117,7 @@ def find_chromosomes_center(data: pd.DataFrame, chr_col: str = 'CHR', chr_pos_co
         If the input data is not a pandas DataFrame.
     ValueError
         If the specified chromosome or chromosome position columns are not found in the DataFrame.
+    
     """
 
     if not isinstance(data, pd.DataFrame):
@@ -163,6 +164,7 @@ def manhattan_process_data(data_df: pd.DataFrame, chr_col: str = 'CHR', pos_col:
         - 'data' (pd.DataFrame): The processed DataFrame with relative positions and log-transformed p-values.
         - 'axis' (dict): The center positions of each chromosome for plotting.
         - 'maxp' (float): The maximum log-transformed p-value.
+    
     """
 
     if not isinstance(data_df, pd.DataFrame):
@@ -254,6 +256,7 @@ def manhattan_draw(data_df: pd.DataFrame, snp_col: str, chr_col: str, pos_col: s
         If required columns are not found in the input DataFrame.
     FileNotFoundError
         If the specified plot directory does not exist.
+    
     """
 
     if not isinstance(data_df, pd.DataFrame):
@@ -442,23 +445,33 @@ def manhattan_draw(data_df: pd.DataFrame, snp_col: str, chr_col: str, pos_col: s
 
 def miami_process_data(data_top: pd.DataFrame, data_bottom: pd.DataFrame, chr_col: str, pos_col: str, p_col: str) -> dict:
     
-    """
-    Processes Miami plot data by preparing, computing relative positions, and splitting the data.
+    """Processes Miami plot data by preparing, computing relative positions, and splitting the data.
 
-    Parameters:
-    -----------
-    data_top (pd.DataFrame): 
+    For each part of the Miami plot (top and bottom), this function computes the relative positions of SNPs,
+    calculates the -log10(p-values), and finds the center positions of chromosomes.
+
+    Parameters
+    ----------
+    data_top : pd.DataFrame
         The top part of the data to be processed.
-    data_bottom (pd.DataFrame): 
+    data_bottom : pd.DataFrame 
         The bottom part of the data to be processed.
     
-    Returns:
-    --------
+    Returns
+    -------
     dict: A dictionary containing the processed data with the following keys:
         - 'upper': DataFrame containing the top part of the processed data.
         - 'lower': DataFrame containing the bottom part of the processed data.
         - 'axis': The center positions of the chromosomes.
         - 'maxp': The maximum -log10(p-value) in the data.
+
+    Raises
+    ------
+    TypeError
+        If `data_top` or `data_bottom` is not a pandas DataFrame.
+    ValueError
+        If the specified columns (`chr_col`, `pos_col`, `p_col`) are not found in the DataFrames.
+    
     """
 
     if not isinstance(data_top, pd.DataFrame):
@@ -494,11 +507,12 @@ def miami_process_data(data_top: pd.DataFrame, data_bottom: pd.DataFrame, chr_co
 
 def manhattan_type_annotate(axes: Axes, data: pd.DataFrame, variants_toanno: pd.DataFrame, max_x_axis: float, suggestive_line: float, genome_line: float) -> Axes:
     
-    """
-    Annotates a Manhattan plot with gene names.
+    """Annotates a Manhattan plot with gene names.
 
-    Parameters:
-    -----------
+    This function uses the textalloc library to place gene names on a Manhattan plot.
+
+    Parameters
+    ----------
     axes : Axes (matplotlib.axes.Axes)
         The matplotlib axes object where the Manhattan plot is drawn.
     data : pd.DataFrame
@@ -512,12 +526,16 @@ def manhattan_type_annotate(axes: Axes, data: pd.DataFrame, variants_toanno: pd.
     genome_line : float
         The y-value for the genome-wide significance line.
 
-    Returns:
-    --------
+    Returns
+    -------
     Axes
         The matplotlib axes object with annotations.
-    list
-        A list of text objects for the annotations.
+
+    Raises
+    ------
+    TypeError
+        If the input parameters are not of the expected types.
+
     """
 
     if not isinstance(axes, Axes):
@@ -570,12 +588,11 @@ def manhattan_type_annotate(axes: Axes, data: pd.DataFrame, variants_toanno: pd.
         
     return axes
 
-def miami_draw_anno_lines(renderer:RendererBase, axes:Axes, texts:list, variants_toanno:pd.DataFrame):
+def miami_draw_anno_lines(renderer: RendererBase, axes: Axes, texts: list, variants_toanno: pd.DataFrame):
     
-    """
-    Draws annotation lines from text labels to their corresponding data points on a plot.
+    """Draws annotation lines from text labels to their corresponding data points on a plot.
 
-    Parameters:
+    Parameters
     ----------
     renderer : RendererBase 
         The renderer used to draw the plot.
@@ -586,9 +603,10 @@ def miami_draw_anno_lines(renderer:RendererBase, axes:Axes, texts:list, variants
     variants_toanno : pd.DataFrame
         A DataFrame containing the data points to annotate, with columns 'GENENAME', 'rel_pos', and 'log10p'.
 
-    Returns:
+    Returns
     -------
-    Axes: The axes with the annotation lines drawn.
+    Axes 
+        The axes with the annotation lines drawn.
     """
 
     from math import dist
@@ -623,11 +641,10 @@ def miami_draw_anno_lines(renderer:RendererBase, axes:Axes, texts:list, variants
 
 def miami_draw(df_top: pd.DataFrame, df_bottom: pd.DataFrame, snp_col: str, chr_col: str, pos_col: str, p_col: str, plots_dir: str, top_highlights: list = [], top_annotations: pd.DataFrame=pd.DataFrame(), bottom_highlights: list = [], bottom_annotations: pd.DataFrame = pd.DataFrame(), top_gen_col: Optional[str] = None, bottom_gen_col: Optional[str] = None, gtf_path: Optional[str] = None, source: str = "ensemble", build: str = '38', save_name: str = 'miami_plot.jpeg', legend_top: str = 'top GWAS', legend_bottom: str = 'bottom GWAS', dpi: int = 400) -> bool:
     
-    """
-    Draws a Miami plot (a combination of two Manhattan plots) for visualizing GWAS results.
+    """Draws a Miami plot (a combination of two Manhattan plots) for visualizing GWAS results.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     df_top : pd.DataFrame
         DataFrame containing the top plot data.
     df_bottom : pd.DataFrame
@@ -654,10 +671,22 @@ def miami_draw(df_top: pd.DataFrame, df_bottom: pd.DataFrame, snp_col: str, chr_
         Path to the GTF file for gene annotation. If None, the file will be downloaded.
     save_name : str, optional
         Name of the file to save the plot as. Default is 'miami_plot.jpeg'.
-    Returns:
-    --------
+
+    Returns
+    -------
     bool
         True if the plot is successfully created and saved, False otherwise.
+
+    Raises
+    ------
+    TypeError
+        If `df_top`, `df_bottom`, `top_annotations`, or `bottom_annotations` are not pandas DataFrames.
+    TypeError
+        If `top_highlights` or `bottom_highlights` are not lists of SNP identifiers.
+    TypeError
+        If `save_name`, `legend_top`, or `legend_bottom` are not strings.
+    ValueError
+        If required columns (`chr_col`, `pos_col`, `p_col`) are not found in the DataFrames.
     """
     
     if not isinstance(df_top, pd.DataFrame):
