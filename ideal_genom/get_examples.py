@@ -236,9 +236,9 @@ def get_height_japanese_gwas() -> tuple:
 
     Notes
     -----
-        - The data is downloaded from the Japanese Database of Clinical and Genomic Data,
-        specifically the hum0014 dataset version 6 with 158k samples.
+        - The data is downloaded from the Japanese Database of Clinical and Genomic Data, specifically the hum0014 dataset version 6 with 158k samples.
         - Akiyama, Masato, et al. Characterizing rare and low-frequency height-asssociated variants in the Japanese population. *Nature Communications* **10**, (2019): 4393. https://doi.org/10.1038/s41467-019-12276-5
+    
     """
 
     library_path = Path(__file__).resolve().parent.parent
