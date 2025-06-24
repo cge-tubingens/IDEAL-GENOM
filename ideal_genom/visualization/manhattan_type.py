@@ -1,3 +1,15 @@
+"""Generate Manhattan and Miami plots for genome-wide association studies (GWAS).
+
+This module provides functions to create Manhattan and Miami plots to visualize
+the significance of genetic variants across the genome.
+
+Features:
+- Data processing and visualization of GWAS summary statistics.
+- Annotation of SNPs with gene information from various sources.
+- Highlighting and labeling of specific SNPs of interest.
+
+"""
+
 import os
 import warnings
 import logging
@@ -20,23 +32,30 @@ logger = logging.getLogger(__name__)
 
 def compute_relative_pos(data: pd.DataFrame, chr_col: str = 'CHR', pos_col: str = 'POS', p_col: str = 'p') -> pd.DataFrame:
     
-    """
-    Compute the relative position of probes/SNPs across chromosomes and add a -log10(p-value) column.
+    """Compute the relative position of probes/SNPs across chromosomes and add a -log10(p-value) column.
 
-    Parameters:
-    -----------
-    data (pd.DataFrame): 
+    Parameters
+    ----------
+    data : pd.DataFrame 
         Input DataFrame containing genomic data.
-    chr_col (str): 
+    chr_col : str
         Column name for chromosome identifiers. Default is 'CHR'.
-    pos_col (str): 
+    pos_col : str 
         Column name for base pair positions. Default is 'POS'.
-    p_col (str): 
+    p_col : str 
         Column name for p-values. Default is 'p'.
     
-    Returns:
-    --------
+    Returns
+    -------
     pd.DataFrame: DataFrame with additional columns for relative positions and -log10(p-values).
+
+    Raises
+    ------
+    TypeError 
+        If input data is not a pandas DataFrame.
+    ValueError 
+        If `chr_col`, `pos_col` or `p_col` columns are not found in the DataFrame.
+
     """
 
     if not isinstance(data, pd.DataFrame):
@@ -72,11 +91,13 @@ def compute_relative_pos(data: pd.DataFrame, chr_col: str = 'CHR', pos_col: str 
 
 def find_chromosomes_center(data: pd.DataFrame, chr_col: str = 'CHR', chr_pos_col: str = 'rel_pos') -> pd.DataFrame:
     
-    """
-    Calculate the center positions of chromosomes in a given DataFrame. This function takes a DataFrame containing chromosome data and calculates the center position for each chromosome based on the specified chromosome column and chromosome position column.
+    """Calculate the center positions of chromosomes in a given DataFrame. 
     
-    Parameters:
-    -----------
+    This function takes a DataFrame containing chromosome data and calculates the center position 
+    for each chromosome based on the specified chromosome column and chromosome position column.
+    
+    Parameters
+    ----------
     data : pd.DataFrame
         The input DataFrame containing chromosome data.
     chr_col : str, optional
@@ -87,7 +108,15 @@ def find_chromosomes_center(data: pd.DataFrame, chr_col: str = 'CHR', chr_pos_co
     Returns:
     --------
     pd.DataFrame
-        A DataFrame with columns 'CHR' and 'center', where 'CHR' contains chromosome identifiers and 'center' contains the calculated center positions for each chromosome.
+        A DataFrame with columns 'CHR' and 'center', where 'CHR' contains chromosome identifiers 
+        and 'center' contains the calculated center positions for each chromosome.
+
+    Raises
+    ------
+    TypeError
+        If the input data is not a pandas DataFrame.
+    ValueError
+        If the specified chromosome or chromosome position columns are not found in the DataFrame.
     """
 
     if not isinstance(data, pd.DataFrame):
@@ -112,11 +141,13 @@ def find_chromosomes_center(data: pd.DataFrame, chr_col: str = 'CHR', chr_pos_co
 
 def manhattan_process_data(data_df: pd.DataFrame, chr_col: str = 'CHR', pos_col: str = 'POS', p_col: str = 'p') -> dict:
     
-    """
-    Processes the input DataFrame to prepare data for a Manhattan plot.
+    """Processes the input DataFrame to prepare data for a Manhattan plot.
 
-    Parameters:
-    -----------
+    The function computes the relative positions of SNPs across chromosomes,
+    calculates the -log10(p-values), and finds the center positions of each chromosome.
+
+    Parameters
+    ----------
     data_df : pd.DataFrame
         The input DataFrame containing genomic data.
     chr_col : str (optional)
@@ -126,8 +157,8 @@ def manhattan_process_data(data_df: pd.DataFrame, chr_col: str = 'CHR', pos_col:
     p_col : str (optional)
         The column name for p-value data. Defaults to 'p'.
 
-    Returns:
-    --------
+    Returns
+    -------
     dict: A dictionary containing processed data for the Manhattan plot with the following keys:
         - 'data' (pd.DataFrame): The processed DataFrame with relative positions and log-transformed p-values.
         - 'axis' (dict): The center positions of each chromosome for plotting.
@@ -163,8 +194,8 @@ def manhattan_process_data(data_df: pd.DataFrame, chr_col: str = 'CHR', pos_col:
     return manhattan_data
 
 def manhattan_draw(data_df: pd.DataFrame, snp_col: str, chr_col: str, pos_col: str, p_col: str, plot_dir: str, to_highlight: pd.DataFrame = pd.DataFrame(), highlight_hue: str = 'hue', to_annotate: pd.DataFrame = pd.DataFrame(), gen_col: Optional[str] = None, build: str = '38', anno_source = 'ensembl', gtf_path: Optional[str] = None, save_name: str = 'manhattan_plot.png', upper_cap: Optional[float] = None, genome_line: float = 5e-8, suggestive_line: float = 1e-5, yaxis_margin: float = 10, dpi: int = 400) -> bool:
-    """
-    Generate a Manhattan plot for genomic data.
+    """Generate a Manhattan plot for genomic data.
+    
     This function creates a Manhattan plot for visualizing the statistical significance of genetic
     variants across the genome, typically used in Genome-Wide Association Studies (GWAS).
     The plot shows -log10(p-values) against genomic positions, organized by chromosome.
