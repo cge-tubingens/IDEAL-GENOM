@@ -1,6 +1,5 @@
 import os
 import time
-import matplotlib
 from matplotlib import cm
 import logging
 
@@ -28,8 +27,8 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 def filter_sumstats(data_df: pd.DataFrame, lead_snp: str, snp_col: str, p_col: str, pos_col: str, chr_col: str, pval_threshold: float = 5e-8, radius: Union[float, int] = 10e6) -> pd.DataFrame:
-    """
-    Filter GWAS summary statistics based on a lead SNP, p-value threshold and genomic region.
+    """Filter GWAS summary statistics based on a lead SNP, p-value threshold and genomic region.
+    
     This function filters a DataFrame containing GWAS summary statistics to return variants
     within a specified genomic region around a lead SNP that meet a p-value significance threshold.
     
@@ -88,8 +87,8 @@ def filter_sumstats(data_df: pd.DataFrame, lead_snp: str, snp_col: str, p_col: s
     return df_filtered
 
 def snp_annotations(data_df: pd.DataFrame, snp_col: str, pos_col: str, chr_col: str, build: str = '38', anno_source: str = 'ensembl', gtf_path: Optional[str] = None, batch_size: int = 100, request_persec: int = 15) -> pd.DataFrame:
-    """
-    Annotate SNPs with gene names and functional consequences using Ensembl databases.
+    """Annotate SNPs with gene names and functional consequences using Ensembl databases.
+    
     This function takes a DataFrame containing SNP information and adds gene name annotations
     and functional consequence annotations using Ensembl VEP (Variant Effect Predictor) API.
     
@@ -126,12 +125,46 @@ def snp_annotations(data_df: pd.DataFrame, snp_col: str, pos_col: str, chr_col: 
     ------
     ValueError
         If specified genome build version is not supported
+        If annotation source is not supported
+        If the specified columns are not found in the DataFrame
+    TypeError
+        If input parameters are not of the expected types
     
     Notes
     -----
     Supports genome builds 19/37 and 38 using different Ensembl REST API endpoints.
     Implements rate limiting and batch processing for API requests.
+
     """
+
+    if not isinstance(data_df, pd.DataFrame):
+        raise TypeError("data_df must be a pandas DataFrame.")
+    if not isinstance(snp_col, str):
+        raise TypeError("snp_col must be a string.")
+    if not isinstance(pos_col, str):
+        raise TypeError("pos_col must be a string.")
+    if not isinstance(chr_col, str):
+        raise TypeError("chr_col must be a string.")
+    if not isinstance(build, str):
+        raise TypeError("build must be a string.")
+    if not isinstance(anno_source, str):
+        raise TypeError("anno_source must be a string.")
+    if not isinstance(batch_size, int):
+        raise TypeError("batch_size must be an integer.")
+    if not isinstance(request_persec, int):
+        raise TypeError("request_persec must be an integer.")
+    if build not in ['19', '37', '38']:
+        raise ValueError(f"Unsupported build version: {build}. Supported versions are '19', '37', and '38'.")
+    if anno_source != 'ensembl':
+        raise ValueError(f"Unsupported annotation source: {anno_source}. Currently only 'ensembl' is supported.")
+    if gtf_path is not None and not isinstance(gtf_path, str):
+        raise TypeError("gtf_path must be a string or None.")
+    if snp_col not in data_df.columns:
+        raise ValueError(f"Column {snp_col} not found in the data frame.")
+    if pos_col not in data_df.columns:
+        raise ValueError(f"Column {pos_col} not found in the data frame.")
+    if chr_col not in data_df.columns:
+        raise ValueError(f"Column {chr_col} not found in the data frame.")
 
     variants_toanno = annotate_snp(
             insumstats=data_df,
@@ -222,8 +255,8 @@ def snp_annotations(data_df: pd.DataFrame, snp_col: str, pos_col: str, chr_col: 
     return variants_toanno
 
 def get_gene_information(genes:list, gtf_path: Optional[str] = None, build: str = "38", anno_source: str = 'ensembl') -> pd.DataFrame:
-    """
-    Retrieves genomic information for a list of genes using Ensembl annotation.
+    """Retrieves genomic information for a list of genes using Ensembl annotation.
+    
     This function fetches start position, end position, strand, and length information
     for each gene in the provided list using either Ensembl GRCh37 or GRCh38 annotations.
     
@@ -262,6 +295,8 @@ def get_gene_information(genes:list, gtf_path: Optional[str] = None, build: str 
     -----
     When gtf_path is None, the function will automatically download and process
     the appropriate Ensembl GTF file based on the specified build version.
+    The function uses the Ensembl Python API to fetch gene information.
+
     """
 
     if anno_source == "ensembl":
@@ -366,8 +401,8 @@ def get_gene_information(genes:list, gtf_path: Optional[str] = None, build: str 
     return pd.DataFrame(gene_info)
 
 def get_ld_matrix(data_df: pd.DataFrame, snp_col: str, pos_col: str, bfile_folder: str, bfile_name: str, output_path: str) -> dict:
-    """
-    Calculate LD matrix using PLINK for a set of SNPs.
+    """Calculate LD matrix using PLINK for a set of SNPs.
+    
     This function takes a DataFrame containing SNP information and calculates the LD (Linkage Disequilibrium)
     matrix using PLINK. The SNPs are first sorted by position, and then PLINK is used to compute
     pairwise r2 values between SNPs.
@@ -396,8 +431,13 @@ def get_ld_matrix(data_df: pd.DataFrame, snp_col: str, pos_col: str, bfile_folde
     
     Raises
     ------
-        FileNotFoundError: If any required files or directories are not found
-        ValueError: If specified columns are not found in the DataFrame
+    FileNotFoundError 
+        If any required files or directories are not found
+    TypeError
+        If input parameters are not of the expected types
+    ValueError 
+        If specified columns are not found in the DataFrame
+
     """
 
     if os.path.exists(output_path) is not True:
@@ -410,6 +450,12 @@ def get_ld_matrix(data_df: pd.DataFrame, snp_col: str, pos_col: str, bfile_folde
         raise FileNotFoundError(f"File {bfile_name}.bed not found in {bfile_folder}.")
     if os.path.exists(os.path.join(bfile_folder, f"{bfile_name}.fam")) is not True:
         raise FileNotFoundError(f"File {bfile_name}.fam not found in {bfile_folder}.")
+    if not isinstance(data_df, pd.DataFrame):
+        raise TypeError("data_df must be a pandas DataFrame.")
+    if not isinstance(snp_col, str):
+        raise TypeError("snp_col must be a string.")
+    if not isinstance(pos_col, str):
+        raise TypeError("pos_col must be a string.")
     
     if snp_col not in data_df.columns:
         raise ValueError(f"Column {snp_col} not found in the data frame.")
@@ -448,8 +494,8 @@ def get_ld_matrix(data_df: pd.DataFrame, snp_col: str, pos_col: str, bfile_folde
     return out_dict
 
 def get_zoomed_data(data_df: pd.DataFrame, lead_snp: str, snp_col: str, p_col: str, pos_col: str, chr_col: str, output_folder: str, pval_threshold: float = 5e-6, radius: Union[float, int] = 1e6, build: str = '38', anno_source: str = 'ensembl', gtf_path: Optional[str] = None, batch_size: int = 100, request_persec: int = 15) -> pd.DataFrame:
-    """
-    Filter and annotate SNP data around a lead SNP within a specified radius.
+    """Filter and annotate SNP data around a lead SNP within a specified radius.
+    
     This function filters significant SNPs in a region around a lead SNP and annotates them with gene
     names and functional consequences. The position values are scaled to Megabase pairs (Mbp).
     
@@ -502,6 +548,7 @@ def get_zoomed_data(data_df: pd.DataFrame, lead_snp: str, snp_col: str, p_col: s
     -----
     The function removes duplicate SNPs, keeping the first occurrence only.
     Position values are converted to Megabase pairs in the output DataFrame.
+
     """
 
     if not isinstance(data_df, pd.DataFrame):
@@ -568,8 +615,8 @@ def get_zoomed_data(data_df: pd.DataFrame, lead_snp: str, snp_col: str, p_col: s
     return annotated
 
 def draw_zoomed_heatmap(data_df: pd.DataFrame, lead_snp: str, snp_col: str, p_col: str, pos_col: str, chr_col: str, output_folder: str, bfile_folder: str, bfile_name: str, pval_threshold: float = 5e-6, radius: Union[int, float] = 1e6, build: str ='38', gtf_path: Optional[str] = None, anno_source: str = "ensembl", batch_size: int = 100, effect_dict: dict = dict(), extension: str = 'pdf', request_persec: int = 15) -> bool:
-    """
-    Creates a zoomed heatmap visualization around a lead SNP showing LD patterns and gene annotations.
+    """Creates a zoomed heatmap visualization around a lead SNP showing LD patterns and gene annotations.
+    
     This function generates a three-panel plot:
     1. Association plot with SNPs colored by functional consequences
     2. Gene track showing gene locations and orientations
@@ -618,6 +665,10 @@ def draw_zoomed_heatmap(data_df: pd.DataFrame, lead_snp: str, snp_col: str, p_co
     -------
     bool
         True if plot was generated successfully
+
+    Side Effects
+    ------------
+    Generates and saves a zoomed heatmap plot in the specified output folder.
     
     Notes
     -----
