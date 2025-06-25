@@ -21,7 +21,7 @@ import textalloc as ta
 
 from matplotlib.collections import LineCollection
 
-from typing import Optional, Tuple
+from typing import Optional
 
 from ideal_genom.annotations import annotate_snp
 
@@ -343,6 +343,9 @@ def beta_beta_draw(gwas_1: pd.DataFrame, gwas_2: pd.DataFrame, p_col: str, beta_
     # merge the dataframes
     df = pd.merge(gwas_1, gwas_2, on=snp_col, how='inner', suffixes=('_1', '_2'))
 
+    logger.info(f"Number of SNPs in the merged GWAS dataframe: {df.shape[0]}")
+    logger.info(f"Significance level for the plot: {significance}")
+
     # create masks to identify the SNPs that are significant in one or both GWAS
     mask_significance_1 = (df[f'{p_col}_1'] < significance)
     mask_significance_2 = (df[f'{p_col}_2'] < significance)
@@ -440,9 +443,18 @@ def beta_beta_draw(gwas_1: pd.DataFrame, gwas_2: pd.DataFrame, p_col: str, beta_
     
         logger.info("Drawing regression line...")
 
-        result = stats.linregress(df[f'{beta_col}_2'], df[f'{beta_col}_2'])
+        result = stats.linregress(df[f'{beta_col}_1'].to_numpy(), df[f'{beta_col}_2'].to_numpy())
 
-        logger.info(f"Regression line: y = {result.slope:.2f}x + {result.intercept:.2f}") # type: ignore
+        slope = result.slope # type: ignore
+        intercept = result.intercept # type: ignore
+
+        if intercept < 0:
+            intercept = -intercept
+            sign = '-'
+        else:
+            sign = '+'
+
+        logger.info(f"Regression line: y = {slope:.3f}x {sign} {intercept:.3f}") # type: ignore
 
         ax.plot(
             help_line, 
@@ -465,7 +477,7 @@ def beta_beta_draw(gwas_1: pd.DataFrame, gwas_2: pd.DataFrame, p_col: str, beta_
     # Second legend (for regression line)
     if draw_reg_line:
         reg_legend = ax.legend(
-            handles=[mlines.Line2D([], [], color='gray', linestyle='dashed', label=f"Fit: y = {result.slope:.2f}x + {result.intercept:.2f}, r={result.rvalue:.2f}, p-value={result.pvalue:.2f}")], # type: ignore
+            handles=[mlines.Line2D([], [], color='gray', linestyle='dashed', label=f"Fit: y = {slope:.3f}x {sign} {intercept:.3f}, r={result.rvalue:.3f}, p-value={result.pvalue:.3f}")], # type: ignore
             loc="lower right", 
             fontsize=7, 
             title="Regression Line"
