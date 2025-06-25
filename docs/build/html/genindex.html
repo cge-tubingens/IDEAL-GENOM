@@ -45,6 +45,9 @@
 <li class="toctree-l1"><a class="reference internal" href="gwas/gwas_glmm.html">GWAS with Generalized Linear Mixed Models (GLMM)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="preprocessing/PostImputation.html">PostImputation Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="preprocessing/preparatory.html">Preparatory Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualization/manhattan_type.html">Manhattan-type Plots Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualization/plots.html">Other Plots Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualization/zoom_heatmap.html">Zoom-Heatmap Plot Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="annotations.html">ideal_genom.annotations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api_client.html">ideal_genom.api_client</a></li>
 <li class="toctree-l1"><a class="reference internal" href="get_examples.html">ideal_genom.get_examples</a></li>
@@ -94,8 +97,10 @@
  | <a href="#N"><strong>N</strong></a>
  | <a href="#O"><strong>O</strong></a>
  | <a href="#P"><strong>P</strong></a>
+ | <a href="#Q"><strong>Q</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
+ | <a href="#T"><strong>T</strong></a>
  | <a href="#U"><strong>U</strong></a>
  | <a href="#V"><strong>V</strong></a>
  
@@ -195,6 +200,8 @@
         <li><a href="get_references.html#ideal_genom.get_references.RefSeqFetcher.base_url">(ideal_genom.get_references.RefSeqFetcher attribute)</a>
 </li>
       </ul></li>
+      <li><a href="visualization/plots.html#ideal_genom.visualization.plots.beta_beta_draw">beta_beta_draw() (in module ideal_genom.visualization.plots)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="get_references.html#ideal_genom.get_references.Ensembl37Fetcher.build">build (ideal_genom.get_references.Ensembl37Fetcher attribute)</a>
@@ -219,9 +226,13 @@
 </li>
       <li><a href="power_comp.html#ideal_genom.power_comp.calculate_power_quantitative">calculate_power_quantitative() (in module ideal_genom.power_comp)</a>
 </li>
+      <li><a href="gwas/gwas_glmm.html#ideal_genom.gwas.gwas_glmm.GWASrandom.compute_grm">compute_grm() (ideal_genom.gwas.gwas_glmm.GWASrandom method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="gwas/gwas_glmm.html#ideal_genom.gwas.gwas_glmm.GWASrandom.compute_grm">compute_grm() (ideal_genom.gwas.gwas_glmm.GWASrandom method)</a>
+      <li><a href="visualization/manhattan_type.html#ideal_genom.visualization.manhattan_type.compute_relative_pos">compute_relative_pos() (in module ideal_genom.visualization.manhattan_type)</a>
+</li>
+      <li><a href="visualization/plots.html#ideal_genom.visualization.plots.confidence_interval">confidence_interval() (in module ideal_genom.visualization.plots)</a>
 </li>
       <li><a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.GetPLINK.convert_vcf_to_plink">convert_vcf_to_plink() (ideal_genom.preprocessing.PostImputation.GetPLINK method)</a>
 </li>
@@ -237,15 +248,17 @@
 </li>
       <li><a href="get_references.html#ideal_genom.get_references.FetcherLDRegions.destination">destination (ideal_genom.get_references.FetcherLDRegions attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="get_references.html#ideal_genom.get_references.ReferenceDataFetcher.destination_folder">destination_folder (ideal_genom.get_references.ReferenceDataFetcher attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="Helpers.html#ideal_genom.Helpers.download_file">download_file() (in module ideal_genom.Helpers)</a>
 </li>
       <li><a href="get_references.html#id3">download_latest() (ideal_genom.get_references.ReferenceDataFetcher method)</a>, <a href="get_references.html#ideal_genom.get_references.ReferenceDataFetcher.download_latest">[1]</a>
 </li>
       <li><a href="get_references.html#ideal_genom.get_references.AssemblyReferenceFetcher.download_reference_file">download_reference_file() (ideal_genom.get_references.AssemblyReferenceFetcher method)</a>
+</li>
+      <li><a href="visualization/zoom_heatmap.html#ideal_genom.visualization.zoom_heatmap.draw_zoomed_heatmap">draw_zoomed_heatmap() (in module ideal_genom.visualization.zoom_heatmap)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -309,11 +322,15 @@
 </li>
       <li><a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.ParallelTaskRunner.files">files (ideal_genom.preprocessing.PostImputation.ParallelTaskRunner attribute)</a>
 </li>
+      <li><a href="visualization/zoom_heatmap.html#ideal_genom.visualization.zoom_heatmap.filter_sumstats">filter_sumstats() (in module ideal_genom.visualization.zoom_heatmap)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="preprocessing/PostImputation.html#id3">filter_variants() (ideal_genom.preprocessing.PostImputation.FilterVariants method)</a>, <a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.FilterVariants.filter_variants">[1]</a>
 </li>
       <li><a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.FilterVariants">FilterVariants (class in ideal_genom.preprocessing.PostImputation)</a>
+</li>
+      <li><a href="visualization/manhattan_type.html#ideal_genom.visualization.manhattan_type.find_chromosomes_center">find_chromosomes_center() (in module ideal_genom.visualization.manhattan_type)</a>
 </li>
       <li><a href="gwas/gwas_glm.html#ideal_genom.gwas.gwas_glm.GWASfixed.fixed_model_association_analysis">fixed_model_association_analysis() (ideal_genom.gwas.gwas_glm.GWASfixed method)</a>
 </li>
@@ -343,6 +360,8 @@
         <li><a href="get_references.html#id6">(ideal_genom.get_references.ReferenceDataFetcher method)</a>, <a href="get_references.html#ideal_genom.get_references.ReferenceDataFetcher.get_destination_folder">[1]</a>
 </li>
       </ul></li>
+      <li><a href="visualization/zoom_heatmap.html#ideal_genom.visualization.zoom_heatmap.get_gene_information">get_gene_information() (in module ideal_genom.visualization.zoom_heatmap)</a>
+</li>
       <li><a href="api_client.html#ideal_genom.api_client.GeneEnsemblRestClient.get_gene_location">get_gene_location() (ideal_genom.api_client.GeneEnsemblRestClient method)</a>
 </li>
       <li><a href="get_examples.html#ideal_genom.get_examples.get_height_japanese_gwas">get_height_japanese_gwas() (in module ideal_genom.get_examples)</a>
@@ -359,6 +378,8 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="visualization/zoom_heatmap.html#ideal_genom.visualization.zoom_heatmap.get_ld_matrix">get_ld_matrix() (in module ideal_genom.visualization.zoom_heatmap)</a>
+</li>
       <li><a href="get_references.html#ideal_genom.get_references.FetcherLDRegions.get_ld_regions">get_ld_regions() (ideal_genom.get_references.FetcherLDRegions method)</a>
 </li>
       <li><a href="annotations.html#ideal_genom.annotations.get_number_to_chr">get_number_to_chr() (in module ideal_genom.annotations)</a>
@@ -378,6 +399,8 @@
       <li><a href="get_examples.html#ideal_genom.get_examples.get_trumpet_binary_example">get_trumpet_binary_example() (in module ideal_genom.get_examples)</a>
 </li>
       <li><a href="get_examples.html#ideal_genom.get_examples.get_trumpet_quantitative_example">get_trumpet_quantitative_example() (in module ideal_genom.get_examples)</a>
+</li>
+      <li><a href="visualization/zoom_heatmap.html#ideal_genom.visualization.zoom_heatmap.get_zoomed_data">get_zoomed_data() (in module ideal_genom.visualization.zoom_heatmap)</a>
 </li>
       <li><a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.GetPLINK">GetPLINK (class in ideal_genom.preprocessing.PostImputation)</a>
 </li>
@@ -439,8 +462,6 @@
         <li><a href="gwas/gwas_glmm.html#module-ideal_genom.gwas.gwas_glmm">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     ideal_genom.Helpers
 
@@ -455,6 +476,8 @@
         <li><a href="power_comp.html#module-ideal_genom.power_comp">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     ideal_genom.preprocessing.PostImputation
 
@@ -467,6 +490,27 @@
 
       <ul>
         <li><a href="preprocessing/preparatory.html#module-ideal_genom.preprocessing.preparatory">module</a>
+</li>
+      </ul></li>
+      <li>
+    ideal_genom.visualization.manhattan_type
+
+      <ul>
+        <li><a href="visualization/manhattan_type.html#module-ideal_genom.visualization.manhattan_type">module</a>
+</li>
+      </ul></li>
+      <li>
+    ideal_genom.visualization.plots
+
+      <ul>
+        <li><a href="visualization/plots.html#module-ideal_genom.visualization.plots">module</a>
+</li>
+      </ul></li>
+      <li>
+    ideal_genom.visualization.zoom_heatmap
+
+      <ul>
+        <li><a href="visualization/zoom_heatmap.html#module-ideal_genom.visualization.zoom_heatmap">module</a>
 </li>
       </ul></li>
       <li><a href="preprocessing/PostImputation.html#id5">index_vcf() (ideal_genom.preprocessing.PostImputation.IndexVCF method)</a>, <a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.IndexVCF.index_vcf">[1]</a>
@@ -507,7 +551,19 @@
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="visualization/manhattan_type.html#ideal_genom.visualization.manhattan_type.manhattan_draw">manhattan_draw() (in module ideal_genom.visualization.manhattan_type)</a>
+</li>
+      <li><a href="visualization/manhattan_type.html#ideal_genom.visualization.manhattan_type.manhattan_process_data">manhattan_process_data() (in module ideal_genom.visualization.manhattan_type)</a>
+</li>
+      <li><a href="visualization/manhattan_type.html#ideal_genom.visualization.manhattan_type.manhattan_type_annotate">manhattan_type_annotate() (in module ideal_genom.visualization.manhattan_type)</a>
+</li>
       <li><a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.ParallelTaskRunner.max_workers">max_workers (ideal_genom.preprocessing.PostImputation.ParallelTaskRunner attribute)</a>
+</li>
+      <li><a href="visualization/manhattan_type.html#ideal_genom.visualization.manhattan_type.miami_draw">miami_draw() (in module ideal_genom.visualization.manhattan_type)</a>
+</li>
+      <li><a href="visualization/manhattan_type.html#ideal_genom.visualization.manhattan_type.miami_draw_anno_lines">miami_draw_anno_lines() (in module ideal_genom.visualization.manhattan_type)</a>
+</li>
+      <li><a href="visualization/manhattan_type.html#ideal_genom.visualization.manhattan_type.miami_process_data">miami_process_data() (in module ideal_genom.visualization.manhattan_type)</a>
 </li>
       <li>
     module
@@ -532,6 +588,12 @@
         <li><a href="preprocessing/PostImputation.html#module-ideal_genom.preprocessing.PostImputation">ideal_genom.preprocessing.PostImputation</a>
 </li>
         <li><a href="preprocessing/preparatory.html#module-ideal_genom.preprocessing.preparatory">ideal_genom.preprocessing.preparatory</a>
+</li>
+        <li><a href="visualization/manhattan_type.html#module-ideal_genom.visualization.manhattan_type">ideal_genom.visualization.manhattan_type</a>
+</li>
+        <li><a href="visualization/plots.html#module-ideal_genom.visualization.plots">ideal_genom.visualization.plots</a>
+</li>
+        <li><a href="visualization/zoom_heatmap.html#module-ideal_genom.visualization.zoom_heatmap">ideal_genom.visualization.zoom_heatmap</a>
 </li>
       </ul></li>
   </ul></td>
@@ -595,6 +657,14 @@
   </ul></td>
 </tr></table>
 
+<h2 id="Q">Q</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="visualization/plots.html#ideal_genom.visualization.plots.qqplot_draw">qqplot_draw() (in module ideal_genom.visualization.plots)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -624,6 +694,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="Helpers.html#ideal_genom.Helpers.shell_do">shell_do() (in module ideal_genom.Helpers)</a>
 </li>
+      <li><a href="visualization/zoom_heatmap.html#ideal_genom.visualization.zoom_heatmap.snp_annotations">snp_annotations() (in module ideal_genom.visualization.zoom_heatmap)</a>
+</li>
       <li><a href="get_references.html#ideal_genom.get_references.Ensembl37Fetcher.source">source (ideal_genom.get_references.Ensembl37Fetcher attribute)</a>
 
       <ul>
@@ -634,6 +706,14 @@
         <li><a href="get_references.html#ideal_genom.get_references.RefSeqFetcher.source">(ideal_genom.get_references.RefSeqFetcher attribute)</a>
 </li>
       </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="T">T</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="visualization/plots.html#ideal_genom.visualization.plots.trumpet_draw">trumpet_draw() (in module ideal_genom.visualization.plots)</a>
+</li>
   </ul></td>
 </tr></table>
 

@@ -16,6 +16,9 @@ Welcome to the documentation of `ideal-genom`, a Python library for genome-relat
    gwas/gwas_glmm.rst
    preprocessing/PostImputation.rst
    preprocessing/preparatory.rst
+   visualization/manhattan_type.rst
+   visualization/plots.rst
+   visualization/zoom_heatmap.rst
    annotations
    api_client
    get_examples

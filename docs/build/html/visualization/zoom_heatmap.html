@@ -1,0 +1,392 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zoom-Heatmap Plot Module &mdash; ideal-genom 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ideal_genom.annotations" href="../annotations.html" />
+    <link rel="prev" title="Other Plots Module" href="plots.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            ideal-genom
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../gwas/gwas_glm.html">GWAS with Generalized Linear Models (GLM)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gwas/gwas_glmm.html">GWAS with Generalized Linear Mixed Models (GLMM)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../preprocessing/PostImputation.html">PostImputation Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../preprocessing/preparatory.html">Preparatory Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="manhattan_type.html">Manhattan-type Plots Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plots.html">Other Plots Module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Zoom-Heatmap Plot Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#ideal_genom.visualization.zoom_heatmap.draw_zoomed_heatmap"><code class="docutils literal notranslate"><span class="pre">draw_zoomed_heatmap()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ideal_genom.visualization.zoom_heatmap.filter_sumstats"><code class="docutils literal notranslate"><span class="pre">filter_sumstats()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ideal_genom.visualization.zoom_heatmap.get_gene_information"><code class="docutils literal notranslate"><span class="pre">get_gene_information()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ideal_genom.visualization.zoom_heatmap.get_ld_matrix"><code class="docutils literal notranslate"><span class="pre">get_ld_matrix()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ideal_genom.visualization.zoom_heatmap.get_zoomed_data"><code class="docutils literal notranslate"><span class="pre">get_zoomed_data()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ideal_genom.visualization.zoom_heatmap.snp_annotations"><code class="docutils literal notranslate"><span class="pre">snp_annotations()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../annotations.html">ideal_genom.annotations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_client.html">ideal_genom.api_client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_examples.html">ideal_genom.get_examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_references.html">ideal_genom.get_references</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Helpers.html">ideal_genom.Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../power_comp.html">ideal_genom.power_comp</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ideal-genom</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Zoom-Heatmap Plot Module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/visualization/zoom_heatmap.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-ideal_genom.visualization.zoom_heatmap">
+<span id="zoom-heatmap-plot-module"></span><h1>Zoom-Heatmap Plot Module<a class="headerlink" href="#module-ideal_genom.visualization.zoom_heatmap" title="Link to this heading"></a></h1>
+<p>This module provides functions to create a zoomed heatmap visualization
+of SNP associations, gene annotations, and linkage disequilibrium (LD) patterns.</p>
+<p>It includes filtering and annotating SNP data, calculating LD matrices,
+and generating a three-panel plot with:
+1. Association plot with SNPs colored by functional consequences
+2. Gene track showing gene locations and orientations
+3. LD heatmap showing correlation patterns between SNPs</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="ideal_genom.visualization.zoom_heatmap.draw_zoomed_heatmap">
+<span class="sig-prename descclassname"><span class="pre">ideal_genom.visualization.zoom_heatmap.</span></span><span class="sig-name descname"><span class="pre">draw_zoomed_heatmap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lead_snp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snp_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chr_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bfile_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bfile_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pval_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000000.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">build</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'38'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gtf_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anno_source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'ensembl'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">effect_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extension</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'pdf'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_persec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">15</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#ideal_genom.visualization.zoom_heatmap.draw_zoomed_heatmap" title="Link to this definition"></a></dt>
+<dd><p>Creates a zoomed heatmap visualization around a lead SNP showing LD patterns and gene annotations.</p>
+<p>This function generates a three-panel plot:
+1. Association plot with SNPs colored by functional consequences
+2. Gene track showing gene locations and orientations
+3. LD heatmap showing correlation patterns between SNPs</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_df</strong> (<em>pd.DataFrame</em>) – Input DataFrame containing GWAS summary statistics</p></li>
+<li><p><strong>lead_snp</strong> (<em>str</em>) – Identifier of the lead SNP to center the plot around</p></li>
+<li><p><strong>snp_col</strong> (<em>str</em>) – Column name containing SNP identifiers</p></li>
+<li><p><strong>p_col</strong> (<em>str</em>) – Column name containing p-values</p></li>
+<li><p><strong>pos_col</strong> (<em>str</em>) – Column name containing genomic positions</p></li>
+<li><p><strong>chr_col</strong> (<em>str</em>) – Column name containing chromosome numbers</p></li>
+<li><p><strong>output_folder</strong> (<em>str</em>) – Path to save output files</p></li>
+<li><p><strong>bfile_folder</strong> (<em>str</em>) – Folder containing PLINK binary files</p></li>
+<li><p><strong>bfile_name</strong> (<em>str</em>) – Base name of PLINK binary files (without extensions)</p></li>
+<li><p><strong>pval_threshold</strong> (<em>float</em><em>, </em><em>optional</em>) – P-value threshold for significance, default 5e-6</p></li>
+<li><p><strong>radius</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>float</em><em>]</em><em>, </em><em>optional</em>) – Distance in base pairs to plot around lead SNP, default 1e6</p></li>
+<li><p><strong>build</strong> (<em>str</em><em>, </em><em>optional</em>) – Genome build version, default ‘38’</p></li>
+<li><p><strong>gtf_path</strong> (<em>str</em><em>, </em><em>optional</em>) – Path to custom GTF file, default None</p></li>
+<li><p><strong>anno_source</strong> (<em>str</em><em>, </em><em>optional</em>) – Source for gene annotations (‘ensembl’ or ‘refseq’), default ‘ensembl’</p></li>
+<li><p><strong>batch_size</strong> (<em>int</em><em>, </em><em>optional</em>) – Batch size for API requests, default 100</p></li>
+<li><p><strong>effect_dict</strong> (<em>dict</em><em>, </em><em>optional</em>) – Dictionary mapping functional effects to display names, default empty dict</p></li>
+<li><p><strong>extension</strong> (<em>str</em><em>, </em><em>optional</em>) – File extension for output plot, default ‘pdf’</p></li>
+<li><p><strong>request_persec</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of API requests per second allowed, default 15</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>bool</em> – True if plot was generated successfully</p></li>
+<li><p><em>Side Effects</em></p></li>
+<li><p><em>————</em></p></li>
+<li><p><em>Generates and saves a zoomed heatmap plot in the specified output folder.</em></p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TypeError</strong> – If input parameters are not of the expected types</p></li>
+<li><p><strong>FileNotFoundError</strong> – If specified folders or PLINK binary files do not exist</p></li>
+<li><p><strong>ValueError</strong> – If the required columns are not found in the DataFrame</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Required input DataFrame must contain columns for SNP IDs, p-values, positions and chromosomes.
+PLINK binary files (.bed, .bim, .fam) must exist in specified folder.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ideal_genom.visualization.zoom_heatmap.filter_sumstats">
+<span class="sig-prename descclassname"><span class="pre">ideal_genom.visualization.zoom_heatmap.</span></span><span class="sig-name descname"><span class="pre">filter_sumstats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lead_snp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snp_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chr_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pval_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5e-08</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10000000.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#ideal_genom.visualization.zoom_heatmap.filter_sumstats" title="Link to this definition"></a></dt>
+<dd><p>Filter GWAS summary statistics based on a lead SNP, p-value threshold and genomic region.</p>
+<p>This function filters a DataFrame containing GWAS summary statistics to return variants
+within a specified genomic region around a lead SNP that meet a p-value significance threshold.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_df</strong> (<em>pandas.DataFrame</em>) – DataFrame containing GWAS summary statistics</p></li>
+<li><p><strong>lead_snp</strong> (<em>str</em>) – Identifier of the lead SNP to center the region on</p></li>
+<li><p><strong>snp_col</strong> (<em>str</em>) – Name of column containing SNP identifiers</p></li>
+<li><p><strong>p_col</strong> (<em>str</em>) – Name of column containing p-values</p></li>
+<li><p><strong>pos_col</strong> (<em>str</em>) – Name of column containing genomic positions</p></li>
+<li><p><strong>chr_col</strong> (<em>str</em>) – Name of column containing chromosome numbers/identifiers</p></li>
+<li><p><strong>pval_threshold</strong> (<em>float</em><em>, </em><em>optional</em>) – P-value significance threshold for filtering variants (default: 5e-8)</p></li>
+<li><p><strong>radius</strong> (<em>float</em><em>, </em><em>optional</em>) – Size of region to include around lead SNP in base pairs (default: 10Mb)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Filtered DataFrame containing only variants that:
+- Are on the same chromosome as lead SNP
+- Meet p-value threshold
+- Fall within specified region around lead SNP
+Also includes calculated -log10(p-value) column</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The function adds a ‘log10p’ column containing -log10 transformed p-values
+to the filtered DataFrame before returning it.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ideal_genom.visualization.zoom_heatmap.get_gene_information">
+<span class="sig-prename descclassname"><span class="pre">ideal_genom.visualization.zoom_heatmap.</span></span><span class="sig-name descname"><span class="pre">get_gene_information</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">genes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gtf_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">build</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'38'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anno_source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'ensembl'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#ideal_genom.visualization.zoom_heatmap.get_gene_information" title="Link to this definition"></a></dt>
+<dd><p>Retrieves genomic information for a list of genes using Ensembl annotation.</p>
+<p>This function fetches start position, end position, strand, and length information
+for each gene in the provided list using either Ensembl GRCh37 or GRCh38 annotations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>genes</strong> (<em>list</em>) – List of gene IDs (Ensembl format)</p></li>
+<li><p><strong>gtf_path</strong> (<em>str</em><em>, </em><em>optional</em>) – Path to a custom GTF file. If None, will download and use Ensembl GTF.</p></li>
+<li><p><strong>build</strong> (<em>str</em><em>, </em><em>default &quot;38&quot;</em>) – Human genome build version. Supported values: “19”, “37”, “38”
+Note: “19” and “37” are equivalent.</p></li>
+<li><p><strong>anno_source</strong> (<em>str</em><em>, </em><em>default &quot;ensembl&quot;</em>) – Source of genome annotations. Currently only supports “ensembl”</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame containing gene information with columns:
+- gene: gene ID
+- start: gene start position
+- end: gene end position
+- strand: gene strand
+- length: gene length</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – If unsupported build version or annotation source is provided</p></li>
+<li><p><strong>FileNotFoundError</strong> – If provided GTF file path does not exist</p></li>
+<li><p><strong>TypeError</strong> – If provided GTF path is not a string</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>When gtf_path is None, the function will automatically download and process
+the appropriate Ensembl GTF file based on the specified build version.
+The function uses the Ensembl Python API to fetch gene information.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ideal_genom.visualization.zoom_heatmap.get_ld_matrix">
+<span class="sig-prename descclassname"><span class="pre">ideal_genom.visualization.zoom_heatmap.</span></span><span class="sig-name descname"><span class="pre">get_ld_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snp_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bfile_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bfile_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#ideal_genom.visualization.zoom_heatmap.get_ld_matrix" title="Link to this definition"></a></dt>
+<dd><p>Calculate LD matrix using PLINK for a set of SNPs.</p>
+<p>This function takes a DataFrame containing SNP information and calculates the LD (Linkage Disequilibrium)
+matrix using PLINK. The SNPs are first sorted by position, and then PLINK is used to compute
+pairwise r2 values between SNPs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_df</strong> (<em>pd.DataFrame</em>) – DataFrame containing SNP information</p></li>
+<li><p><strong>snp_col</strong> (<em>str</em>) – Name of the column containing SNP IDs</p></li>
+<li><p><strong>pos_col</strong> (<em>str</em>) – Name of the column containing SNP positions</p></li>
+<li><p><strong>bfile_folder</strong> (<em>str</em>) – Path to the folder containing PLINK binary files</p></li>
+<li><p><strong>bfile_name</strong> (<em>str</em>) – Base name of the PLINK binary files (without extensions)</p></li>
+<li><p><strong>output_path</strong> (<em>str</em>) – Path where output files will be saved</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p><strong>dict</strong> –</p>
+<ul class="simple">
+<li><p>‘pass’ (bool): True if process completed successfully</p></li>
+<li><p>’step’ (str): Name of the processing step (‘get_ld_matrix’)</p></li>
+<li><p>’output’ (dict): Dictionary with output file paths</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionary containing:</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>FileNotFoundError</strong> – If any required files or directories are not found</p></li>
+<li><p><strong>TypeError</strong> – If input parameters are not of the expected types</p></li>
+<li><p><strong>ValueError</strong> – If specified columns are not found in the DataFrame</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ideal_genom.visualization.zoom_heatmap.get_zoomed_data">
+<span class="sig-prename descclassname"><span class="pre">ideal_genom.visualization.zoom_heatmap.</span></span><span class="sig-name descname"><span class="pre">get_zoomed_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lead_snp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snp_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chr_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pval_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000000.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">build</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'38'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anno_source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'ensembl'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gtf_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_persec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">15</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#ideal_genom.visualization.zoom_heatmap.get_zoomed_data" title="Link to this definition"></a></dt>
+<dd><p>Filter and annotate SNP data around a lead SNP within a specified radius.</p>
+<p>This function filters significant SNPs in a region around a lead SNP and annotates them with gene
+names and functional consequences. The position values are scaled to Megabase pairs (Mbp).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_df</strong> (<em>pd.DataFrame</em>) – Input DataFrame containing SNP data</p></li>
+<li><p><strong>lead_snp</strong> (<em>str</em>) – Identifier of the lead SNP to center the region around</p></li>
+<li><p><strong>snp_col</strong> (<em>str</em>) – Name of the column containing SNP identifiers</p></li>
+<li><p><strong>p_col</strong> (<em>str</em>) – Name of the column containing p-values</p></li>
+<li><p><strong>pos_col</strong> (<em>str</em>) – Name of the column containing position information</p></li>
+<li><p><strong>chr_col</strong> (<em>str</em>) – Name of the column containing chromosome information</p></li>
+<li><p><strong>output_folder</strong> (<em>str</em>) – Path to the output folder (must exist)</p></li>
+<li><p><strong>pval_threshold</strong> (<em>float</em><em>, </em><em>optional</em>) – P-value threshold for significance filtering (default: 5e-6)</p></li>
+<li><p><strong>radius</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>int</em><em>]</em><em>, </em><em>optional</em>) – Radius around the lead SNP in base pairs (default: 1e6)</p></li>
+<li><p><strong>build</strong> (<em>str</em><em>, </em><em>optional</em>) – Genome build version (‘38’ or ‘37’) (default: ‘38’)</p></li>
+<li><p><strong>anno_source</strong> (<em>str</em><em>, </em><em>optional</em>) – Source for annotations (‘ensembl’ or other supported sources) (default: ‘ensembl’)</p></li>
+<li><p><strong>gtf_path</strong> (<em>str</em><em>, </em><em>optional</em>) – Path to GTF file for annotations (default: None)</p></li>
+<li><p><strong>batch_size</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of SNPs to process in each batch (default: 100)</p></li>
+<li><p><strong>request_persec</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of API requests per second allowed (default: 15)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Filtered and annotated DataFrame with added Mbp column and removed duplicates</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – If input parameters are not of the expected types</p></li>
+<li><p><strong>FileNotFoundError</strong> – If <cite>output_folder</cite> does not exist</p></li>
+<li><p><strong>ValueError</strong> – If no significant SNPs are found in the specified region</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The function removes duplicate SNPs, keeping the first occurrence only.
+Position values are converted to Megabase pairs in the output DataFrame.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ideal_genom.visualization.zoom_heatmap.snp_annotations">
+<span class="sig-prename descclassname"><span class="pre">ideal_genom.visualization.zoom_heatmap.</span></span><span class="sig-name descname"><span class="pre">snp_annotations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snp_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chr_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">build</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'38'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anno_source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'ensembl'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gtf_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_persec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">15</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#ideal_genom.visualization.zoom_heatmap.snp_annotations" title="Link to this definition"></a></dt>
+<dd><p>Annotate SNPs with gene names and functional consequences using Ensembl databases.</p>
+<p>This function takes a DataFrame containing SNP information and adds gene name annotations
+and functional consequence annotations using Ensembl VEP (Variant Effect Predictor) API.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_df</strong> (<em>pd.DataFrame</em>) – Input DataFrame containing SNP information</p></li>
+<li><p><strong>snp_col</strong> (<em>str</em>) – Name of column containing SNP IDs</p></li>
+<li><p><strong>pos_col</strong> (<em>str</em>) – Name of column containing genomic positions</p></li>
+<li><p><strong>chr_col</strong> (<em>str</em>) – Name of column containing chromosome numbers</p></li>
+<li><p><strong>build</strong> (<em>str</em><em>, </em><em>optional</em>) – Genome build version (‘38’, ‘37’, or ‘19’), by default ‘38’</p></li>
+<li><p><strong>anno_source</strong> (<em>str</em><em>, </em><em>optional</em>) – Source for annotations (‘ensembl’), by default ‘ensembl’</p></li>
+<li><p><strong>gtf_path</strong> (<em>str</em><em>, </em><em>optional</em>) – Path to GTF file for annotations, by default None</p></li>
+<li><p><strong>batch_size</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of SNPs to process in each API request batch, by default 100</p></li>
+<li><p><strong>request_persec</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum number of API requests per second, by default 15</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Input DataFrame augmented with gene name and functional consequence annotations.
+Added columns:
+- GENENAME: Gene name from Ensembl
+- Functional_Consequence: Most severe consequence from VEP</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – If specified genome build version is not supported
+    If annotation source is not supported
+    If the specified columns are not found in the DataFrame</p></li>
+<li><p><strong>TypeError</strong> – If input parameters are not of the expected types</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Supports genome builds 19/37 and 38 using different Ensembl REST API endpoints.
+Implements rate limiting and batch processing for API requests.</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="plots.html" class="btn btn-neutral float-left" title="Other Plots Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../annotations.html" class="btn btn-neutral float-right" title="ideal_genom.annotations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Luis Giraldo Gonzalez Ricardo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

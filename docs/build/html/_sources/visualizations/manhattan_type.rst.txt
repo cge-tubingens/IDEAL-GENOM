@@ -1,0 +1,7 @@
+Manhattan-type Plots Module
+===========================
+
+.. automodule:: ideal_genom.visualizations.manhattan_type
+   :members:
+   :undoc-members:
+   :show-inheritance:

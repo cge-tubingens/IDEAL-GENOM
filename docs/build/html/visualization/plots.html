@@ -1,0 +1,301 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Other Plots Module &mdash; ideal-genom 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Zoom-Heatmap Plot Module" href="zoom_heatmap.html" />
+    <link rel="prev" title="Manhattan-type Plots Module" href="manhattan_type.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            ideal-genom
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../gwas/gwas_glm.html">GWAS with Generalized Linear Models (GLM)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gwas/gwas_glmm.html">GWAS with Generalized Linear Mixed Models (GLMM)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../preprocessing/PostImputation.html">PostImputation Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../preprocessing/preparatory.html">Preparatory Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="manhattan_type.html">Manhattan-type Plots Module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Other Plots Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#ideal_genom.visualization.plots.beta_beta_draw"><code class="docutils literal notranslate"><span class="pre">beta_beta_draw()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ideal_genom.visualization.plots.confidence_interval"><code class="docutils literal notranslate"><span class="pre">confidence_interval()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ideal_genom.visualization.plots.qqplot_draw"><code class="docutils literal notranslate"><span class="pre">qqplot_draw()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ideal_genom.visualization.plots.trumpet_draw"><code class="docutils literal notranslate"><span class="pre">trumpet_draw()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="zoom_heatmap.html">Zoom-Heatmap Plot Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../annotations.html">ideal_genom.annotations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_client.html">ideal_genom.api_client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_examples.html">ideal_genom.get_examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_references.html">ideal_genom.get_references</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Helpers.html">ideal_genom.Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../power_comp.html">ideal_genom.power_comp</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ideal-genom</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Other Plots Module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/visualization/plots.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-ideal_genom.visualization.plots">
+<span id="other-plots-module"></span><h1>Other Plots Module<a class="headerlink" href="#module-ideal_genom.visualization.plots" title="Link to this heading"></a></h1>
+<p>This module provides functions for generating various plots for GWAS (Genome-Wide Association Studies) data.</p>
+<p>The plots include QQ plots, beta-beta scatter plots, and trumpet plots for visualizing the effect sizes and power of GWAS results.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="ideal_genom.visualization.plots.beta_beta_draw">
+<span class="sig-prename descclassname"><span class="pre">ideal_genom.visualization.plots.</span></span><span class="sig-name descname"><span class="pre">beta_beta_draw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gwas_1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gwas_2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">se_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snp_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">significance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5e-08</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotate_coincidents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotate_diff</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'beta_beta.jpeg'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">draw_error_line</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">draw_reg_line</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#ideal_genom.visualization.plots.beta_beta_draw" title="Link to this definition"></a></dt>
+<dd><p>Generates a scatter plot comparing the effect sizes (beta values) of two GWAS studies.</p>
+<p>This function creates a scatter plot of beta values from two GWAS datasets, allowing for visual comparison of effect sizes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gwas_1</strong> (<em>pd.DataFrame</em>) – DataFrame containing the first GWAS data.</p></li>
+<li><p><strong>gwas_2</strong> (<em>pd.DataFrame</em>) – DataFrame containing the second GWAS data.</p></li>
+<li><p><strong>p_col</strong> (<em>str</em>) – Column name for p-values in the GWAS dataframes.</p></li>
+<li><p><strong>beta_col</strong> (<em>str</em>) – Column name for beta values in the GWAS dataframes.</p></li>
+<li><p><strong>se_col</strong> (<em>str</em>) – Column name for standard errors in the GWAS dataframes.</p></li>
+<li><p><strong>snp_col</strong> (<em>str</em>) – Column name for SNP identifiers in the GWAS dataframes.</p></li>
+<li><p><strong>label_1</strong> (<em>str</em>) – Label for the first GWAS study.</p></li>
+<li><p><strong>label_2</strong> (<em>str</em>) – Label for the second GWAS study.</p></li>
+<li><p><strong>plot_dir</strong> (<em>str</em>) – Directory where the plot will be saved.</p></li>
+<li><p><strong>significance</strong> (<em>float</em><em>, </em><em>optional</em>) – Significance threshold for p-values, by default 5e-8.</p></li>
+<li><p><strong>annotate_coincidents</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to annotate SNPs that are significant in both GWAS studies, by default True.</p></li>
+<li><p><strong>annotate_diff</strong> (<em>float</em><em>, </em><em>optional</em>) – Minimum difference in beta values to annotate, by default np.infty.</p></li>
+<li><p><strong>save_name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the saved plot file, by default ‘beta_beta.jpeg’.</p></li>
+<li><p><strong>draw_error_line</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to draw error bars, by default True.</p></li>
+<li><p><strong>draw_reg_line</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to draw a regression line, by default True.</p></li>
+<li><p><strong>Returns</strong></p></li>
+<li><p><strong>--------</strong></p></li>
+<li><p><strong>bool</strong> – True if the plot is successfully generated and saved.</p></li>
+<li><p><strong>Effects</strong> (<em>Side</em>)</p></li>
+<li><p><strong>------------</strong></p></li>
+<li><p><strong>directory.</strong> (<em>Saves a scatter plot image to the specified</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – If the input dataframes are not pandas dataframes.
+    If the boolean parameters are not boolean.
+    If the significance level is not a float.</p></li>
+<li><p><strong>ValueError</strong> – If the specified columns are not present in the dataframes.
+    If the significance level is not a float between 0 and 1.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ideal_genom.visualization.plots.confidence_interval">
+<span class="sig-prename descclassname"><span class="pre">ideal_genom.visualization.plots.</span></span><span class="sig-name descname"><span class="pre">confidence_interval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conf_points</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1500</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conf_alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.05</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#ideal_genom.visualization.plots.confidence_interval" title="Link to this definition"></a></dt>
+<dd><p>Function to confidence intervals for the QQ plot.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> (<em>int</em>) – Number of p-values.</p></li>
+<li><p><strong>conf_points</strong> (<em>int</em><em> (</em><em>default=1500</em><em>)</em>) – Number of points to plot the confidence interval.</p></li>
+<li><p><strong>conf_col</strong> (<em>str</em><em> (</em><em>default=&quot;lightgray&quot;</em><em>)</em>) – Color of the confidence interval.</p></li>
+<li><p><strong>conf_alpha</strong> (<em>float</em><em> (</em><em>default=0.05</em><em>)</em>) – Alpha value for the confidence interval.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>ndarray</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ValueError</strong> – If n, conf_points, or conf_alpha are out of the specified ranges.</p></li>
+<li><p><strong>TypeError</strong> – If n, conf_points, or conf_alpha are not of the expected type.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ideal_genom.visualization.plots.qqplot_draw">
+<span class="sig-prename descclassname"><span class="pre">ideal_genom.visualization.plots.</span></span><span class="sig-name descname"><span class="pre">qqplot_draw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_gwas</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plots_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambda_val</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pval_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'P'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conf_color</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'lightgray'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'qq_plot.jpeg'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(10,</span> <span class="pre">10)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dpi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">500</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#ideal_genom.visualization.plots.qqplot_draw" title="Link to this definition"></a></dt>
+<dd><p>Creates a Q-Q (Quantile-Quantile) plot from GWAS results.</p>
+<p>This function generates a Q-Q plot comparing observed vs expected -log10(p-values)
+from GWAS results, including confidence intervals and genomic inflation factor (λ).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df_gwas</strong> (<em>pd.DataFrame</em>) – DataFrame containing GWAS results with p-values</p></li>
+<li><p><strong>plots_dir</strong> (<em>str</em>) – Directory path where the plot will be saved</p></li>
+<li><p><strong>lambda_val</strong> (<em>float</em><em>, </em><em>optional</em>) – Pre-calculated genomic inflation factor (λ). If None, will be calculated</p></li>
+<li><p><strong>pval_col</strong> (<em>str</em><em>, </em><em>default='P'</em>) – Name of the column containing p-values in df_gwas</p></li>
+<li><p><strong>conf_color</strong> (<em>str</em><em>, </em><em>default='lightgray'</em>) – Color for the confidence interval region</p></li>
+<li><p><strong>save_name</strong> (<em>str</em><em>, </em><em>default='qq_plot.jpeg'</em>) – Filename to save the plot</p></li>
+<li><p><strong>fig_size</strong> (<em>tuple</em><em>, </em><em>default=</em><em>(</em><em>10</em><em>,</em><em>10</em><em>)</em>) – Figure dimensions as (width, height) in inches</p></li>
+<li><p><strong>dpi</strong> (<em>int</em><em>, </em><em>default=500</em>) – Dots per inch for the saved figure resolution</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>bool</em> – True if plot is successfully created and saved</p></li>
+<li><p><em>Side Effects</em></p></li>
+<li><p><em>————</em></p></li>
+<li><p><em>Saves a QQ plot image to the specified directory.</em></p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TypeError</strong> – If input parameters are of incorrect type or format</p></li>
+<li><p><strong>FileExistsError</strong> – If plots directory does not exist</p></li>
+<li><p><strong>ValueError</strong> – If figure size is not a tuple of length 2</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The function includes data thinning to improve performance with large datasets
+and automatically calculates genomic inflation factor if not provided.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ideal_genom.visualization.plots.trumpet_draw">
+<span class="sig-prename descclassname"><span class="pre">ideal_genom.visualization.plots.</span></span><span class="sig-name descname"><span class="pre">trumpet_draw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_gwas</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snp_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chr_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maf_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">power_ts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df_freq</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_case</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_control</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_size_strategy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'median'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prevalence</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'binary'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_filter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5e-08</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_highlight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_annotate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'cool'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">power_sig_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5e-08</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">build</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'38'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anno_source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'ensembl'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gtf_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'trumpet_plot.pdf'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'linear'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#ideal_genom.visualization.plots.trumpet_draw" title="Link to this definition"></a></dt>
+<dd><p>Create a trumpet plot to visualize GWAS results with power analysis.</p>
+<p>A trumpet plot displays effect sizes (beta) versus minor allele frequencies (MAF) with power curves,
+allowing for assessment of statistical power across different allele frequencies and effect sizes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df_gwas</strong> (<em>pd.DataFrame</em>) – DataFrame containing GWAS summary statistics.</p></li>
+<li><p><strong>df_freq</strong> (<em>pd.DataFrame</em>) – DataFrame containing allele frequency information, required if MAF is not in df_gwas.</p></li>
+<li><p><strong>plot_dir</strong> (<em>str</em>) – Directory to save the plot.</p></li>
+<li><p><strong>snp_col</strong> (<em>str</em>) – Column name for SNP identifiers.</p></li>
+<li><p><strong>chr_col</strong> (<em>str</em>) – Column name for chromosome information.</p></li>
+<li><p><strong>pos_col</strong> (<em>str</em>) – Column name for genomic position.</p></li>
+<li><p><strong>maf_col</strong> (<em>str</em>) – Column name for minor allele frequency.</p></li>
+<li><p><strong>beta_col</strong> (<em>str</em>) – Column name for effect size.</p></li>
+<li><p><strong>power_ts</strong> (<em>list</em>) – List of power thresholds to plot (float values between 0 and 1).</p></li>
+<li><p><strong>n_case</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of cases (required for binary traits).</p></li>
+<li><p><strong>n_control</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of controls (required for binary traits).</p></li>
+<li><p><strong>sample_size</strong> (<em>int</em><em>, </em><em>optional</em>) – Sample size (required for quantitative traits if n_col not provided).</p></li>
+<li><p><strong>n_col</strong> (<em>str</em><em>, </em><em>default ''</em>) – Column name for sample size (for quantitative traits).</p></li>
+<li><p><strong>sample_size_strategy</strong> (<em>str</em><em>, </em><em>default 'median'</em>) – Strategy to calculate sample size when n_col is provided (‘median’, ‘mean’, ‘min’, ‘max’).</p></li>
+<li><p><strong>p_col</strong> (<em>str</em><em>, </em><em>optional</em>) – Column name for p-values.</p></li>
+<li><p><strong>prevalence</strong> (<em>float</em><em>, </em><em>optional</em>) – Disease prevalence (for binary traits). If not provided, will be inferred from n_case and n_control.</p></li>
+<li><p><strong>mode</strong> (<em>str</em><em>, </em><em>default 'binary'</em>) – Analysis mode (‘binary’ or ‘quantitative’).</p></li>
+<li><p><strong>p_filter</strong> (<em>float</em><em>, </em><em>default 5e-8</em>) – P-value threshold for filtering SNPs.</p></li>
+<li><p><strong>to_highlight</strong> (<em>list</em><em>, </em><em>default</em><em> [</em><em>]</em>) – List of SNP identifiers to highlight in the plot.</p></li>
+<li><p><strong>to_annotate</strong> (<em>pd.DataFrame</em><em>, </em><em>optional</em>) – DataFrame of SNPs to annotate with gene names.</p></li>
+<li><p><strong>gen_col</strong> (<em>str</em><em>, </em><em>optional</em>) – Column name for gene names in to_annotate DataFrame.</p></li>
+<li><p><strong>cmap</strong> (<em>str</em><em>, </em><em>default &quot;cool&quot;</em>) – Colormap for power lines.</p></li>
+<li><p><strong>power_sig_level</strong> (<em>float</em><em>, </em><em>default 5e-8</em>) – Significance level for power calculation.</p></li>
+<li><p><strong>build</strong> (<em>str</em><em>, </em><em>default '38'</em>) – Genome build version (‘38’ or ‘37’).</p></li>
+<li><p><strong>anno_source</strong> (<em>str</em><em>, </em><em>default 'ensembl'</em>) – Source for gene annotation.</p></li>
+<li><p><strong>gtf_path</strong> (<em>str</em><em>, </em><em>optional</em>) – Path to GTF file for annotation if not using online resources.</p></li>
+<li><p><strong>save_name</strong> (<em>str</em><em>, </em><em>default 'trumpet_plot.pdf'</em>) – Filename for saving the plot.</p></li>
+<li><p><strong>scale</strong> (<em>str</em><em>, </em><em>default 'linear'</em>) – Scale for x-axis (‘linear’ or ‘log’).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>bool</em> – True if plot was successfully created and saved.</p></li>
+<li><p><em>Side Effects</em></p></li>
+<li><p><em>————</em></p></li>
+<li><p><em>Saves a trumpet plot image to the specified directory.</em></p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TypeError</strong> – If input parameters are of incorrect type.
+    If <cite>power_ts</cite> is not a list of floats.</p></li>
+<li><p><strong>ValueError</strong> – If required columns are missing from the DataFrame.
+    If <cite>df_gwas</cite> is empty or None.
+    If the elements of <cite>power_ts</cite> are not between 0 and 1.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>For binary traits, either prevalence or both n_case and n_control must be provided.
+For quantitative traits, either sample_size or n_col must be provided.</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="manhattan_type.html" class="btn btn-neutral float-left" title="Manhattan-type Plots Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="zoom_heatmap.html" class="btn btn-neutral float-right" title="Zoom-Heatmap Plot Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Luis Giraldo Gonzalez Ricardo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
