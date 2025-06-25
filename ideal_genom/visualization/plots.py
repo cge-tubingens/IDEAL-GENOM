@@ -368,8 +368,19 @@ def beta_beta_draw(gwas_1: pd.DataFrame, gwas_2: pd.DataFrame, p_col: str, beta_
     df = df.dropna(subset=[f'P-val<{significance}']).reset_index(drop=True)
 
     # set the limits for the plot
-    max_beta_x = df[f'{beta_col}_1'].abs().max() + 0.01
-    max_beta_y = df[f'{beta_col}_2'].abs().max() + 0.01
+
+    x_beta_plus_sd = df[f'{beta_col}_1'] + df[f'{se_col}_1'].abs()
+    x_beta_minus_sd = df[f'{beta_col}_1'] - df[f'{se_col}_1'].abs()
+    x_max = max(x_beta_plus_sd.max(), abs(x_beta_minus_sd.min()))
+
+    max_beta_x = x_max + 0.01
+
+    y_beta_plus_sd = df[f'{beta_col}_2'] + df[f'{se_col}_2'].abs()
+    y_beta_minus_sd = df[f'{beta_col}_2'] - df[f'{se_col}_2'].abs()
+    y_max = max(y_beta_plus_sd.max(), abs(y_beta_minus_sd.min()))
+
+    max_beta_y = y_max + 0.01
+
     max_coords = max(max_beta_x, max_beta_y)
 
     x_lim = (-max_coords, max_coords)
