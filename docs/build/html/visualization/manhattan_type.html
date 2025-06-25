@@ -109,17 +109,17 @@ the significance of genetic variants across the genome.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> (<em>pd.DataFrame</em>) – Input DataFrame containing genomic data.</p></li>
+<li><p><strong>data</strong> (<em>pandas.DataFrame</em>) – Input DataFrame containing genomic data.</p></li>
 <li><p><strong>chr_col</strong> (<em>str</em>) – Column name for chromosome identifiers. Default is ‘CHR’.</p></li>
 <li><p><strong>pos_col</strong> (<em>str</em>) – Column name for base pair positions. Default is ‘POS’.</p></li>
 <li><p><strong>p_col</strong> (<em>str</em>) – Column name for p-values. Default is ‘p’.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>pd.DataFrame</strong></p>
+<dd class="field-even"><p>DataFrame with additional columns for relative positions and -log10(p-values).</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>DataFrame with additional columns for relative positions and -log10(p-values).</p>
+<dd class="field-odd"><p>pandas.DataFrame</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -139,14 +139,17 @@ for each chromosome based on the specified chromosome column and chromosome posi
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> (<em>pd.DataFrame</em>) – The input DataFrame containing chromosome data.</p></li>
+<li><p><strong>data</strong> (<em>pandas.DataFrame</em>) – The input DataFrame containing chromosome data.</p></li>
 <li><p><strong>chr_col</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the column representing chromosome identifiers (default is ‘CHR’).</p></li>
 <li><p><strong>chr_pos_col</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the column representing relative positions within chromosomes (default is ‘rel_pos’).</p></li>
-<li><p><strong>Returns</strong></p></li>
-<li><p><strong>--------</strong></p></li>
-<li><p><strong>pd.DataFrame</strong> – A DataFrame with columns ‘CHR’ and ‘center’, where ‘CHR’ contains chromosome identifiers
-and ‘center’ contains the calculated center positions for each chromosome.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A DataFrame with columns ‘CHR’ and ‘center’, where ‘CHR’ contains chromosome identifiers
+and ‘center’ contains the calculated center positions for each chromosome.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -167,15 +170,15 @@ The plot shows -log10(p-values) against genomic positions, organized by chromoso
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>data_df</strong> (<em>pd.DataFrame</em>) – DataFrame containing the SNP data to be plotted.</p></li>
+<li><p><strong>data_df</strong> (<em>pandas.DataFrame</em>) – DataFrame containing the SNP data to be plotted.</p></li>
 <li><p><strong>snp_col</strong> (<em>str</em>) – Column name in data_df that contains the SNP identifiers.</p></li>
 <li><p><strong>chr_col</strong> (<em>str</em>) – Column name in data_df that contains the chromosome information.</p></li>
 <li><p><strong>pos_col</strong> (<em>str</em>) – Column name in data_df that contains the position information.</p></li>
 <li><p><strong>p_col</strong> (<em>str</em>) – Column name in data_df that contains the p-values.</p></li>
 <li><p><strong>plot_dir</strong> (<em>str</em>) – Directory path where the plot will be saved.</p></li>
-<li><p><strong>to_highlight</strong> (<em>pd.DataFrame</em><em>, </em><em>optional</em>) – DataFrame containing SNPs to be highlighted in the plot.</p></li>
+<li><p><strong>to_highlight</strong> (<em>pandas.DataFrame</em><em>, </em><em>optional</em>) – DataFrame containing SNPs to be highlighted in the plot.</p></li>
 <li><p><strong>highlight_hue</strong> (<em>str</em><em>, </em><em>default='hue'</em>) – Column name in to_highlight to be used for color-coding highlighted SNPs.</p></li>
-<li><p><strong>to_annotate</strong> (<em>pd.DataFrame</em><em>, </em><em>optional</em>) – DataFrame containing SNPs to be annotated in the plot.</p></li>
+<li><p><strong>to_annotate</strong> (<em>pandas.DataFrame</em><em>, </em><em>optional</em>) – DataFrame containing SNPs to be annotated in the plot.</p></li>
 <li><p><strong>gen_col</strong> (<em>str</em><em>, </em><em>optional</em>) – Column name for gene information to be used in annotation.</p></li>
 <li><p><strong>build</strong> (<em>str</em><em>, </em><em>default='38'</em>) – Genome build version (‘38’ for GRCh38, etc.).</p></li>
 <li><p><strong>anno_source</strong> (<em>str</em><em>, </em><em>default='ensembl'</em>) – Source for gene annotation information.</p></li>
@@ -189,22 +192,21 @@ The plot shows -log10(p-values) against genomic positions, organized by chromoso
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><em>bool</em> – True if the plot was successfully created and saved.</p></li>
-<li><p><em>Side Effects</em></p></li>
-<li><p><em>————</em></p></li>
-<li><p><em>Saves a Manhattan plot image to the specified directory.</em></p></li>
-</ul>
-</p>
+<dd class="field-even"><p>True if the plot was successfully created and saved.</p>
 </dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – If input data is not a pandas DataFrame or to_highlight/to_annotate are not of correct type.</p></li>
 <li><p><strong>ValueError</strong> – If required columns are not found in the input DataFrame.</p></li>
 <li><p><strong>FileNotFoundError</strong> – If the specified plot directory does not exist.</p></li>
 </ul>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>Saves a Manhattan plot image to the specified directory.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -216,23 +218,42 @@ calculates the -log10(p-values), and finds the center positions of each chromoso
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>data_df</strong> (<em>pd.DataFrame</em>) – The input DataFrame containing genomic data.</p></li>
+<li><p><strong>data_df</strong> (<em>pandas.DataFrame</em>) – The input DataFrame containing genomic data.</p></li>
 <li><p><strong>chr_col</strong> (<em>str</em><em> (</em><em>optional</em><em>)</em>) – The column name for chromosome data. Defaults to ‘CHR’.</p></li>
 <li><p><strong>pos_col</strong> (<em>str</em><em> (</em><em>optional</em><em>)</em>) – The column name for position data. Defaults to ‘POS’.</p></li>
 <li><p><strong>p_col</strong> (<em>str</em><em> (</em><em>optional</em><em>)</em>) – The column name for p-value data. Defaults to ‘p’.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><p><strong>dict</strong> –</p>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – If <cite>data_df</cite> is not a pandas DataFrame.
+    If <cite>chr_col</cite>, <cite>pos_col</cite>, or <cite>p_col</cite> are not strings.</p></li>
+<li><p><strong>ValueError</strong> – If the specified columns (<cite>chr_col</cite>, <cite>pos_col</cite>, <cite>p_col</cite>) are not found in the DataFrame.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><p>A dictionary containing processed data for the Manhattan plot with the following keys:</p>
 <ul class="simple">
-<li><p>‘data’ (pd.DataFrame): The processed DataFrame with relative positions and log-transformed p-values.</p></li>
-<li><p>’axis’ (dict): The center positions of each chromosome for plotting.</p></li>
-<li><p>’maxp’ (float): The maximum log-transformed p-value.</p></li>
+<li><dl class="simple">
+<dt>data<span class="classifier">pandas.DataFrame</span></dt><dd><p>The processed DataFrame with relative positions and log-transformed p-values.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>axis<span class="classifier">dict</span></dt><dd><p>The center positions of each chromosome for plotting.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>maxp<span class="classifier">float</span></dt><dd><p>The maximum log-transformed p-value.</p>
+</dd>
+</dl>
+</li>
 </ul>
 </p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A dictionary containing processed data for the Manhattan plot with the following keys:</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
 </dd>
 </dl>
 </dd></dl>
@@ -246,8 +267,8 @@ calculates the -log10(p-values), and finds the center positions of each chromoso
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>axes</strong> (<em>Axes</em><em> (</em><em>matplotlib.axes.Axes</em><em>)</em>) – The matplotlib axes object where the Manhattan plot is drawn.</p></li>
-<li><p><strong>data</strong> (<em>pd.DataFrame</em>) – DataFrame containing the scatter plot data with columns ‘rel_pos’ and ‘log10p’.</p></li>
-<li><p><strong>variants_toanno</strong> (<em>pd.DataFrame</em>) – DataFrame containing the variants to annotate with columns ‘rel_pos’, ‘log10p’, and ‘GENENAME’.</p></li>
+<li><p><strong>data</strong> (<em>pandas.DataFrame</em>) – DataFrame containing the scatter plot data with columns ‘rel_pos’ and ‘log10p’.</p></li>
+<li><p><strong>variants_toanno</strong> (<em>pandas.DataFrame</em>) – DataFrame containing the variants to annotate with columns ‘rel_pos’, ‘log10p’, and ‘GENENAME’.</p></li>
 <li><p><strong>max_x_axis</strong> (<em>float</em>) – The maximum value for the x-axis.</p></li>
 <li><p><strong>suggestive_line</strong> (<em>float</em>) – The y-value for the suggestive significance line.</p></li>
 <li><p><strong>genome_line</strong> (<em>float</em>) – The y-value for the genome-wide significance line.</p></li>
@@ -257,7 +278,7 @@ calculates the -log10(p-values), and finds the center positions of each chromoso
 <dd class="field-even"><p>The matplotlib axes object with annotations.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Axes</p>
+<dd class="field-odd"><p>matplotlib.axes.Axes.</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>TypeError</strong> – If the input parameters are not of the expected types.</p>
@@ -272,8 +293,8 @@ calculates the -log10(p-values), and finds the center positions of each chromoso
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>df_top</strong> (<em>pd.DataFrame</em>) – DataFrame containing the top plot data.</p></li>
-<li><p><strong>df_bottom</strong> (<em>pd.DataFrame</em>) – DataFrame containing the bottom plot data.</p></li>
+<li><p><strong>df_top</strong> (<em>pandas.DataFrame</em>) – DataFrame containing the top plot data.</p></li>
+<li><p><strong>df_bottom</strong> (<em>pandas.DataFrame</em>) – DataFrame containing the bottom plot data.</p></li>
 <li><p><strong>snp_col</strong> (<em>str</em>) – Column name for SNP identifiers.</p></li>
 <li><p><strong>chr_col</strong> (<em>str</em>) – Column name for chromosome identifiers.</p></li>
 <li><p><strong>pos_col</strong> (<em>str</em>) – Column name for base pair positions.</p></li>
@@ -288,16 +309,13 @@ calculates the -log10(p-values), and finds the center positions of each chromoso
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><em>bool</em> – True if the plot is successfully created and saved, False otherwise.</p></li>
-<li><p><em>Side Effects</em></p></li>
-<li><p><em>————</em></p></li>
-<li><p><em>Saves a Miami plot image to the specified directory.</em></p></li>
-</ul>
-</p>
+<dd class="field-even"><p>True if the plot is successfully created and saved, False otherwise.</p>
 </dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – If <cite>df_top</cite>, <cite>df_bottom</cite>, <cite>top_annotations</cite>, or <cite>bottom_annotations</cite> are not pandas DataFrames.</p></li>
 <li><p><strong>TypeError</strong> – If <cite>top_highlights</cite> or <cite>bottom_highlights</cite> are not lists of SNP identifiers.</p></li>
 <li><p><strong>TypeError</strong> – If <cite>save_name</cite>, <cite>legend_top</cite>, or <cite>legend_bottom</cite> are not strings.</p></li>
@@ -305,6 +323,8 @@ calculates the -log10(p-values), and finds the center positions of each chromoso
 </ul>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>Saves a Miami plot image to the specified directory.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -317,14 +337,14 @@ calculates the -log10(p-values), and finds the center positions of each chromoso
 <li><p><strong>renderer</strong> (<em>RendererBase</em>) – The renderer used to draw the plot.</p></li>
 <li><p><strong>axes</strong> (<em>Axes</em><em> (</em><em>matplotlib.axes.Axes</em><em>)</em>) – The axes on which the plot is drawn.</p></li>
 <li><p><strong>texts</strong> (<em>list</em>) – A list of text objects to annotate.</p></li>
-<li><p><strong>variants_toanno</strong> (<em>pd.DataFrame</em>) – A DataFrame containing the data points to annotate, with columns ‘GENENAME’, ‘rel_pos’, and ‘log10p’.</p></li>
+<li><p><strong>variants_toanno</strong> (<em>pandas.DataFrame</em>) – A DataFrame containing the data points to annotate, with columns ‘GENENAME’, ‘rel_pos’, and ‘log10p’.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The axes with the annotation lines drawn.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Axes</p>
+<dd class="field-odd"><p>matplotlib.axes.Axes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -338,22 +358,40 @@ calculates the -log10(p-values), and finds the center positions of chromosomes.<
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>data_top</strong> (<em>pd.DataFrame</em>) – The top part of the data to be processed.</p></li>
-<li><p><strong>data_bottom</strong> (<em>pd.DataFrame</em>) – The bottom part of the data to be processed.</p></li>
+<li><p><strong>data_top</strong> (<em>pandas.DataFrame</em>) – The top part of the data to be processed.</p></li>
+<li><p><strong>data_bottom</strong> (<em>pandas.DataFrame</em>) – The bottom part of the data to be processed.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><p><strong>dict</strong> –</p>
-<ul class="simple">
-<li><p>‘upper’: DataFrame containing the top part of the processed data.</p></li>
-<li><p>’lower’: DataFrame containing the bottom part of the processed data.</p></li>
-<li><p>’axis’: The center positions of the chromosomes.</p></li>
-<li><p>’maxp’: The maximum -log10(p-value) in the data.</p></li>
+<dd class="field-even"><p><dl class="simple">
+<dt>A dictionary containing the processed data with the following keys:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>’upper’<span class="classifier">pandas.DataFrame</span></dt><dd><p>DataFrame containing the top part of the processed data.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>’lower’<span class="classifier">pandas.DataFrame</span></dt><dd><p>DataFrame containing the bottom part of the processed data.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>’axis’<span class="classifier">pandas.DataFrame</span></dt><dd><p>DataFrame with the center positions of the chromosomes.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>’maxp’<span class="classifier">float</span></dt><dd><p>The maximum -log10(p-value) in the data.</p>
+</dd>
+</dl>
+</li>
 </ul>
+</dd>
+</dl>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A dictionary containing the processed data with the following keys:</p>
+<dd class="field-odd"><p>dict</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
