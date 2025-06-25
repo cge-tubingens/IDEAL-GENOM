@@ -1,3 +1,13 @@
+"""This module provides functions to create a zoomed heatmap visualization
+of SNP associations, gene annotations, and linkage disequilibrium (LD) patterns.
+
+It includes filtering and annotating SNP data, calculating LD matrices,
+and generating a three-panel plot with:
+1. Association plot with SNPs colored by functional consequences
+2. Gene track showing gene locations and orientations
+3. LD heatmap showing correlation patterns between SNPs
+"""
+
 import os
 import time
 from matplotlib import cm
