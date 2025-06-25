@@ -40,7 +40,7 @@ def qqplot_draw(df_gwas:pd.DataFrame, plots_dir: str, lambda_val: Optional[float
 
     Parameters
     ----------
-    df_gwas : pd.DataFrame
+    df_gwas : pandas.DataFrame
         DataFrame containing GWAS results with p-values
     plots_dir : str
         Directory path where the plot will be saved
@@ -62,10 +62,6 @@ def qqplot_draw(df_gwas:pd.DataFrame, plots_dir: str, lambda_val: Optional[float
     bool
         True if plot is successfully created and saved
 
-    Side Effects
-    ------------
-    Saves a QQ plot image to the specified directory.
-
     Raises
     ------
     TypeError
@@ -79,7 +75,7 @@ def qqplot_draw(df_gwas:pd.DataFrame, plots_dir: str, lambda_val: Optional[float
     -----
     The function includes data thinning to improve performance with large datasets
     and automatically calculates genomic inflation factor if not provided.
-
+    Saves a QQ plot image to the specified directory.
     """
 
     if not isinstance(df_gwas, pd.DataFrame):
@@ -211,7 +207,6 @@ def confidence_interval(n: int, conf_points: int = 1500, conf_alpha: float = 0.0
         If n, conf_points, or conf_alpha are out of the specified ranges.
     TypeError
         If n, conf_points, or conf_alpha are not of the expected type.
-
     """
 
     if not isinstance(n, int):
@@ -254,9 +249,9 @@ def beta_beta_draw(gwas_1: pd.DataFrame, gwas_2: pd.DataFrame, p_col: str, beta_
 
     Parameters
     ----------
-    gwas_1 : pd.DataFrame
+    gwas_1 : pandas.DataFrame
         DataFrame containing the first GWAS data.
-    gwas_2 : pd.DataFrame
+    gwas_2 : pandas.DataFrame
         DataFrame containing the second GWAS data.
     p_col : str
         Column name for p-values in the GWAS dataframes.
@@ -290,10 +285,6 @@ def beta_beta_draw(gwas_1: pd.DataFrame, gwas_2: pd.DataFrame, p_col: str, beta_
     bool
         True if the plot is successfully generated and saved.
 
-    Side Effects
-    ------------
-    Saves a scatter plot image to the specified directory.
-
     Raises
     ------
     TypeError
@@ -303,6 +294,10 @@ def beta_beta_draw(gwas_1: pd.DataFrame, gwas_2: pd.DataFrame, p_col: str, beta_
     ValueError
         If the specified columns are not present in the dataframes.
         If the significance level is not a float between 0 and 1.
+
+    Notes
+    -----
+    Saves a scatter plot image to the specified directory.
     """
 
     # check if the dataframes are pandas dataframes
@@ -457,7 +452,6 @@ def beta_beta_draw(gwas_1: pd.DataFrame, gwas_2: pd.DataFrame, p_col: str, beta_
             lw       =0.5
         )
 
-
     ax.set_xlim(x_lim)
     ax.set_ylim(y_lim)
     
@@ -558,9 +552,9 @@ def trumpet_draw(df_gwas: pd.DataFrame, plot_dir: str, snp_col: str, chr_col: st
     
     Parameters
     ----------
-    df_gwas : pd.DataFrame
+    df_gwas : pandas.DataFrame
         DataFrame containing GWAS summary statistics.
-    df_freq : pd.DataFrame
+    df_freq : pandas.DataFrame
         DataFrame containing allele frequency information, required if MAF is not in df_gwas.
     plot_dir : str
         Directory to save the plot.
@@ -620,10 +614,6 @@ def trumpet_draw(df_gwas: pd.DataFrame, plot_dir: str, snp_col: str, chr_col: st
     bool
         True if plot was successfully created and saved.
 
-    Side Effects
-    ------------
-    Saves a trumpet plot image to the specified directory.
-
     Raises
     ------
     TypeError
@@ -639,6 +629,7 @@ def trumpet_draw(df_gwas: pd.DataFrame, plot_dir: str, snp_col: str, chr_col: st
     -----
     For binary traits, either prevalence or both n_case and n_control must be provided.
     For quantitative traits, either sample_size or n_col must be provided.
+    Saves a trumpet plot image to the specified directory.
     """
 
     if not isinstance(df_gwas, pd.DataFrame):

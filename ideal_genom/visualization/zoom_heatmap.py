@@ -65,9 +65,9 @@ def filter_sumstats(data_df: pd.DataFrame, lead_snp: str, snp_col: str, p_col: s
     -------
     pandas.DataFrame
         Filtered DataFrame containing only variants that:
-        - Are on the same chromosome as lead SNP
-        - Meet p-value threshold
-        - Fall within specified region around lead SNP
+            - Are on the same chromosome as lead SNP
+            - Meet p-value threshold
+            - Fall within specified region around lead SNP
         Also includes calculated -log10(p-value) column
     
     Notes
@@ -104,7 +104,7 @@ def snp_annotations(data_df: pd.DataFrame, snp_col: str, pos_col: str, chr_col: 
     
     Parameters
     ----------
-    data_df : pd.DataFrame
+    data_df : pandas.DataFrame
         Input DataFrame containing SNP information
     snp_col : str
         Name of column containing SNP IDs
@@ -144,7 +144,6 @@ def snp_annotations(data_df: pd.DataFrame, snp_col: str, pos_col: str, chr_col: 
     -----
     Supports genome builds 19/37 and 38 using different Ensembl REST API endpoints.
     Implements rate limiting and batch processing for API requests.
-
     """
 
     if not isinstance(data_df, pd.DataFrame):
@@ -286,11 +285,11 @@ def get_gene_information(genes:list, gtf_path: Optional[str] = None, build: str 
     -------
     pandas.DataFrame
         DataFrame containing gene information with columns:
-        - gene: gene ID
-        - start: gene start position
-        - end: gene end position
-        - strand: gene strand
-        - length: gene length
+            - gene: gene ID
+            - start: gene start position
+            - end: gene end position
+            - strand: gene strand
+            - length: gene length
     
     Raises
     ------
@@ -306,7 +305,6 @@ def get_gene_information(genes:list, gtf_path: Optional[str] = None, build: str 
     When gtf_path is None, the function will automatically download and process
     the appropriate Ensembl GTF file based on the specified build version.
     The function uses the Ensembl Python API to fetch gene information.
-
     """
 
     if anno_source == "ensembl":
@@ -419,7 +417,7 @@ def get_ld_matrix(data_df: pd.DataFrame, snp_col: str, pos_col: str, bfile_folde
     
     Parameters
     ----------
-    data_df : pd.DataFrame 
+    data_df : pandas.DataFrame 
         DataFrame containing SNP information
     snp_col : str 
         Name of the column containing SNP IDs
@@ -434,10 +432,14 @@ def get_ld_matrix(data_df: pd.DataFrame, snp_col: str, pos_col: str, bfile_folde
     
     Returns
     -------
-    dict: Dictionary containing:
-        - 'pass' (bool): True if process completed successfully
-        - 'step' (str): Name of the processing step ('get_ld_matrix')
-        - 'output' (dict): Dictionary with output file paths
+    dict 
+        Dictionary containing:
+            - 'pass' : bool 
+                True if process completed successfully
+            - 'step' : str 
+                Name of the processing step ('get_ld_matrix')
+            - 'output' : dict 
+                Dictionary with output file paths
     
     Raises
     ------
@@ -447,7 +449,6 @@ def get_ld_matrix(data_df: pd.DataFrame, snp_col: str, pos_col: str, bfile_folde
         If input parameters are not of the expected types
     ValueError 
         If specified columns are not found in the DataFrame
-
     """
 
     if os.path.exists(output_path) is not True:
@@ -511,7 +512,7 @@ def get_zoomed_data(data_df: pd.DataFrame, lead_snp: str, snp_col: str, p_col: s
     
     Parameters
     ----------
-    data_df : pd.DataFrame
+    data_df : pandas.DataFrame
         Input DataFrame containing SNP data
     lead_snp : str
         Identifier of the lead SNP to center the region around
@@ -542,7 +543,7 @@ def get_zoomed_data(data_df: pd.DataFrame, lead_snp: str, snp_col: str, p_col: s
     
     Returns
     -------
-    pd.DataFrame
+    pandas.DataFrame
         Filtered and annotated DataFrame with added Mbp column and removed duplicates
     
     Raises
@@ -558,7 +559,6 @@ def get_zoomed_data(data_df: pd.DataFrame, lead_snp: str, snp_col: str, p_col: s
     -----
     The function removes duplicate SNPs, keeping the first occurrence only.
     Position values are converted to Megabase pairs in the output DataFrame.
-
     """
 
     if not isinstance(data_df, pd.DataFrame):
@@ -577,8 +577,7 @@ def get_zoomed_data(data_df: pd.DataFrame, lead_snp: str, snp_col: str, p_col: s
         raise TypeError("pval_threshold must be a float.")
     if not isinstance(radius, float) and not isinstance(radius, int):
         raise TypeError("radius must be a float or an integer.")
-        
-    
+
     if os.path.isdir(output_folder) is not True:
         raise FileNotFoundError(f"Folder {output_folder} not found.")
     
@@ -634,7 +633,7 @@ def draw_zoomed_heatmap(data_df: pd.DataFrame, lead_snp: str, snp_col: str, p_co
     
     Parameters
     ----------
-    data_df : pd.DataFrame
+    data_df : pandas.DataFrame
         Input DataFrame containing GWAS summary statistics
     lead_snp : str
         Identifier of the lead SNP to center the plot around
@@ -676,10 +675,6 @@ def draw_zoomed_heatmap(data_df: pd.DataFrame, lead_snp: str, snp_col: str, p_co
     bool
         True if plot was generated successfully
 
-    Side Effects
-    ------------
-    Generates and saves a zoomed heatmap plot in the specified output folder.
-
     Raises
     ------
     TypeError
@@ -693,7 +688,7 @@ def draw_zoomed_heatmap(data_df: pd.DataFrame, lead_snp: str, snp_col: str, p_co
     -----
     Required input DataFrame must contain columns for SNP IDs, p-values, positions and chromosomes.
     PLINK binary files (.bed, .bim, .fam) must exist in specified folder.
-
+    Generates and saves a zoomed heatmap plot in the specified output folder.
     """
 
     if not isinstance(data_df, pd.DataFrame):

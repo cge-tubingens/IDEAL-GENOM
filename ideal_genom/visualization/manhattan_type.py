@@ -36,7 +36,7 @@ def compute_relative_pos(data: pd.DataFrame, chr_col: str = 'CHR', pos_col: str 
 
     Parameters
     ----------
-    data : pd.DataFrame 
+    data : pandas.DataFrame 
         Input DataFrame containing genomic data.
     chr_col : str
         Column name for chromosome identifiers. Default is 'CHR'.
@@ -47,7 +47,8 @@ def compute_relative_pos(data: pd.DataFrame, chr_col: str = 'CHR', pos_col: str 
     
     Returns
     -------
-    pd.DataFrame: DataFrame with additional columns for relative positions and -log10(p-values).
+    pandas.DataFrame 
+        DataFrame with additional columns for relative positions and -log10(p-values).
 
     Raises
     ------
@@ -55,7 +56,6 @@ def compute_relative_pos(data: pd.DataFrame, chr_col: str = 'CHR', pos_col: str 
         If input data is not a pandas DataFrame.
     ValueError 
         If `chr_col`, `pos_col` or `p_col` columns are not found in the DataFrame.
-
     """
 
     if not isinstance(data, pd.DataFrame):
@@ -98,16 +98,16 @@ def find_chromosomes_center(data: pd.DataFrame, chr_col: str = 'CHR', chr_pos_co
     
     Parameters
     ----------
-    data : pd.DataFrame
+    data : pandas.DataFrame
         The input DataFrame containing chromosome data.
     chr_col : str, optional
         The name of the column representing chromosome identifiers (default is 'CHR').
     chr_pos_col : str, optional
         The name of the column representing relative positions within chromosomes (default is 'rel_pos').
     
-    Returns:
-    --------
-    pd.DataFrame
+    Returns
+    -------
+    pandas.DataFrame
         A DataFrame with columns 'CHR' and 'center', where 'CHR' contains chromosome identifiers 
         and 'center' contains the calculated center positions for each chromosome.
 
@@ -117,7 +117,6 @@ def find_chromosomes_center(data: pd.DataFrame, chr_col: str = 'CHR', chr_pos_co
         If the input data is not a pandas DataFrame.
     ValueError
         If the specified chromosome or chromosome position columns are not found in the DataFrame.
-    
     """
 
     if not isinstance(data, pd.DataFrame):
@@ -149,7 +148,7 @@ def manhattan_process_data(data_df: pd.DataFrame, chr_col: str = 'CHR', pos_col:
 
     Parameters
     ----------
-    data_df : pd.DataFrame
+    data_df : pandas.DataFrame
         The input DataFrame containing genomic data.
     chr_col : str (optional)
         The column name for chromosome data. Defaults to 'CHR'.
@@ -158,17 +157,35 @@ def manhattan_process_data(data_df: pd.DataFrame, chr_col: str = 'CHR', pos_col:
     p_col : str (optional)
         The column name for p-value data. Defaults to 'p'.
 
+    Raises
+    ------
+    TypeError
+        If `data_df` is not a pandas DataFrame.
+        If `chr_col`, `pos_col`, or `p_col` are not strings.
+    ValueError
+        If the specified columns (`chr_col`, `pos_col`, `p_col`) are not found in the DataFrame.
+
     Returns
     -------
-    dict: A dictionary containing processed data for the Manhattan plot with the following keys:
-        - 'data' (pd.DataFrame): The processed DataFrame with relative positions and log-transformed p-values.
-        - 'axis' (dict): The center positions of each chromosome for plotting.
-        - 'maxp' (float): The maximum log-transformed p-value.
-    
+    dict
+        A dictionary containing processed data for the Manhattan plot with the following keys:
+
+        - data : pandas.DataFrame
+            The processed DataFrame with relative positions and log-transformed p-values.
+        - axis : dict
+            The center positions of each chromosome for plotting.
+        - maxp : float
+            The maximum log-transformed p-value.
     """
 
     if not isinstance(data_df, pd.DataFrame):
         raise TypeError("Input data must be a pandas DataFrame.")
+    if not isinstance(chr_col, str):
+        raise TypeError("chr_col must be a string.")
+    if not isinstance(pos_col, str):
+        raise TypeError("pos_col must be a string.")
+    if not isinstance(p_col, str):
+        raise TypeError("p_col must be a string.")
     if chr_col not in data_df.columns:
         raise ValueError(f"Column '{chr_col}' not found in the input DataFrame.")
     if pos_col not in data_df.columns:
@@ -205,7 +222,7 @@ def manhattan_draw(data_df: pd.DataFrame, snp_col: str, chr_col: str, pos_col: s
     
     Parameters
     ----------
-    data_df : pd.DataFrame
+    data_df : pandas.DataFrame
         DataFrame containing the SNP data to be plotted.
     snp_col : str
         Column name in data_df that contains the SNP identifiers.
@@ -217,11 +234,11 @@ def manhattan_draw(data_df: pd.DataFrame, snp_col: str, chr_col: str, pos_col: s
         Column name in data_df that contains the p-values.
     plot_dir : str
         Directory path where the plot will be saved.
-    to_highlight : pd.DataFrame, optional
+    to_highlight : pandas.DataFrame, optional
         DataFrame containing SNPs to be highlighted in the plot.
     highlight_hue : str, default='hue'
         Column name in to_highlight to be used for color-coding highlighted SNPs.
-    to_annotate : pd.DataFrame, optional
+    to_annotate : pandas.DataFrame, optional
         DataFrame containing SNPs to be annotated in the plot.
     gen_col : str, optional
         Column name for gene information to be used in annotation.
@@ -248,10 +265,6 @@ def manhattan_draw(data_df: pd.DataFrame, snp_col: str, chr_col: str, pos_col: s
     -------
     bool
         True if the plot was successfully created and saved.
-
-    Side Effects
-    ------------
-    Saves a Manhattan plot image to the specified directory.
     
     Raises
     ------
@@ -261,7 +274,10 @@ def manhattan_draw(data_df: pd.DataFrame, snp_col: str, chr_col: str, pos_col: s
         If required columns are not found in the input DataFrame.
     FileNotFoundError
         If the specified plot directory does not exist.
-    
+
+    Notes
+    -----
+    Saves a Manhattan plot image to the specified directory.
     """
 
     if not isinstance(data_df, pd.DataFrame):
@@ -457,18 +473,23 @@ def miami_process_data(data_top: pd.DataFrame, data_bottom: pd.DataFrame, chr_co
 
     Parameters
     ----------
-    data_top : pd.DataFrame
+    data_top : pandas.DataFrame
         The top part of the data to be processed.
-    data_bottom : pd.DataFrame 
+    data_bottom : pandas.DataFrame 
         The bottom part of the data to be processed.
     
     Returns
     -------
-    dict: A dictionary containing the processed data with the following keys:
-        - 'upper': DataFrame containing the top part of the processed data.
-        - 'lower': DataFrame containing the bottom part of the processed data.
-        - 'axis': The center positions of the chromosomes.
-        - 'maxp': The maximum -log10(p-value) in the data.
+    dict 
+        A dictionary containing the processed data with the following keys:
+            - 'upper' : pandas.DataFrame 
+                DataFrame containing the top part of the processed data.
+            - 'lower' : pandas.DataFrame 
+                DataFrame containing the bottom part of the processed data.
+            - 'axis' : pandas.DataFrame
+                DataFrame with the center positions of the chromosomes.
+            - 'maxp' : float
+                The maximum -log10(p-value) in the data.
 
     Raises
     ------
@@ -476,7 +497,6 @@ def miami_process_data(data_top: pd.DataFrame, data_bottom: pd.DataFrame, chr_co
         If `data_top` or `data_bottom` is not a pandas DataFrame.
     ValueError
         If the specified columns (`chr_col`, `pos_col`, `p_col`) are not found in the DataFrames.
-    
     """
 
     if not isinstance(data_top, pd.DataFrame):
@@ -520,9 +540,9 @@ def manhattan_type_annotate(axes: Axes, data: pd.DataFrame, variants_toanno: pd.
     ----------
     axes : Axes (matplotlib.axes.Axes)
         The matplotlib axes object where the Manhattan plot is drawn.
-    data : pd.DataFrame
+    data : pandas.DataFrame
         DataFrame containing the scatter plot data with columns 'rel_pos' and 'log10p'.
-    variants_toanno : pd.DataFrame
+    variants_toanno : pandas.DataFrame
         DataFrame containing the variants to annotate with columns 'rel_pos', 'log10p', and 'GENENAME'.
     max_x_axis : float
         The maximum value for the x-axis.
@@ -533,14 +553,13 @@ def manhattan_type_annotate(axes: Axes, data: pd.DataFrame, variants_toanno: pd.
 
     Returns
     -------
-    Axes
+    matplotlib.axes.Axes.
         The matplotlib axes object with annotations.
 
     Raises
     ------
     TypeError
         If the input parameters are not of the expected types.
-
     """
 
     if not isinstance(axes, Axes):
@@ -605,12 +624,12 @@ def miami_draw_anno_lines(renderer: RendererBase, axes: Axes, texts: list, varia
         The axes on which the plot is drawn.
     texts : list
         A list of text objects to annotate.
-    variants_toanno : pd.DataFrame
+    variants_toanno : pandas.DataFrame
         A DataFrame containing the data points to annotate, with columns 'GENENAME', 'rel_pos', and 'log10p'.
 
     Returns
     -------
-    Axes 
+    matplotlib.axes.Axes 
         The axes with the annotation lines drawn.
     """
 
@@ -650,9 +669,9 @@ def miami_draw(df_top: pd.DataFrame, df_bottom: pd.DataFrame, snp_col: str, chr_
 
     Parameters
     ----------
-    df_top : pd.DataFrame
+    df_top : pandas.DataFrame
         DataFrame containing the top plot data.
-    df_bottom : pd.DataFrame
+    df_bottom : pandas.DataFrame
         DataFrame containing the bottom plot data.
     snp_col : str
         Column name for SNP identifiers.
@@ -682,10 +701,6 @@ def miami_draw(df_top: pd.DataFrame, df_bottom: pd.DataFrame, snp_col: str, chr_
     bool
         True if the plot is successfully created and saved, False otherwise.
 
-    Side Effects
-    ------------
-    Saves a Miami plot image to the specified directory.
-
     Raises
     ------
     TypeError
@@ -696,6 +711,10 @@ def miami_draw(df_top: pd.DataFrame, df_bottom: pd.DataFrame, snp_col: str, chr_
         If `save_name`, `legend_top`, or `legend_bottom` are not strings.
     ValueError
         If required columns (`chr_col`, `pos_col`, `p_col`) are not found in the DataFrames.
+
+    Notes
+    -----
+    Saves a Miami plot image to the specified directory.
     """
     
     if not isinstance(df_top, pd.DataFrame):
