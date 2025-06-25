@@ -1,15 +1,7 @@
 """
-This module provides functions for generating various plots for GWAS (Genome-Wide Association Studies) data. The plots include QQ plots, beta-beta scatter plots, and trumpet plots for visualizing the effect sizes and power of GWAS results.
+This module provides functions for generating various plots for GWAS (Genome-Wide Association Studies) data. 
 
-Functions:
-----------
-- qqplot_draw(df_gwas: pd.DataFrame, plots_dir: str, conf_color="lightgray", save_name: str='qq_plot.jpeg') -> bool:
-    Draws a QQ plot for GWAS data.
-- confidence_interval(n: int, conf_points: int=1500, conf_alpha: float=0.05) -> np.ndarray:
-    Computes confidence intervals for the QQ plot.
-- beta_beta_draw(gwas_1: pd.DataFrame, gwas_2: pd.DataFrame, p_col: str, beta_col: str, se_col: str, snp_col: str, label_1: str, label_2: str, plot_dir: str, significance: float=5e-8, annotate_coincidents: bool=True, save_name: str='beta_beta.jpeg', draw_error_line: bool=True, draw_reg_line: bool=True) -> bool:
-- new_trumpet(df_gwas: pd.DataFrame, df_freq: pd.DataFrame, plot_dir: pd.DataFrame, snp_col: str, chr_col: str, pos_col: str, maf_col: str, beta_col: str, power_ts: list, n_case: int, n_control: int, sample_size: int=None, n_col: str='', sample_size_strategy: str='median', p_col: str=None, prevalence: int=None, mode: str='binary', p_filter: float=5e-8, to_highlight: list=[], to_annotate: list=[], cmap: str="cool", power_sig_level: float=5e-8, build='38', gtf_path: str=None, save_name: str='trumpet_plot.jpeg') -> bool:
-    Generates a trumpet plot for visualizing the effect sizes and power of GWAS results.
+The plots include QQ plots, beta-beta scatter plots, and trumpet plots for visualizing the effect sizes and power of GWAS results.
 """
 
 import os
@@ -29,7 +21,7 @@ import textalloc as ta
 
 from matplotlib.collections import LineCollection
 
-from typing import Optional
+from typing import Optional, Tuple
 
 from ideal_genom.annotations import annotate_snp
 
@@ -39,10 +31,9 @@ from ideal_genom.power_comp import get_beta_binary
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
-def qqplot_draw(df_gwas:pd.DataFrame, plots_dir: str, lambda_val: Optional[float] = None, pval_col: str = 'P', conf_color: str = "lightgray", save_name: str = 'qq_plot.jpeg', fig_size: tuple = (10,10), dpi=500) -> bool:
+def qqplot_draw(df_gwas:pd.DataFrame, plots_dir: str, lambda_val: Optional[float] = None, pval_col: str = 'P', conf_color: str = "lightgray", save_name: str = 'qq_plot.jpeg', fig_size: tuple[float, float] = (10, 10), dpi=500) -> bool:
     
-    """
-    Creates a Q-Q (Quantile-Quantile) plot from GWAS results.
+    """Creates a Q-Q (Quantile-Quantile) plot from GWAS results.
     
     This function generates a Q-Q plot comparing observed vs expected -log10(p-values)
     from GWAS results, including confidence intervals and genomic inflation factor (λ).
@@ -71,34 +62,42 @@ def qqplot_draw(df_gwas:pd.DataFrame, plots_dir: str, lambda_val: Optional[float
     bool
         True if plot is successfully created and saved
 
+    Side Effects
+    ------------
+    Saves a QQ plot image to the specified directory.
+
     Raises
     ------
-    ValueError
+    TypeError
         If input parameters are of incorrect type or format
+    FileExistsError
         If plots directory does not exist
+    ValueError
+        If figure size is not a tuple of length 2
     
     Notes
     -----
     The function includes data thinning to improve performance with large datasets
     and automatically calculates genomic inflation factor if not provided.
+
     """
 
     if not isinstance(df_gwas, pd.DataFrame):
-        raise ValueError(f"GWAS dataframe must be a pandas dataframe.")
+        raise TypeError(f"GWAS dataframe must be a pandas dataframe.")
     if not isinstance(plots_dir, str):
-        raise ValueError(f"Plots directory must be a string.")
+        raise TypeError(f"Plots directory must be a string.")
     if not os.path.exists(plots_dir):
-        raise ValueError(f"Plots directory does not exist.")
+        raise FileExistsError(f"Plots directory does not exist.")
     if not isinstance(lambda_val, float) and lambda_val is not None:
-        raise ValueError(f"Lambda value must be a float.")
+        raise TypeError(f"Lambda value must be a float.")
     if not isinstance(pval_col, str):    
-        raise ValueError(f"P-value column must be a string.")
+        raise TypeError(f"P-value column must be a string.")
     if not isinstance(conf_color, str):
-        raise ValueError(f"Confidence color must be a string.")
+        raise TypeError(f"Confidence color must be a string.")
     if not isinstance(save_name, str):
-        raise ValueError(f"Save name must be a string.")
+        raise TypeError(f"Save name must be a string.")
     if not isinstance(fig_size, tuple):
-        raise ValueError(f"Figure size must be a tuple.")
+        raise TypeError(f"Figure size must be a tuple.")
     if len(fig_size) != 2:
         raise ValueError(f"Figure size must be a tuple of length 2.")
 
@@ -189,11 +188,10 @@ def qqplot_draw(df_gwas:pd.DataFrame, plots_dir: str, lambda_val: Optional[float
 
 def confidence_interval(n: int, conf_points: int = 1500, conf_alpha: float = 0.05) -> np.ndarray:
 
-    """
-    Function to confidence intervals for the QQ plot.
+    """Function to confidence intervals for the QQ plot.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     n : int
         Number of p-values.
     conf_points : int (default=1500)
@@ -203,23 +201,31 @@ def confidence_interval(n: int, conf_points: int = 1500, conf_alpha: float = 0.0
     conf_alpha : float (default=0.05)
         Alpha value for the confidence interval.
 
-    Returns:
-    --------
+    Returns
+    -------
     ndarray
+
+    Raises
+    ------
+    ValueError
+        If n, conf_points, or conf_alpha are out of the specified ranges.
+    TypeError
+        If n, conf_points, or conf_alpha are not of the expected type.
+
     """
 
     if not isinstance(n, int):
-        raise ValueError(f"n must be an integer.")
+        raise TypeError(f"n must be an integer.")
     elif n < 0:
         raise ValueError(f"n must be positive.")
     
     if not isinstance(conf_points, int):
-        raise ValueError(f"conf_points must be an integer.")
+        raise TypeError(f"conf_points must be an integer.")
     elif conf_points < 0:
         raise ValueError(f"conf_points must be positive.")
     
     if not isinstance(conf_alpha, float):
-        raise ValueError(f"conf_alpha must be a float.")
+        raise TypeError(f"conf_alpha must be a float.")
     elif conf_alpha < 0 or conf_alpha > 1:
         raise ValueError(f"conf_alpha must be between 0 and 1.")
     
@@ -242,11 +248,12 @@ def confidence_interval(n: int, conf_points: int = 1500, conf_alpha: float = 0.0
 
 def beta_beta_draw(gwas_1: pd.DataFrame, gwas_2: pd.DataFrame, p_col: str, beta_col: str, se_col: str, snp_col: str, label_1: str, label_2: str, plot_dir: str, significance: float = 5e-8, annotate_coincidents: bool = True, annotate_diff: float = np.infty, save_name: str = 'beta_beta.jpeg', draw_error_line:bool = True, draw_reg_line: bool = True) -> bool:
     
-    """
-    Generates a scatter plot comparing the effect sizes (beta values) of two GWAS studies.
+    """Generates a scatter plot comparing the effect sizes (beta values) of two GWAS studies.
 
-    Parameters:
-    -----------
+    This function creates a scatter plot of beta values from two GWAS datasets, allowing for visual comparison of effect sizes.
+
+    Parameters
+    ----------
     gwas_1 : pd.DataFrame
         DataFrame containing the first GWAS data.
     gwas_2 : pd.DataFrame
@@ -283,20 +290,26 @@ def beta_beta_draw(gwas_1: pd.DataFrame, gwas_2: pd.DataFrame, p_col: str, beta_
     bool
         True if the plot is successfully generated and saved.
 
-    Raises:
-    -------
-    ValueError
+    Side Effects
+    ------------
+    Saves a scatter plot image to the specified directory.
+
+    Raises
+    ------
+    TypeError
         If the input dataframes are not pandas dataframes.
+        If the boolean parameters are not boolean.
+        If the significance level is not a float.
+    ValueError
         If the specified columns are not present in the dataframes.
         If the significance level is not a float between 0 and 1.
-        If the boolean parameters are not boolean.
     """
 
     # check if the dataframes are pandas dataframes
     if not isinstance(gwas_1, pd.DataFrame):
-        raise ValueError(f"GWAS 1 dataframe must be a pandas dataframe.")
+        raise TypeError(f"GWAS 1 dataframe must be a pandas dataframe.")
     if not isinstance(gwas_2, pd.DataFrame):
-        raise ValueError(f"GWAS 2 dataframe must be a pandas dataframe.")
+        raise TypeError(f"GWAS 2 dataframe must be a pandas dataframe.")
     
     # check if the column names are in the dataframe
     if beta_col not in gwas_1.columns or p_col not in gwas_2.columns:
@@ -306,17 +319,17 @@ def beta_beta_draw(gwas_1: pd.DataFrame, gwas_2: pd.DataFrame, p_col: str, beta_
     
     # check if the significance level is a float between 0 and 1
     if not isinstance(significance, float):
-        raise ValueError(f"Significance level must be a float.")
+        raise TypeError(f"Significance level must be a float.")
     elif significance < 0 or significance > 1:
         raise ValueError(f"Significance level must be between 0 and 1.")
     
     # check if the boolean values are boolean
     if not isinstance(annotate_coincidents, bool):
-        raise ValueError(f"annotate_coincidents must be a boolean.")
+        raise TypeError(f"annotate_coincidents must be a boolean.")
     if not isinstance(draw_error_line, bool):
-        raise ValueError(f"draw_error_line must be a boolean.")
+        raise TypeError(f"draw_error_line must be a boolean.")
     if not isinstance(draw_reg_line, bool):
-        raise ValueError(f"draw_reg_line must be a boolean.")
+        raise TypeError(f"draw_reg_line must be a boolean.")
     
     # check if the se column in dataframes if draw_error_line is True
     if draw_error_line is True:
@@ -537,8 +550,9 @@ def beta_beta_draw(gwas_1: pd.DataFrame, gwas_2: pd.DataFrame, p_col: str, beta_
     return True
     
 def trumpet_draw(df_gwas: pd.DataFrame, plot_dir: str, snp_col: str, chr_col: str, pos_col: str, maf_col: str, beta_col: str, power_ts: list,  df_freq: Optional[pd.DataFrame] = None, n_case: Optional[int] = None, n_control: Optional[int] = None, sample_size: Optional[int] = None, n_col: str = '', sample_size_strategy: str = 'median', p_col: Optional[str] = None, prevalence: Optional[float] = None, mode: str = 'binary', p_filter: Optional[float] = 5e-8, to_highlight: list = [], to_annotate: Optional[pd.DataFrame] = None, gen_col: Optional[str] = None, cmap: str= "cool", power_sig_level: float = 5e-8, build = '38', anno_source: str = 'ensembl', gtf_path: Optional[str] = None, save_name: str = 'trumpet_plot.pdf', scale: str = 'linear') -> bool:
-    """
-    Create a trumpet plot to visualize GWAS results with power analysis.
+    
+    """Create a trumpet plot to visualize GWAS results with power analysis.
+    
     A trumpet plot displays effect sizes (beta) versus minor allele frequencies (MAF) with power curves,
     allowing for assessment of statistical power across different allele frequencies and effect sizes.
     
@@ -605,6 +619,21 @@ def trumpet_draw(df_gwas: pd.DataFrame, plot_dir: str, snp_col: str, chr_col: st
     -------
     bool
         True if plot was successfully created and saved.
+
+    Side Effects
+    ------------
+    Saves a trumpet plot image to the specified directory.
+
+    Raises
+    ------
+    TypeError
+        If input parameters are of incorrect type.
+        If `power_ts` is not a list of floats.
+    ValueError
+        If required columns are missing from the DataFrame.
+        If `df_gwas` is empty or None.
+        If the elements of `power_ts` are not between 0 and 1.
+
     
     Notes
     -----
@@ -613,14 +642,14 @@ def trumpet_draw(df_gwas: pd.DataFrame, plot_dir: str, snp_col: str, chr_col: st
     """
 
     if not isinstance(df_gwas, pd.DataFrame):
-        raise ValueError(f"GWAS dataframe must be a pandas dataframe.")
+        raise TypeError(f"GWAS dataframe must be a pandas dataframe.")
 
     # check if the column names are in the dataframe
     if maf_col not in df_gwas.columns:
         if df_freq is None:
             raise ValueError(f"Column {maf_col} not present in the GWAS dataframe and no frequency dataframe provided.")
         elif not isinstance(df_freq, pd.DataFrame):
-            raise ValueError(f"Frequency dataframe must be a pandas dataframe.")
+            raise TypeError(f"Frequency dataframe must be a pandas dataframe.")
         elif maf_col not in df_freq.columns:
             raise ValueError(f"Column {maf_col} not present in the GWAS dataframe and frequency dataframe.")
         elif df_freq.shape[0]==0:
@@ -633,10 +662,10 @@ def trumpet_draw(df_gwas: pd.DataFrame, plot_dir: str, snp_col: str, chr_col: st
     if df_gwas is None:
         raise ValueError(f"GWAS dataframe is None.")
     if not isinstance(power_ts, list):
-        raise ValueError(f"Power thresholds must be a list.")
+        raise TypeError(f"Power thresholds must be a list.")
     for val in power_ts:
         if not isinstance(val, float):
-            raise ValueError(f"Power thresholds must be floats.")
+            raise TypeError(f"Power thresholds must be floats.")
         elif val > 1 or val < 0:
             raise ValueError(f"Power thresholds must be between 0 and 1.")
     if mode not in ['binary', 'quantitative']:
@@ -646,7 +675,7 @@ def trumpet_draw(df_gwas: pd.DataFrame, plot_dir: str, snp_col: str, chr_col: st
         if n_case is None or n_control is None:
             raise ValueError(f"Number of cases and controls must be provided.")
         elif not isinstance(n_case, int) or not isinstance(n_control, int):
-            raise ValueError(f"Number of cases and controls must be integers.")
+            raise TypeError(f"Number of cases and controls must be integers.")
         elif n_case < 0 or n_control < 0:
             raise ValueError(f"Number of cases and controls must be positive.")
         if prevalence is None:
@@ -670,7 +699,7 @@ def trumpet_draw(df_gwas: pd.DataFrame, plot_dir: str, snp_col: str, chr_col: st
 
     if p_filter is not None and p_col is not None:
         if not isinstance(p_filter, float):
-            raise ValueError(f"Significance level must be a float.")
+            raise TypeError(f"Significance level must be a float.")
         elif p_filter < 0 or p_filter > 1:
             raise ValueError(f"Significance level must be between 0 and 1.")
         elif p_col not in df_gwas.columns:
@@ -685,7 +714,7 @@ def trumpet_draw(df_gwas: pd.DataFrame, plot_dir: str, snp_col: str, chr_col: st
         gwas_df = df_gwas.copy()
 
     if not isinstance(scale, str):
-        raise ValueError(f"Scale must be a string.")
+        raise TypeError(f"Scale must be a string.")
     if scale not in ['linear', 'log']:
         raise ValueError(f"Scale must be either 'linear' or 'log.")
 
@@ -696,7 +725,7 @@ def trumpet_draw(df_gwas: pd.DataFrame, plot_dir: str, snp_col: str, chr_col: st
             raise ValueError(f"to_annotate must be a pandas DataFrame.")
     for val in to_highlight:
         if not isinstance(val, str):
-            raise ValueError(f"to_highlight must be a list of strings.")
+            raise TypeError(f"to_highlight must be a list of strings.")
 
     if maf_col not in gwas_df.columns:
         if df_freq is None:
