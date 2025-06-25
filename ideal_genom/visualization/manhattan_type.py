@@ -196,6 +196,7 @@ def manhattan_process_data(data_df: pd.DataFrame, chr_col: str = 'CHR', pos_col:
     return manhattan_data
 
 def manhattan_draw(data_df: pd.DataFrame, snp_col: str, chr_col: str, pos_col: str, p_col: str, plot_dir: str, to_highlight: pd.DataFrame = pd.DataFrame(), highlight_hue: str = 'hue', to_annotate: pd.DataFrame = pd.DataFrame(), gen_col: Optional[str] = None, build: str = '38', anno_source = 'ensembl', gtf_path: Optional[str] = None, save_name: str = 'manhattan_plot.png', upper_cap: Optional[float] = None, genome_line: float = 5e-8, suggestive_line: float = 1e-5, yaxis_margin: float = 10, dpi: int = 400) -> bool:
+    
     """Generate a Manhattan plot for genomic data.
     
     This function creates a Manhattan plot for visualizing the statistical significance of genetic
@@ -247,6 +248,10 @@ def manhattan_draw(data_df: pd.DataFrame, snp_col: str, chr_col: str, pos_col: s
     -------
     bool
         True if the plot was successfully created and saved.
+
+    Side Effects
+    ------------
+    Saves a Manhattan plot image to the specified directory.
     
     Raises
     ------
@@ -676,6 +681,10 @@ def miami_draw(df_top: pd.DataFrame, df_bottom: pd.DataFrame, snp_col: str, chr_
     -------
     bool
         True if the plot is successfully created and saved, False otherwise.
+
+    Side Effects
+    ------------
+    Saves a Miami plot image to the specified directory.
 
     Raises
     ------
