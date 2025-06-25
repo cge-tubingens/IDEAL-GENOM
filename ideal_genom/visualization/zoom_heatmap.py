@@ -65,10 +65,20 @@ def filter_sumstats(data_df: pd.DataFrame, lead_snp: str, snp_col: str, p_col: s
     -------
     pandas.DataFrame
         Filtered DataFrame containing only variants that:
+
             - Are on the same chromosome as lead SNP
             - Meet p-value threshold
             - Fall within specified region around lead SNP
+
         Also includes calculated -log10(p-value) column
+
+    Raises
+    ------
+    TypeError
+        If input parameters are not of the expected types
+    ValueError
+        If specified columns are not found in the DataFrame
+        If lead SNP is not found in the DataFrame
     
     Notes
     -----
@@ -76,8 +86,37 @@ def filter_sumstats(data_df: pd.DataFrame, lead_snp: str, snp_col: str, p_col: s
     to the filtered DataFrame before returning it.
     """
 
-    lead_chr = data_df[data_df[snp_col]==lead_snp][chr_col].values[0]
-    lead_pos = data_df[data_df[snp_col]==lead_snp][pos_col].values[0]
+    if not isinstance(data_df, pd.DataFrame):
+        raise TypeError("data_df must be a pandas DataFrame.")
+    if not isinstance(lead_snp, str):
+        raise TypeError("lead_snp must be a string.")
+    if not isinstance(snp_col, str):
+        raise TypeError("snp_col must be a string.")
+    if not isinstance(p_col, str):
+        raise TypeError("p_col must be a string.")
+    if not isinstance(pos_col, str):
+        raise TypeError("pos_col must be a string.")
+    if not isinstance(chr_col, str):
+        raise TypeError("chr_col must be a string.")
+    if not isinstance(pval_threshold, float):
+        raise TypeError("pval_threshold must be a float.")
+    if not isinstance(radius, (float, int)):
+        raise TypeError("radius must be a float or an integer.")
+    if snp_col not in data_df.columns:
+        raise ValueError(f"Column {snp_col} not found in the data frame.")
+    if p_col not in data_df.columns:
+        raise ValueError(f"Column {p_col} not found in the data frame.")
+    if pos_col not in data_df.columns:
+        raise ValueError(f"Column {pos_col} not found in the data frame.")
+    if chr_col not in data_df.columns:
+        raise ValueError(f"Column {chr_col} not found in the data frame.")
+    
+    lead_snp_mask = (data_df[snp_col]==lead_snp)
+    if not lead_snp_mask.any():
+        raise ValueError(f"Lead SNP {lead_snp} not found in the data frame.")
+
+    lead_chr = data_df[lead_snp_mask][chr_col].values[0]
+    lead_pos = data_df[lead_snp_mask][pos_col].values[0]
 
     mask_chr = (data_df[chr_col] == lead_chr)
     mask_pval= (data_df[p_col] <= pval_threshold)
