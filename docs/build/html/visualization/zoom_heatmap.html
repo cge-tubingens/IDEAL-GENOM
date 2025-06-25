@@ -111,7 +111,7 @@ and generating a three-panel plot with:
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>data_df</strong> (<em>pd.DataFrame</em>) – Input DataFrame containing GWAS summary statistics</p></li>
+<li><p><strong>data_df</strong> (<em>pandas.DataFrame</em>) – Input DataFrame containing GWAS summary statistics</p></li>
 <li><p><strong>lead_snp</strong> (<em>str</em>) – Identifier of the lead SNP to center the plot around</p></li>
 <li><p><strong>snp_col</strong> (<em>str</em>) – Column name containing SNP identifiers</p></li>
 <li><p><strong>p_col</strong> (<em>str</em>) – Column name containing p-values</p></li>
@@ -132,16 +132,13 @@ and generating a three-panel plot with:
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><em>bool</em> – True if plot was generated successfully</p></li>
-<li><p><em>Side Effects</em></p></li>
-<li><p><em>————</em></p></li>
-<li><p><em>Generates and saves a zoomed heatmap plot in the specified output folder.</em></p></li>
-</ul>
-</p>
+<dd class="field-even"><p>True if plot was generated successfully</p>
 </dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – If input parameters are not of the expected types</p></li>
 <li><p><strong>FileNotFoundError</strong> – If specified folders or PLINK binary files do not exist</p></li>
 <li><p><strong>ValueError</strong> – If the required columns are not found in the DataFrame</p></li>
@@ -150,7 +147,8 @@ and generating a three-panel plot with:
 </dl>
 <p class="rubric">Notes</p>
 <p>Required input DataFrame must contain columns for SNP IDs, p-values, positions and chromosomes.
-PLINK binary files (.bed, .bim, .fam) must exist in specified folder.</p>
+PLINK binary files (.bed, .bim, .fam) must exist in specified folder.
+Generates and saves a zoomed heatmap plot in the specified output folder.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -173,14 +171,26 @@ within a specified genomic region around a lead SNP that meet a p-value signific
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Filtered DataFrame containing only variants that:
-- Are on the same chromosome as lead SNP
-- Meet p-value threshold
-- Fall within specified region around lead SNP
-Also includes calculated -log10(p-value) column</p>
+<dd class="field-even"><p><p>Filtered DataFrame containing only variants that:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Are on the same chromosome as lead SNP</p></li>
+<li><p>Meet p-value threshold</p></li>
+<li><p>Fall within specified region around lead SNP</p></li>
+</ul>
+</div></blockquote>
+<p>Also includes calculated -log10(p-value) column</p>
+</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – If input parameters are not of the expected types</p></li>
+<li><p><strong>ValueError</strong> – If specified columns are not found in the DataFrame
+    If lead SNP is not found in the DataFrame</p></li>
+</ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -205,12 +215,17 @@ Note: “19” and “37” are equivalent.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>DataFrame containing gene information with columns:
-- gene: gene ID
-- start: gene start position
-- end: gene end position
-- strand: gene strand
-- length: gene length</p>
+<dd class="field-even"><p><dl class="simple">
+<dt>DataFrame containing gene information with columns:</dt><dd><ul class="simple">
+<li><p>gene: gene ID</p></li>
+<li><p>start: gene start position</p></li>
+<li><p>end: gene end position</p></li>
+<li><p>strand: gene strand</p></li>
+<li><p>length: gene length</p></li>
+</ul>
+</dd>
+</dl>
+</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pandas.DataFrame</p>
@@ -239,7 +254,7 @@ pairwise r2 values between SNPs.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>data_df</strong> (<em>pd.DataFrame</em>) – DataFrame containing SNP information</p></li>
+<li><p><strong>data_df</strong> (<em>pandas.DataFrame</em>) – DataFrame containing SNP information</p></li>
 <li><p><strong>snp_col</strong> (<em>str</em>) – Name of the column containing SNP IDs</p></li>
 <li><p><strong>pos_col</strong> (<em>str</em>) – Name of the column containing SNP positions</p></li>
 <li><p><strong>bfile_folder</strong> (<em>str</em>) – Path to the folder containing PLINK binary files</p></li>
@@ -248,16 +263,30 @@ pairwise r2 values between SNPs.</p>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><p><strong>dict</strong> –</p>
-<ul class="simple">
-<li><p>‘pass’ (bool): True if process completed successfully</p></li>
-<li><p>’step’ (str): Name of the processing step (‘get_ld_matrix’)</p></li>
-<li><p>’output’ (dict): Dictionary with output file paths</p></li>
+<dd class="field-even"><p><dl class="simple">
+<dt>Dictionary containing:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>’pass’<span class="classifier">bool</span></dt><dd><p>True if process completed successfully</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>’step’<span class="classifier">str</span></dt><dd><p>Name of the processing step (‘get_ld_matrix’)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>’output’<span class="classifier">dict</span></dt><dd><p>Dictionary with output file paths</p>
+</dd>
+</dl>
+</li>
 </ul>
+</dd>
+</dl>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Dictionary containing:</p>
+<dd class="field-odd"><p>dict</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -278,7 +307,7 @@ names and functional consequences. The position values are scaled to Megabase pa
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>data_df</strong> (<em>pd.DataFrame</em>) – Input DataFrame containing SNP data</p></li>
+<li><p><strong>data_df</strong> (<em>pandas.DataFrame</em>) – Input DataFrame containing SNP data</p></li>
 <li><p><strong>lead_snp</strong> (<em>str</em>) – Identifier of the lead SNP to center the region around</p></li>
 <li><p><strong>snp_col</strong> (<em>str</em>) – Name of the column containing SNP identifiers</p></li>
 <li><p><strong>p_col</strong> (<em>str</em>) – Name of the column containing p-values</p></li>
@@ -298,7 +327,7 @@ names and functional consequences. The position values are scaled to Megabase pa
 <dd class="field-even"><p>Filtered and annotated DataFrame with added Mbp column and removed duplicates</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>pd.DataFrame</p>
+<dd class="field-odd"><p>pandas.DataFrame</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -322,7 +351,7 @@ and functional consequence annotations using Ensembl VEP (Variant Effect Predict
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>data_df</strong> (<em>pd.DataFrame</em>) – Input DataFrame containing SNP information</p></li>
+<li><p><strong>data_df</strong> (<em>pandas.DataFrame</em>) – Input DataFrame containing SNP information</p></li>
 <li><p><strong>snp_col</strong> (<em>str</em>) – Name of column containing SNP IDs</p></li>
 <li><p><strong>pos_col</strong> (<em>str</em>) – Name of column containing genomic positions</p></li>
 <li><p><strong>chr_col</strong> (<em>str</em>) – Name of column containing chromosome numbers</p></li>

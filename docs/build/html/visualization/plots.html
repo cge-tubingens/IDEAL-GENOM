@@ -101,8 +101,8 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>gwas_1</strong> (<em>pd.DataFrame</em>) – DataFrame containing the first GWAS data.</p></li>
-<li><p><strong>gwas_2</strong> (<em>pd.DataFrame</em>) – DataFrame containing the second GWAS data.</p></li>
+<li><p><strong>gwas_1</strong> (<em>pandas.DataFrame</em>) – DataFrame containing the first GWAS data.</p></li>
+<li><p><strong>gwas_2</strong> (<em>pandas.DataFrame</em>) – DataFrame containing the second GWAS data.</p></li>
 <li><p><strong>p_col</strong> (<em>str</em>) – Column name for p-values in the GWAS dataframes.</p></li>
 <li><p><strong>beta_col</strong> (<em>str</em>) – Column name for beta values in the GWAS dataframes.</p></li>
 <li><p><strong>se_col</strong> (<em>str</em>) – Column name for standard errors in the GWAS dataframes.</p></li>
@@ -119,9 +119,6 @@
 <li><p><strong>Returns</strong></p></li>
 <li><p><strong>--------</strong></p></li>
 <li><p><strong>bool</strong> – True if the plot is successfully generated and saved.</p></li>
-<li><p><strong>Effects</strong> (<em>Side</em>)</p></li>
-<li><p><strong>------------</strong></p></li>
-<li><p><strong>directory.</strong> (<em>Saves a scatter plot image to the specified</em>)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
@@ -134,6 +131,8 @@
 </ul>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>Saves a scatter plot image to the specified directory.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -170,7 +169,7 @@ from GWAS results, including confidence intervals and genomic inflation factor (
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>df_gwas</strong> (<em>pd.DataFrame</em>) – DataFrame containing GWAS results with p-values</p></li>
+<li><p><strong>df_gwas</strong> (<em>pandas.DataFrame</em>) – DataFrame containing GWAS results with p-values</p></li>
 <li><p><strong>plots_dir</strong> (<em>str</em>) – Directory path where the plot will be saved</p></li>
 <li><p><strong>lambda_val</strong> (<em>float</em><em>, </em><em>optional</em>) – Pre-calculated genomic inflation factor (λ). If None, will be calculated</p></li>
 <li><p><strong>pval_col</strong> (<em>str</em><em>, </em><em>default='P'</em>) – Name of the column containing p-values in df_gwas</p></li>
@@ -181,16 +180,13 @@ from GWAS results, including confidence intervals and genomic inflation factor (
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><em>bool</em> – True if plot is successfully created and saved</p></li>
-<li><p><em>Side Effects</em></p></li>
-<li><p><em>————</em></p></li>
-<li><p><em>Saves a QQ plot image to the specified directory.</em></p></li>
-</ul>
-</p>
+<dd class="field-even"><p>True if plot is successfully created and saved</p>
 </dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – If input parameters are of incorrect type or format</p></li>
 <li><p><strong>FileExistsError</strong> – If plots directory does not exist</p></li>
 <li><p><strong>ValueError</strong> – If figure size is not a tuple of length 2</p></li>
@@ -199,7 +195,8 @@ from GWAS results, including confidence intervals and genomic inflation factor (
 </dl>
 <p class="rubric">Notes</p>
 <p>The function includes data thinning to improve performance with large datasets
-and automatically calculates genomic inflation factor if not provided.</p>
+and automatically calculates genomic inflation factor if not provided.
+Saves a QQ plot image to the specified directory.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -211,8 +208,8 @@ allowing for assessment of statistical power across different allele frequencies
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>df_gwas</strong> (<em>pd.DataFrame</em>) – DataFrame containing GWAS summary statistics.</p></li>
-<li><p><strong>df_freq</strong> (<em>pd.DataFrame</em>) – DataFrame containing allele frequency information, required if MAF is not in df_gwas.</p></li>
+<li><p><strong>df_gwas</strong> (<em>pandas.DataFrame</em>) – DataFrame containing GWAS summary statistics.</p></li>
+<li><p><strong>df_freq</strong> (<em>pandas.DataFrame</em>) – DataFrame containing allele frequency information, required if MAF is not in df_gwas.</p></li>
 <li><p><strong>plot_dir</strong> (<em>str</em>) – Directory to save the plot.</p></li>
 <li><p><strong>snp_col</strong> (<em>str</em>) – Column name for SNP identifiers.</p></li>
 <li><p><strong>chr_col</strong> (<em>str</em>) – Column name for chromosome information.</p></li>
@@ -242,16 +239,13 @@ allowing for assessment of statistical power across different allele frequencies
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><em>bool</em> – True if plot was successfully created and saved.</p></li>
-<li><p><em>Side Effects</em></p></li>
-<li><p><em>————</em></p></li>
-<li><p><em>Saves a trumpet plot image to the specified directory.</em></p></li>
-</ul>
-</p>
+<dd class="field-even"><p>True if plot was successfully created and saved.</p>
 </dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – If input parameters are of incorrect type.
     If <cite>power_ts</cite> is not a list of floats.</p></li>
 <li><p><strong>ValueError</strong> – If required columns are missing from the DataFrame.
@@ -262,7 +256,8 @@ allowing for assessment of statistical power across different allele frequencies
 </dl>
 <p class="rubric">Notes</p>
 <p>For binary traits, either prevalence or both n_case and n_control must be provided.
-For quantitative traits, either sample_size or n_col must be provided.</p>
+For quantitative traits, either sample_size or n_col must be provided.
+Saves a trumpet plot image to the specified directory.</p>
 </dd></dl>
 
 </section>
