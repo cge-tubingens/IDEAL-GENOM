@@ -540,7 +540,7 @@ def get_zoomed_data(data_df: pd.DataFrame, lead_snp: str, snp_col: str, p_col: s
     TypeError
         If input parameters are not of the expected types
     FileNotFoundError
-        If output_folder does not exist
+        If `output_folder` does not exist
     ValueError
         If no significant SNPs are found in the specified region
     
@@ -669,12 +669,79 @@ def draw_zoomed_heatmap(data_df: pd.DataFrame, lead_snp: str, snp_col: str, p_co
     Side Effects
     ------------
     Generates and saves a zoomed heatmap plot in the specified output folder.
+
+    Raises
+    ------
+    TypeError
+        If input parameters are not of the expected types
+    FileNotFoundError
+        If specified folders or PLINK binary files do not exist
+    ValueError
+        If the required columns are not found in the DataFrame
     
     Notes
     -----
     Required input DataFrame must contain columns for SNP IDs, p-values, positions and chromosomes.
     PLINK binary files (.bed, .bim, .fam) must exist in specified folder.
+
     """
+
+    if not isinstance(data_df, pd.DataFrame):
+        raise TypeError("data_df must be a pandas DataFrame.")
+    if not isinstance(lead_snp, str):
+        raise TypeError("lead_snp must be a string.")
+    if not isinstance(snp_col, str):
+        raise TypeError("snp_col must be a string.")
+    if not isinstance(p_col, str):
+        raise TypeError("p_col must be a string.")
+    if not isinstance(pos_col, str):
+        raise TypeError("pos_col must be a string.")
+    if not isinstance(chr_col, str):
+        raise TypeError("chr_col must be a string.")
+    if not isinstance(output_folder, str):
+        raise TypeError("output_folder must be a string.")
+    if not isinstance(bfile_folder, str):
+        raise TypeError("bfile_folder must be a string.")
+    if not isinstance(bfile_name, str):
+        raise TypeError("bfile_name must be a string.")
+    if not isinstance(pval_threshold, float):
+        raise TypeError("pval_threshold must be a float.")
+    if not isinstance(radius, (float, int)):
+        raise TypeError("radius must be a float or an integer.")
+    if not isinstance(build, str):
+        raise TypeError("build must be a string.")
+    if not isinstance(gtf_path, (str, type(None))):
+        raise TypeError("gtf_path must be a string or None.")
+    if not isinstance(anno_source, str):
+        raise TypeError("anno_source must be a string.")
+    if not isinstance(batch_size, int):
+        raise TypeError("batch_size must be an integer.")
+    if not isinstance(effect_dict, dict):
+        raise TypeError("effect_dict must be a dictionary.")
+    if not isinstance(extension, str):
+        raise TypeError("extension must be a string.")
+    if not isinstance(request_persec, int):
+        raise TypeError("request_persec must be an integer.")
+    
+    if not os.path.isdir(output_folder):
+        raise FileNotFoundError(f"Output folder {output_folder} does not exist.")
+    if not os.path.isdir(bfile_folder):
+        raise FileNotFoundError(f"PLINK binary folder {bfile_folder} does not exist.")
+    if not os.path.exists(os.path.join(bfile_folder, f"{bfile_name}.bim")):
+        raise FileNotFoundError(f"PLINK binary file {bfile_name}.bim not found in {bfile_folder}.")
+    if not os.path.exists(os.path.join(bfile_folder, f"{bfile_name}.bed")):
+        raise FileNotFoundError(f"PLINK binary file {bfile_name}.bed not found in {bfile_folder}.")
+    if not os.path.exists(os.path.join(bfile_folder, f"{bfile_name}.fam")):
+        raise FileNotFoundError(f"PLINK binary file {bfile_name}.fam not found in {bfile_folder}.")
+    
+    if snp_col not in data_df.columns:
+        raise ValueError(f"Column {snp_col} not found in the data frame.")
+    if p_col not in data_df.columns:
+        raise ValueError(f"Column {p_col} not found in the data frame.")
+    if pos_col not in data_df.columns:
+        raise ValueError(f"Column {pos_col} not found in the data frame.")
+    if chr_col not in data_df.columns:
+        raise ValueError(f"Column {chr_col} not found in the data frame.")
 
     annotated = get_zoomed_data(
         data_df       =data_df,
@@ -686,10 +753,10 @@ def draw_zoomed_heatmap(data_df: pd.DataFrame, lead_snp: str, snp_col: str, p_co
         output_folder =output_folder,
         pval_threshold=pval_threshold, 
         radius        =radius,
-        batch_size=batch_size,
+        batch_size    =batch_size,
         request_persec=request_persec,
-        build=build,
-        gtf_path=gtf_path,
+        build         =build,
+        gtf_path      =gtf_path,
     )
 
     logger.info(f" - Annotated data shape: {annotated.shape}")
@@ -732,10 +799,10 @@ def draw_zoomed_heatmap(data_df: pd.DataFrame, lead_snp: str, snp_col: str, p_co
 
     df_LD = pd.read_csv(
         os.path.join(output_folder, 'matrix-ld.ld'),
-        sep=r'\s+',
-        header=None,
+        sep      =r'\s+',
+        header   =None,
         index_col=None,
-        engine='python'
+        engine   ='python'
     )
     ld = df_LD.values
 
