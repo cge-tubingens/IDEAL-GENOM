@@ -53,7 +53,7 @@ def analysis_pipe(params_dict: dict, data_dict: dict, steps_dict: dict)->None:
         get_plink = GetPLINK(
             input_path = Path(data_dict['output_directory']),
             output_path= Path(data_dict['output_directory']),
-            input_name = data_dict['output_prefix']+'.vcf.gz',
+            input_name = 'concat-'+data_dict['output_prefix']+'.vcf.gz',
             output_name= data_dict['output_prefix'],
         )
 
