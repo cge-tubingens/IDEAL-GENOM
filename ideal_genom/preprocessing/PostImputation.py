@@ -1,3 +1,14 @@
+"""Module to run the post-imputation processing tasks on VCF files.
+
+This module provides classes for running various post-imputation tasks in parallel,
+including unzipping VCF files, filtering variants based on imputation quality, normalizing VCF files,
+and indexing VCF files. It uses the `ThreadPoolExecutor` for parallel execution
+and `tqdm` for progress tracking. The tasks are designed to handle large genomic datasets
+efficiently by leveraging multi-threading.
+
+It also includes functionality to download and use reference genomes for normalization, and convert
+VCF file into a format suitable for further analysis, that is PLINK binary files.
+"""
 import time
 import logging
 import os
@@ -18,8 +29,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 class ParallelTaskRunner:
-    """
-    A base class for running parallel tasks on files.
+    """A base class for running parallel tasks on files.
     
     This class provides the basic infrastructure for parallel processing of files
     using ThreadPoolExecutor. It handles file collection and parallel task execution
@@ -38,33 +48,15 @@ class ParallelTaskRunner:
    
     Raises
     ------
-    TypeError: If input_path or output_path are not Path objects.
-    FileNotFoundError: If input_path or output_path don't exist.
-    NotADirectoryError: If input_path or output_path are not directories.
+    TypeError
+        If input_path or output_path are not Path objects.
+    FileNotFoundError
+        If input_path or output_path don't exist.
+    NotADirectoryError 
+        If input_path or output_path are not directories.
     """
     
     def __init__(self, input_path: Path, output_path: Path, max_workers: Optional[int] = None) -> None:
-        """
-        Initialize a ParallelTask processor.
-
-        This constructor sets up paths for processing multiple VCF in parallel and validates
-        that both input and output directories exist and are properly formatted.
-
-        Parameters
-        ----------
-        input_path : Path
-            Path to the directory containing input files to process.
-        output_path : Path 
-            Path to the directory where processed files will be saved.
-        max_workers : Optional[int] 
-            Maximum number of concurrent workers for parallel processing. If None, defaults to min(8, os.cpu_count()).
-
-        Raises
-        ------
-        TypeError: If input_path or output_path is not a Path object.
-        FileNotFoundError: If input_path or output_path does not exist.
-        NotADirectoryError: If input_path or output_path is not a directory.
-        """
 
         if not isinstance(input_path, Path):
             raise TypeError(f"input_path should be of type Path, got {type(input_path)}")
@@ -90,21 +82,21 @@ class ParallelTaskRunner:
         pass
 
     def execute_task(self) -> None:
-        """
-        Execute the specific post-imputation processing task.
+        """Execute the specific post-imputation processing task.
 
         This abstract method should be implemented by all subclasses to perform
         their specific post-imputation processing operations. Implementations
         should handle the execution logic for the particular task the subclass
         is designed to perform.
 
-        Returns:
-        --------
+        Returns
+        -------
         None
 
-        Raises:
-        -------
-        NotImplementedError: If the subclass does not implement this method.
+        Raises
+        ------
+        NotImplementedError
+            If the subclass does not implement this method.
         """
 
         raise NotImplementedError("Subclasses must implement this method.")
@@ -118,7 +110,7 @@ class ParallelTaskRunner:
         Parameters
         ----------
         filename_pattern : str
-            A glob pattern string to match files (e.g., "*.vcf.gz").
+            A glob pattern string to match files (e.g., ``*.vcf.gz``).
         
         Returns
         -------
@@ -152,8 +144,8 @@ class ParallelTaskRunner:
         return files
     
     def _run_task(self, task_fn: Callable, task_args: Dict[str, Any], desc: str = "Running tasks") -> None:
-        """
-        Execute a task function across all files using parallel processing with ThreadPoolExecutor.
+        """Execute a task function across all files using parallel processing with ThreadPoolExecutor.
+        
         This method applies the given task function to each file in self.files concurrently,
         managing thread allocation, progress tracking, and error handling.
         
@@ -161,7 +153,7 @@ class ParallelTaskRunner:
         ----------
         task_fn : Callable
             The function to execute for each file. First argument should accept a file,
-            and it should accept **kwargs for additional arguments.
+            and it should accept ``**kwargs`` for additional arguments.
         task_args : Dict[str, Any]
             Dictionary of keyword arguments to pass to the task function.
         desc : str, optional
@@ -203,22 +195,15 @@ class ParallelTaskRunner:
         logger.info(f"{desc} finished in {elapsed:.2f} seconds.")
 
 class UnzipVCF(ParallelTaskRunner):
-    """
-    A class for unzipping VCF (Variant Call Format) files after imputation, with support for parallel processing.
+    """A class for unzipping VCF (Variant Call Format) files after imputation, with support for parallel processing.
+    
     This class extends ParallelTaskRunner to efficiently extract VCF files from zip archives,
     including password-protected ones. It collects all zip files in the working directory
     and extracts their contents to the output directory.
     
     Attributes
     ----------
-    Inherits all attributes from ParallelTaskRunner
-    
-    Methods
-    -------
-    execute_task(password=None)
-        Execute the unzipping process for all zip files in the working directory
-    unzip_files(zip_path, password)
-        Extract files from a specific zip archive, handling password protection if needed
+    (See `ParallelTaskRunner` for inherited attributes.)
 
     Notes
     -----
@@ -363,25 +348,22 @@ class FilterVariants(ParallelTaskRunner):
     
     Attributes
     ----------
-    Inherits all attributes from ParallelTaskRunner
-    
-    Methods
-    -------
-    execute_task(r2_threshold, output_prefix='filtered-')
-        Set up and execute parallel filtering of variants based on R² threshold
-    filter_variants(input_file, r2_threshold, output_prefix='filtered-')
-        Filter a single VCF/BCF file based on the R² imputation quality threshold
-    
-    Dependencies
-    ------------
-    - bcftools must be installed and available in the system path
-    - ParallelTaskRunner parent class for handling parallel execution
+    r2_threshold : float
+        The threshold value for the R² statistic. Variants with an R² value below this threshold 
+        will be filtered out.
+    output_prefix : str, optional
+        The prefix to be added to output filenames. Default is 'filtered-'.
+    (See `ParallelTaskRunner` for inherited attributes.)
     
     Notes
     -----
     The class searches for files matching the pattern ``*dose.vcf.gz`` in the input directory
     and processes them in parallel. The filtered output files will be saved in the output
     directory with the specified prefix added to their original filenames.
+
+    Note
+    ----
+    bcftools must be installed and available in the system path
     """
 
     def __init__(self, input_path: Path, output_path: Path, max_workers: Optional[int] = None, r2_threshold: float = 0.3, output_prefix: str = 'filtered-') -> None:
@@ -395,14 +377,6 @@ class FilterVariants(ParallelTaskRunner):
 
         This method collects the necessary files with the pattern ``*dose.vcf.gz`` and runs 
         the filtering task with the specified parameters.
-
-        Parameters
-        ----------
-        r2_threshold : float
-            The threshold value for the R² statistic. Variants with an R² value below this threshold 
-            will be filtered out.
-        output_prefix : str, optional
-            The prefix to be added to output filenames. Default is 'filtered-'.
 
         Returns
         -------
@@ -435,36 +409,43 @@ class FilterVariants(ParallelTaskRunner):
         return
     
     def filter_variants(self, input_file: Path, r2_threshold: float, output_prefix: str = 'filtered-') -> None:
-        """
-        Filter variants from a VCF/BCF file based on R2 imputation quality threshold.
+        """Filter variants from a VCF/BCF file based on R2 imputation quality threshold.
+        
         This method takes an imputed VCF/BCF file and filters out variants with 
         imputation quality (R2) below the specified threshold. The filtered output 
         is saved as a compressed VCF.
 
-        Parameters:
-        -----------
-        input_file (Path): 
+        Parameters
+        ----------
+        input_file : Path 
             Path to the input VCF/BCF file to be filtered
-        r2_threshold (float): 
+        r2_threshold : float 
             Minimum R2 imputation quality threshold (variants with R2 <= threshold will be removed)
-        output_prefix (str, optional): 
+        output_prefix : str, optional 
             Prefix to add to the output filename. Defaults to 'filtered-'.
         
-        Returns:
-        --------
-            None: The method outputs a filtered VCF file but doesn't return a value.
-        
-        Raises:
+        Returns
         -------
-            FileExistsError: If the input file does not exist
-            IsADirectoryError: If the input path is a directory, not a file
-            TypeError: If r2_threshold is not a float or output_prefix is not a string
+        None 
+            The method outputs a filtered VCF file but doesn't return a value.
         
-        Notes:
+        Raises
         ------
-            The output file will be saved in the instance's output_path directory with
-            the name constructed as: output_prefix + input_file.name
-            This method requires bcftools to be installed and available in the system path.
+        FileExistsError 
+            If the input file does not exist
+        IsADirectoryError
+            If the input path is a directory, not a file
+        TypeError 
+            If r2_threshold is not a float or output_prefix is not a string
+        
+        Notes
+        -----
+        - The output file will be saved in the instance's output_path directory with
+        - the name constructed as: `output_prefix` + `input_file.name`
+
+        Note
+        ----
+        This method requires bcftools to be installed and available in the system path.
         """
 
         if not input_file.exists():
@@ -501,8 +482,8 @@ class FilterVariants(ParallelTaskRunner):
         pass
 
 class NormalizeVCF(ParallelTaskRunner):
-    """
-    A class for normalizing VCF files post-imputation in parallel.
+    """A class for normalizing VCF files post-imputation in parallel.
+    
     This class provides functionality to process VCF files by normalizing them using
     bcftools. It's specifically designed to handle post-imputation VCF files and
     split multiallelic variants into separate entries.
@@ -512,13 +493,12 @@ class NormalizeVCF(ParallelTaskRunner):
     Attributes
     ----------
         Inherits all attributes from ParallelTaskRunner
+    output_prefix : str, optional
+        Prefix to add to the output files. Defaults to 'uncompressed-'.
 
-    Methods
-    -------
-    execute_task(output_prefix='uncompressed-')
-        Execute the normalization task on VCF files in parallel.
-    normalize_vcf(input_file, output_prefix='uncompressed-')
-        Normalize a single VCF file using bcftools norm with the -m -any option.
+    Note
+    ----
+    bcftools must be installed and available in the system path
     """
 
     def __init__(self, input_path: Path, output_path: Path, max_workers: Optional[int] = None, output_prefix: str = 'uncompressed-') -> None:
@@ -541,10 +521,11 @@ class NormalizeVCF(ParallelTaskRunner):
 
         Raises
         ------
-        TypeError: If output_prefix is not a string.
+        TypeError 
+            If output_prefix is not a string.
 
-        Returns:
-        --------
+        Returns
+        -------
         None
         """
 
@@ -563,31 +544,36 @@ class NormalizeVCF(ParallelTaskRunner):
         return
     
     def normalize_vcf(self, input_file: Path, output_prefix: str = 'uncompressed-') -> None:
-        """
-        Normalizes a VCF file using bcftools norm with the -m -any option.
+        """Normalizes a VCF file using bcftools norm with the -m -any option.
+        
         This method takes a VCF file, performs normalization using bcftools to split 
         multiallelic variants into separate entries, and outputs the normalized file 
         with the specified prefix.
         
-        Parameters:
-        -----------
-            input_file (Path): Path to the input VCF file to be normalized
-            output_prefix (str, optional): Prefix for the output file name. Defaults to 'uncompressed-'
+        Parameters
+        ----------
+        input_file : Path 
+            Path to the input VCF file to be normalized
+        output_prefix : str, optional 
+            Prefix for the output file name. Defaults to 'uncompressed-'
         
-        Returns:
-        --------
-            None
-
-        Raises:
+        Returns
         -------
-            FileExistsError: If the input file does not exist
-            IsADirectoryError: If the input file path points to a directory
-            TypeError: If output_prefix is not a string
+        None
+
+        Raises
+        ------
+        FileExistsError 
+            If the input file does not exist
+        IsADirectoryError 
+            If the input file path points to a directory
+        TypeError 
+            If output_prefix is not a string
         
-        Note:
+        Notes
         -----
-            The output file will be saved in the output_path directory with the naming 
-            convention: output_prefix + base_name, where base_name is derived from the input file.
+        The output file will be saved in the output_path directory with the naming 
+        convention: `output_prefix` + `base_name`, where base_name is derived from the input file.
         """
 
         if not input_file.exists():
@@ -618,26 +604,27 @@ class NormalizeVCF(ParallelTaskRunner):
         pass
 
 class ReferenceNormalizeVCF(ParallelTaskRunner):
-    """
-    A class for normalizing VCF files using a reference genome in parallel.
+    """A class for normalizing VCF files using a reference genome in parallel.
+    
     This class extends ParallelTaskRunner to process multiple VCF files concurrently,
     normalizing them against a reference genome using bcftools. If a reference file
     is not provided, it will automatically download the appropriate reference genome
     based on the specified build.
     
-    Attributes:
-    -----------
-        reference_file (str): Path to the reference genome file used for normalization.
+    Attributes
+    ----------
+    build : str
+        Genome build version, either '37' or '38'. Defaults to '38'.
+    output_prefix : str
+        Prefix to add to the output files. Defaults to 'normalized-'.
+    reference_file : Path, optional
+        Path to the reference genome file used for normalization. Defaults to None.
+        If None or the file does not exist, it will be downloaded automatically based on the build.
+    (See `ParallelTaskRunner` for inherited attributes.)
     
-    Methods:
-    --------
-        execute_task: Sets up normalization task and processes files in parallel.
-        normalize_with_reference: Normalizes a single VCF file using bcftools.
-    
-    Example:
-    --------
-        normalizer = ReferenceNormalizeVCF()
-        normalizer.execute_task(build='38', output_prefix='normalized-')
+    Note
+    ----
+    bcftools must be installed and available in the system path
     """
 
     def __init__(self, input_path: Path, output_path: Path, max_workers: Optional[int] = None, build: str = '38', output_prefix: str = 'normalized-', reference_file: Optional[Path] = None) -> None:
@@ -647,30 +634,23 @@ class ReferenceNormalizeVCF(ParallelTaskRunner):
         self.reference_file = reference_file
 
     def execute_task(self) -> None:
-        """
-        Execute the post-imputation normalization task with reference genome.
+        """Execute the post-imputation normalization task with reference genome.
+        
         This method normalizes VCF files using a reference genome. If no reference file is provided,
         it automatically downloads the appropriate reference genome based on the build parameter.
 
-        Parameters:
-        -----------
-        build : str (optional) 
-            Genome build version, either '37' or '38'. Defaults to '38'.
-        output_prefix : str (optional) 
-            Prefix to add to output files. Defaults to 'normalized-'.
-        reference_file : Path (optional) 
-            Path to the reference genome file. If None or the file doesn't exist, the reference will be downloaded. Defaults to None.
         
-        Returns:
-        --------
+        Returns
+        -------
         None
 
-        Raises:
-        -------
-        TypeError: If output_prefix is not a string.
-        
-        Notes:
+        Raises
         ------
+        TypeError 
+            If output_prefix is not a string.
+        
+        Notes
+        -----
         This method collects uncompressed dose VCF files using a pattern match and normalizes them against the reference genome. The downloaded reference genomes come from the 1000 Genomes Project.
         """
 
@@ -715,8 +695,8 @@ class ReferenceNormalizeVCF(ParallelTaskRunner):
         return
     
     def normalize_with_reference(self, input_file: Path, output_prefix: str = 'normalized-') -> None:
-        """
-        Normalize a VCF file with a reference genome using bcftools.
+        """Normalize a VCF file with a reference genome using bcftools.
+        
         This method takes an input VCF file and normalizes it against a reference genome
         using bcftools norm. The normalized output is compressed with gzip (-Oz).
         
@@ -772,35 +752,39 @@ class ReferenceNormalizeVCF(ParallelTaskRunner):
         pass
 
 class IndexVCF(ParallelTaskRunner):
-    """
-    A class for indexing VCF (Variant Call Format) files using bcftools in parallel.
+    """A class for indexing VCF (Variant Call Format) files using bcftools in parallel.
+    
     This class extends ParallelTaskRunner to enable parallel processing of multiple VCF files.
     It creates index files that facilitate quick random access to compressed VCF files.
     
-    Methods
-    -------
-    execute_task(pattern: str) -> None
-        Collects VCF files based on the given pattern and runs indexing in parallel.
+    Attributes
+    ----------
+    pattern : str, optional
+        The glob pattern to match VCF files for indexing. Defaults to ``normalized-*dose.vcf.gz``.
+    (See `ParallelTaskRunner` for inherited attributes.)
+
+    Raises
+    ------
+    TypeError
+        If pattern is not a string.
     
-    index_vcf(input_file: Path) -> None
-        Indexes a single VCF file using bcftools.
+    Note
+    ----
+    bcftools must be installed and available in the system path
     """
 
     def __init__(self, input_path: Path, output_path: Path, max_workers: Optional[int] = None, pattern: str = 'normalized-*dose.vcf.gz') -> None:
         super().__init__(input_path, output_path, max_workers)
+
+        if not isinstance(pattern, str):
+            raise TypeError(f"pattern should be of type str, got {type(pattern)}")
         self.pattern = pattern
 
     def execute_task(self) -> None:
-        """
-        Execute the task of indexing VCF files.
+        """Execute the task of indexing VCF files.
 
         This method collects files based on the provided pattern and indexes
         the VCF files.
-
-        Parameter
-        ---------
-        pattern : str 
-            The pattern used to filter/collect files for processing.
 
         Returns
         -------
@@ -818,8 +802,7 @@ class IndexVCF(ParallelTaskRunner):
         return
     
     def index_vcf(self, input_file: Path) -> None:
-        """
-        Index a VCF file using bcftools.
+        """Index a VCF file using bcftools.
 
         This method creates an index for the specified VCF file using bcftools,
         which is required for efficient querying and processing of VCF files.
@@ -855,8 +838,8 @@ class IndexVCF(ParallelTaskRunner):
         pass
 
 class AnnotateVCF(ParallelTaskRunner):
-    """
-    A parallel task runner for annotating normalized VCF files using reference annotation.
+    """A parallel task runner for annotating normalized VCF files using reference annotation.
+    
     This class provides functionality to annotate normalized VCF files with identifiers
     from a reference annotation file using bcftools. It processes multiple VCF files in 
     parallel, making it efficient for large genomic datasets.
@@ -867,41 +850,47 @@ class AnnotateVCF(ParallelTaskRunner):
     
     Attributes
     ----------
-    Inherits all attributes from ParallelTaskRunner.
+    output_prefix : str, optional
+        Prefix to add to the output files. Defaults to 'annotated-'.
+    ref_annotation : Path
+        Path to the reference annotation file used for annotating VCF files.
+    (See `ParallelTaskRunner` for inherited attributes.)
+
+    Raises
+    ------
+    TypeError
+        If ref_annotation is not a Path object or output_prefix is not a string.
+    FileNotFoundError
+        If the reference annotation file does not exist.
+    IsADirectoryError
+        If the reference annotation file is not a file.
     
-    Methods
-    -------
-    execute_task(ref_annotation, output_prefix='annotated-')
-        Annotate all normalized VCF files using the reference annotation file.
-    annotate_vcf(input_file, ref_annotation, output_prefix='annotated-')
-        Annotate a single VCF file using bcftools.
+    Note
+    ----
+    This class requires bcftools to be installed and available in the system path.
     """
 
     def __init__(self, input_path: Path, output_path: Path, ref_annotation: Path, max_workers: Optional[int] = None, output_prefix: str = 'annotated-') -> None:
         super().__init__(input_path, output_path, max_workers)
-        self.ref_annotation = ref_annotation
+
+        if not isinstance(ref_annotation, Path):
+            raise TypeError(f"ref_annotation should be of type Path, got {type(ref_annotation)}")
+        if not isinstance(output_prefix, str):
+            raise TypeError(f"output_prefix should be of type str, got {type(output_prefix)}")
+        if not ref_annotation.exists():
+            raise FileNotFoundError(f"Reference annotation file {ref_annotation} does not exist.")
+        if not ref_annotation.is_file():
+            raise IsADirectoryError(f"Reference annotation file {ref_annotation} is not a file.")
+        
+        self.ref_annotation= ref_annotation
         self.output_prefix = output_prefix
 
     def execute_task(self) -> None:
-        """
-        Annotates normalized VCF files using a reference annotation file.
+        """Annotates normalized VCF files using a reference annotation file.
+        
         This method collects all normalized VCF files matching the pattern ``normalized-*dose.vcf.gz`` 
         and annotates them using the provided reference annotation file. The annotated files 
         will be saved with the specified output prefix.
-
-        Parameters
-        ----------
-        ref_annotation: Path 
-            Path to the reference annotation file.
-        output_prefix: str (optional)
-            Prefix to add to the output files. Defaults to 'annotated-'.
-
-        Raises
-        ------
-        TypeError: 
-            If ref_annotation is not a Path object or output_prefix is not a string.
-        FileNotFoundError: 
-            If the reference annotation file does not exist.
         
         Returns
         -------
@@ -947,13 +936,17 @@ class AnnotateVCF(ParallelTaskRunner):
         
         Raises
         ------
-        FileExistsError: If the input file does not exist.
-        IsADirectoryError: If the input file is a directory, not a file.
-        TypeError: If ref_annotation is not a Path object or output_prefix is not a string.
-        subprocess.CalledProcessError: If the bcftools command fails.
-        FileNotFoundError: If the input file is not found during execution.
+        FileExistsError 
+            If the input file does not exist.
+        IsADirectoryError 
+            If the input file is a directory, not a file.
+        TypeError 
+            If ref_annotation is not a Path object or output_prefix is not a string.
+        subprocess.CalledProcessError 
+            If the bcftools command fails.
+        FileNotFoundError 
+            If the input file is not found during execution.
         """
-
 
         if not input_file.exists():
             raise FileExistsError(f"Input file {input_file} does not exist")
@@ -989,8 +982,7 @@ class AnnotateVCF(ParallelTaskRunner):
         pass
 
 class ProcessVCF:
-    """
-    ProcessVCF class for post-imputation processing of Variant Call Format (VCF) files.
+    """ProcessVCF class for post-imputation processing of Variant Call Format (VCF) files.
 
     This class provides a pipeline for processing VCF files through multiple sequential steps:
     
@@ -1002,66 +994,35 @@ class ProcessVCF:
     6. Annotating variants with additional information
     7. Concatenating multiple VCF files into a single output file
 
-    :ivar input_path: Directory containing input VCF files.
-    :vartype input_path: pathlib.Path
-    :ivar output_path: Directory where processed files will be saved.
-    :vartype output_path: pathlib.Path
-    :ivar process_vcf: Subdirectory created for intermediate processing files.
-    :vartype process_vcf: pathlib.Path
+    Attributes
+    ----------
+    input_path : Path
+        Path to the directory containing input VCF files.
+    output_path : Path
+        Path to the directory where processed files will be saved.
 
-    :meth:`execute_unzip(password)`
-        Unzips compressed VCF files.
+    Raises
+    ------
+    TypeError
+        If `input_path` or `output_path` is not of type `Path`.
+    FileNotFoundError
+        If `input_path` or `output_path` does not exist.
+    NotADirectoryError
+        If `input_path` or `output_path` is not a directory.
 
-    :meth:`execute_filter(r2_threshold)`
-        Filters variants based on imputation quality.
+    Notes
+    -----
+    - A subdirectory named `process_vcf` is created inside the `input_path` directory
+      for storing intermediate files during processing.
+    - This class is designed to handle multiple sequential steps in VCF file processing,
+      such as unzipping, filtering, normalizing, and annotating.
 
-    :meth:`execute_normalize()`
-        Normalizes variant representation.
-
-    :meth:`execute_reference_normalize(build, reference_file)`
-        Normalizes variants against a reference genome.
-
-    :meth:`execute_index(pattern)`
-        Creates index files for the VCF files.
-
-    :meth:`execute_annotate(ref_annotation, output_prefix)`
-        Annotates variants with additional information.
-
-    :meth:`execute_concatenate(output_name, max_threads)`
-        Concatenates multiple VCF files into a single output file.
+    Note
+    ----
+    This class requires bcftools to be installed and available in the system path.
     """
 
     def __init__(self, input_path: Path, output_path: Path) -> None:
-
-        """
-        Initialize the ProcessVCF class for post-imputation processing of VCF files.
-
-        This constructor sets up the input and output directories for processing VCF files
-        and creates a subdirectory for intermediate processing files.
-
-        Parameters
-        ----------
-        input_path : Path
-            Path to the directory containing input VCF files.
-        output_path : Path
-            Path to the directory where processed files will be saved.
-
-        Raises
-        ------
-        TypeError
-            If `input_path` or `output_path` is not of type `Path`.
-        FileNotFoundError
-            If `input_path` or `output_path` does not exist.
-        NotADirectoryError
-            If `input_path` or `output_path` is not a directory.
-
-        Notes
-        -----
-        - A subdirectory named `process_vcf` is created inside the `input_path` directory
-          for storing intermediate files during processing.
-        - This class is designed to handle multiple sequential steps in VCF file processing,
-          such as unzipping, filtering, normalizing, and annotating.
-        """
         
         if not isinstance(input_path, Path):
             raise TypeError(f"input_path should be of type Path, got {type(input_path)}")
@@ -1085,19 +1046,20 @@ class ProcessVCF:
         pass
 
     def execute_unzip(self, password: Optional[str] = None) -> None:
-        """
-        Unzips a VCF file using the UnzipVCF utility.
+        """Unzips a VCF file using the UnzipVCF utility.
+        
         This method creates an instance of UnzipVCF with the input and process paths
         from the current object, then executes the unzipping task. If the VCF file
         is password-protected, a password can be provided.
         
-        Parameters:
-        -----------
-            password (str, optional): Password for the protected zip file. Defaults to None.
+        Parameters
+        ----------
+        password : str, optional 
+            Password for the protected zip file. Defaults to None.
         
-        Returns:
-        --------
-            None
+        Returns
+        -------
+        None
         """
         
         unzipper = UnzipVCF(
@@ -1111,8 +1073,7 @@ class ProcessVCF:
         return
 
     def execute_filter(self, r2_threshold: float = 0.3) -> None:
-        """
-        Execute a filtering operation on VCF data based on R² threshold.
+        """Execute a filtering operation on VCF data based on R² threshold.
 
         This method filters variants in the processed VCF file by creating and 
         executing a FilterVariants object with the specified R² threshold.
@@ -1120,7 +1081,7 @@ class ProcessVCF:
 
         Parameters
         ----------
-        r2_threshold : float (optional)
+        r2_threshold : float, optional
             The R² threshold value for filtering variants. Variants with R² value below this threshold will be filtered out. Default is 0.3.
 
         Returns
@@ -1138,15 +1099,15 @@ class ProcessVCF:
         return
     
     def execute_normalize(self) -> None:
-        """
-        Normalizes the VCF file using the NormalizeVCF class.
+        """Normalizes the VCF file using the NormalizeVCF class.
+        
         This method creates a NormalizeVCF object with the current processed VCF file
         as both input and output, then executes the normalization task. The normalization
         process updates the VCF file in place.
         
-        Returns:
-        --------
-            None: This method doesn't return any value.
+        Returns
+        -------
+        None
         """
         
         normalizer = NormalizeVCF(
@@ -1158,20 +1119,20 @@ class ProcessVCF:
         return
     
     def execute_reference_normalize(self, build: str = '38', ref_genome: Optional[Path] = None) -> None:
-        """
-        Normalize the VCF file against a reference genome.
+        """Normalize the VCF file against a reference genome.
+        
         This method creates a ReferenceNormalizeVCF object and executes the normalization 
         task on the processed VCF file, using the specified genome build or reference file.
         
         Parameters
         ----------
-        build : str (optional) 
+        build : str, optional 
             Genome build version to use. Defaults to '38'.
-        reference_file : Path (optional) 
+        reference_file : Path, optional 
             Path to a custom reference file. If provided, this will be used instead of the default reference for the specified build. Defaults to None.
         
-        Returns:
-        --------
+        Returns
+        -------
         None
         """
         
@@ -1186,15 +1147,14 @@ class ProcessVCF:
         return
     
     def execute_index(self, pattern: str = 'normalized-*dose.vcf.gz') -> None:
-        """
-        Index VCF files matching a specific pattern.
+        """Index VCF files matching a specific pattern.
 
         This method creates an indexer for VCF files and executes the indexing task
         on files that match the given pattern in the process_vcf directory.
 
         Parameters
         ----------
-        pattern : str (optional): 
+        pattern : str, optional 
             The glob pattern to match VCF files for indexing. Defaults to ``normalized-*dose.vcf.gz``.
 
         Returns
@@ -1212,8 +1172,8 @@ class ProcessVCF:
         return
     
     def execute_annotate(self, ref_annotation: Path, output_prefix: str = 'annotated-') -> None:
-        """
-        Annotates a VCF file using a reference annotation file.
+        """Annotates a VCF file using a reference annotation file.
+        
         This method initializes an AnnotateVCF object and executes the annotation
         process on the current VCF file.
         
@@ -1240,8 +1200,8 @@ class ProcessVCF:
         return
     
     def execute_concatenate(self, output_name: str, max_threads: Optional[int] = None) -> None:
-        """
-        Concatenates annotated VCF files using bcftools concat.
+        """Concatenates annotated VCF files using bcftools concat.
+        
         This method finds all annotated VCF files in the process_vcf directory, 
         sorts them, and concatenates them into a single compressed VCF file.
         
@@ -1258,12 +1218,15 @@ class ProcessVCF:
 
         Raises
         ------
-        TypeError: If output_name is not a string.
-        FileNotFoundError: If no annotated VCF files are found in the process_vcf directory.
-        ValueError: If max_threads is less than 1.
+        TypeError 
+            If output_name is not a string.
+        FileNotFoundError 
+            If no annotated VCF files are found in the process_vcf directory.
+        ValueError 
+            If max_threads is less than 1.
         
-        Notes:
-        ------
+        Notes
+        -----
         The output file will be saved in the output_path directory.
         The method uses the 'bcftools concat' command with Oz compression.
         """
@@ -1307,33 +1270,35 @@ class ProcessVCF:
 
 class GetPLINK:
 
-    def __init__(self, input_path: Path, input_name: str, output_path: Path, output_name: str) -> None:
-        """
-        Initialize the GetPLINK class.
-        This class handles conversion of a concatenated VCF file to a PLINK binary ready for further analysis.
+    """A class for converting concatenated VCF files to PLINK binary format.
 
-        Parameters
-        ----------
-        input_path : Path
-            Directory path where the input VCF file is located.
-        output_path : Path
-            Directory path where the output files will be saved.
-        input_name : str
-            Name of the input VCF file (must end with .vcf or .vcf.gz).
-        output_name : str, optional
-            Name for the output file. If not provided, it will be derived from input_name.
+    This class handles conversion of a concatenated VCF file to a PLINK binary ready for further analysis.
+
+    Attributes
+    ----------
+    input_path : Path
+        Directory path where the input VCF file is located.
+    output_path : Path
+        Directory path where the output files will be saved.
+    input_name : str
+        Name of the input VCF file (must end with .vcf or .vcf.gz).
+    output_name : str, optional
+        Name for the output file. If not provided, it will be derived from input_name.
         
-        Raises
-        ------
-        TypeError
-            If input_path or output_path is not a Path object, or if input_name or output_name is not a string.
-        FileNotFoundError
-            If input_path or output_path does not exist.
-        NotADirectoryError
-            If input_path or output_path is not a directory.
-        ValueError
-            If input_name is not provided or if it doesn't end with .vcf or .vcf.gz.
-        """
+    Raises
+    ------
+    TypeError
+        If input_path or output_path is not a Path object, or if input_name or output_name is not a string.
+    FileNotFoundError
+        If input_path or output_path does not exist.
+    NotADirectoryError
+        If input_path or output_path is not a directory.
+    ValueError
+        If input_name is not provided or if it doesn't end with .vcf or .vcf.gz.
+    """
+
+    def __init__(self, input_path: Path, input_name: str, output_path: Path, output_name: str) -> None:
+        
 
         if not isinstance(input_path, Path):
             raise TypeError(f"input_path should be of type Path, got {type(input_path)}")
@@ -1373,18 +1338,18 @@ class GetPLINK:
         pass
 
     def convert_vcf_to_plink(self, double_id: bool = True, threads: Optional[int] = None, memory: Optional[int] = None) -> None:
-        """
-        Convert a VCF file to PLINK binary format (.bed, .bim, .fam).
+        """Convert a VCF file to PLINK binary format (.bed, .bim, .fam).
+        
         This method runs the plink2 command-line tool to convert the input VCF file to PLINK
         binary format, filtering for SNPs with standard ACGT alleles only.
         
         Parameters
         ----------
-        double_id : bool (optional) 
+        double_id : bool, optional 
             Whether to use the --double-id flag in plink2 command, which sets both FID and IID to the sample ID. Defaults to True.
-        threads : int (optional) 
+        threads : int, optional 
             Number of CPU threads to use. If None, defaults to (available CPU cores - 2) or 10 if CPU count can't be determined.
-        memory : int (optional) 
+        memory : int, optional
             Memory allocation in MB for plink2. If None, defaults to approximately 2/3 of available system memory.
 
         Returns
@@ -1397,10 +1362,10 @@ class GetPLINK:
         
         Raises
         ------
-        subprocess.CalledProcessError: If the plink2 command execution fails.
+        subprocess.CalledProcessError 
+            If the plink2 command execution fails.
         """
 
-        
         if threads is None:
             cpu_count = os.cpu_count()
             if cpu_count is not None:
@@ -1447,8 +1412,7 @@ class GetPLINK:
         pass
 
     def update_fam(self, for_fam_update_file: Path, threads: Optional[int] = None) -> None:
-        """
-        Add family information to the PLINK .fam file.
+        """Add family information to the PLINK .fam file.
 
         This method reads a family information file and updates the PLINK .fam file
         using the provided family information, via PLINK2.
