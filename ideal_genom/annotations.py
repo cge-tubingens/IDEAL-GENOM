@@ -314,8 +314,8 @@ def gtf_to_all_genes(gtfpath: str) -> str:
     with the suffix '_all_genes.gtf.gz'. If the output file already exists, it will be returned
     without regenerating it.
 
-    Parameter
-    ---------
+    Parameters
+    ----------
     gtfpath : str 
         Path to the input GTF file.
     
@@ -329,10 +329,10 @@ def gtf_to_all_genes(gtfpath: str) -> str:
     TypeError
         If `gtfpath` is not a string.
     
-    Note
-    ----
-        The function uses the `read_gtf` function for initial parsing and pandas for extraction.
-        The function assumes the GTF file has a standard format with gene_id attributes.
+    Notes
+    -----
+    The function uses the `read_gtf` function for initial parsing and pandas for extraction.
+    The function assumes the GTF file has a standard format with gene_id attributes.
     """
 
     if not isinstance(gtfpath, str):
