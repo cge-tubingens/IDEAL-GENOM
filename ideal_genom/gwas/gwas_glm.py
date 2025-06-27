@@ -17,32 +17,32 @@ class GWASfixed:
 
     This class provides methods to perform association analysis, obtain top hits, and annotate SNPs with gene information.
 
-        Attributes
-        ----------
-        input_path : str
-            Path to the input directory.
-        output_path : str 
-            Path to the output directory.
-        input_name : str 
-            Base name of the input PLINK files.
-        output_name : str 
-            Base name for the output files.
-        recompute : bool 
-            Flag indicating whether to recompute the analysis.
-        results_dir : str 
-            Directory where the results will be saved.
+    Attributes
+    ----------
+    input_path : str
+        Path to the input directory.
+    output_path : str 
+        Path to the output directory.
+    input_name : str 
+        Base name of the input PLINK files.
+    output_name : str 
+        Base name for the output files.
+    recompute : bool 
+        Flag indicating whether to recompute the analysis.
+    results_dir : str 
+        Directory where the results will be saved.
         
-        Raises
-        ------
-        ValueError: 
-            If input_path, output_path, input_name, or output_name are not provided.
-        FileNotFoundError: 
-            If the specified input_path or output_path does not exist.
-        FileNotFoundError: 
-            If the required PLINK files (.bed, .bim, .fam) are not found in the input_path.
-        TypeError: 
-            If input_name or output_name are not strings, or if recompute is not a boolean.
-        """
+    Raises
+    ------
+    ValueError: 
+        If input_path, output_path, input_name, or output_name are not provided.
+    FileNotFoundError: 
+        If the specified input_path or output_path does not exist.
+    FileNotFoundError: 
+        If the required PLINK files (.bed, .bim, .fam) are not found in the input_path.
+    TypeError: 
+        If input_name or output_name are not strings, or if recompute is not a boolean.
+    """
 
     def __init__(self, input_path: str, input_name: str, output_path: str, output_name: str, recompute: bool = True) -> None:
     
