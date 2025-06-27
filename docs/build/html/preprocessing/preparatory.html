@@ -49,6 +49,12 @@
 <li class="toctree-l1"><a class="reference internal" href="PostImputation.html">PostImputation Module</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Preparatory Module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#ideal_genom.preprocessing.preparatory.Preparatory"><code class="docutils literal notranslate"><span class="pre">Preparatory</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ideal_genom.preprocessing.preparatory.Preparatory.input_path"><code class="docutils literal notranslate"><span class="pre">Preparatory.input_path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ideal_genom.preprocessing.preparatory.Preparatory.input_name"><code class="docutils literal notranslate"><span class="pre">Preparatory.input_name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ideal_genom.preprocessing.preparatory.Preparatory.output_path"><code class="docutils literal notranslate"><span class="pre">Preparatory.output_path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ideal_genom.preprocessing.preparatory.Preparatory.output_name"><code class="docutils literal notranslate"><span class="pre">Preparatory.output_name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ideal_genom.preprocessing.preparatory.Preparatory.high_ld_file"><code class="docutils literal notranslate"><span class="pre">Preparatory.high_ld_file</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ideal_genom.preprocessing.preparatory.Preparatory.build"><code class="docutils literal notranslate"><span class="pre">Preparatory.build</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#ideal_genom.preprocessing.preparatory.Preparatory.__init__"><code class="docutils literal notranslate"><span class="pre">Preparatory.__init__()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#ideal_genom.preprocessing.preparatory.Preparatory.execute_ld_prunning"><code class="docutils literal notranslate"><span class="pre">Preparatory.execute_ld_prunning()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#ideal_genom.preprocessing.preparatory.Preparatory.execute_pc_decomposition"><code class="docutils literal notranslate"><span class="pre">Preparatory.execute_pc_decomposition()</span></code></a></li>
@@ -93,40 +99,107 @@
              
   <section id="module-ideal_genom.preprocessing.preparatory">
 <span id="preparatory-module"></span><h1>Preparatory Module<a class="headerlink" href="#module-ideal_genom.preprocessing.preparatory" title="Link to this heading"></a></h1>
+<p>Class designed to run preparatory steps before conducting Genomic-Wide Association Studies (GWAS).</p>
+<p>This class handles the pruning of high linkage disequilibrium (LD) regions and performs Principal Component Analysis (PCA) on the pruned data.
+It uses PLINK software for the pruning and PCA operations, ensuring that the input data is in the correct format and that necessary files are present.
+It also manages the fetching of high LD regions if they are not provided, using the FetcherLDRegions class from the ideal_genom package.
+It is designed to be flexible with parameters such as missing rate, minor allele frequency, and number of principal components to compute.
+It also allows for memory and thread management during the execution of PLINK</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="ideal_genom.preprocessing.preparatory.Preparatory">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ideal_genom.preprocessing.preparatory.</span></span><span class="sig-name descname"><span class="pre">Preparatory</span></span><a class="headerlink" href="#ideal_genom.preprocessing.preparatory.Preparatory" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="ideal_genom.preprocessing.preparatory.Preparatory.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high_ld_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">built</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'38'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#ideal_genom.preprocessing.preparatory.Preparatory.__init__" title="Link to this definition"></a></dt>
-<dd><p>Initialize the preparatory class for genomic data processing.</p>
-<p>This class handles the initialization and validation of paths and files needed for genomic data preprocessing.
-It checks for the existence of required PLINK files and sets up the directory structure for output results.</p>
+<p>A class for preprocessing genomic data in preparation for analysis.</p>
+<p>This class handles the preparatory steps needed for genomic data analysis,
+including input validation, LD (Linkage Disequilibrium) pruning, and
+PCA (Principal Component Analysis) decomposition.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ideal_genom.preprocessing.preparatory.Preparatory.input_path">
+<span class="sig-name descname"><span class="pre">input_path</span></span><a class="headerlink" href="#ideal_genom.preprocessing.preparatory.Preparatory.input_path" title="Link to this definition"></a></dt>
+<dd><p>Path to the directory containing input PLINK files (.bed, .bim, .fam)</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>Path</strong><strong>)</strong> (<em>high_ld_file</em><em> (</em><em>str</em><em> |</em>) – Directory path containing input PLINK files</p></li>
-<li><p><strong>(</strong><strong>str</strong><strong>)</strong> (<em>output_name</em>) – Base name of input PLINK files (without extension)</p></li>
-<li><p><strong>Path</strong><strong>)</strong> – Directory path for output files</p></li>
-<li><p><strong>(</strong><strong>str</strong><strong>)</strong> – Base name for output files (without extension)</p></li>
-<li><p><strong>Path</strong><strong>)</strong> – Path to the high LD regions file</p></li>
-<li><p><strong>(</strong><strong>str</strong> (<em>built</em>) – Genome build version. Must be either ‘38’ or ‘37’. Defaults to ‘38’</p></li>
-<li><p><strong>optional</strong><strong>)</strong> – Genome build version. Must be either ‘38’ or ‘37’. Defaults to ‘38’</p></li>
-</ul>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>ValueError</strong> – If input_path, output_path, input_name, or output_name are not set, or if built is not ‘38’ or ‘37’:</p></li>
-<li><p><strong>TypeError</strong> – If input_path, output_path are not str or Path objects, if input_name, output_name are not str objects, or if built is not a str object:</p></li>
-<li><p><strong>FileNotFoundError</strong> – If input_path or output_path don’t exist, or if required PLINK files (.bed, .bim, .fam) are not found:</p></li>
-<li><p><strong>Note:</strong> – </p></li>
-<li><p><strong>-----</strong> – </p></li>
-<li><p><strong>If high_ld_file is not found</strong><strong>, </strong><strong>it will be automatically fetched from the package using the FetcherLDRegions class.</strong> – </p></li>
-</ul>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str or Path</p>
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ideal_genom.preprocessing.preparatory.Preparatory.input_name">
+<span class="sig-name descname"><span class="pre">input_name</span></span><a class="headerlink" href="#ideal_genom.preprocessing.preparatory.Preparatory.input_name" title="Link to this definition"></a></dt>
+<dd><p>Base name of the input PLINK files (without extension)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ideal_genom.preprocessing.preparatory.Preparatory.output_path">
+<span class="sig-name descname"><span class="pre">output_path</span></span><a class="headerlink" href="#ideal_genom.preprocessing.preparatory.Preparatory.output_path" title="Link to this definition"></a></dt>
+<dd><p>Path to the directory where output files will be saved</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str or Path</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ideal_genom.preprocessing.preparatory.Preparatory.output_name">
+<span class="sig-name descname"><span class="pre">output_name</span></span><a class="headerlink" href="#ideal_genom.preprocessing.preparatory.Preparatory.output_name" title="Link to this definition"></a></dt>
+<dd><p>Base name for the output files</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ideal_genom.preprocessing.preparatory.Preparatory.high_ld_file">
+<span class="sig-name descname"><span class="pre">high_ld_file</span></span><a class="headerlink" href="#ideal_genom.preprocessing.preparatory.Preparatory.high_ld_file" title="Link to this definition"></a></dt>
+<dd><p>Path to the high LD regions file. If not found, will be fetched automatically</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str or Path</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ideal_genom.preprocessing.preparatory.Preparatory.build">
+<span class="sig-name descname"><span class="pre">build</span></span><a class="headerlink" href="#ideal_genom.preprocessing.preparatory.Preparatory.build" title="Link to this definition"></a></dt>
+<dd><p>Genome build version, either ‘38’ or ‘37’</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str, default=’38’</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ValueError</strong> – If input_path or output_path is None, or if input_name or output_name is None</p></li>
+<li><p><strong>TypeError</strong> – If input_path or output_path is not of type str or Path, or if input_name or output_name is not of type str,
+    or if build is not of type str</p></li>
+<li><p><strong>FileNotFoundError</strong> – If the specified input_path or output_path does not exist, or if the required PLINK files (.bed, .bim, .fam) are not found,
+    or if the high LD file is not found and cannot be fetched.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This class uses PLINK software for genomic data processing operations.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The class assumes that PLINK is installed and available in the system PATH.</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="ideal_genom.preprocessing.preparatory.Preparatory.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high_ld_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">build</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'38'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#ideal_genom.preprocessing.preparatory.Preparatory.__init__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ideal_genom.preprocessing.preparatory.Preparatory.execute_ld_prunning">
