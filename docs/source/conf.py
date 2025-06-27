@@ -23,6 +23,8 @@ autodoc_class_signature = 'separated'
 
 napoleon_google_docstring = False
 napoleon_numpy_docstring = True
+napoleon_include_private_with_doc = True
+napoleon_include_special_with_doc = False
 
 templates_path = ['_templates']
 exclude_patterns = []
