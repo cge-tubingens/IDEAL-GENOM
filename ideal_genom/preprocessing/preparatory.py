@@ -1,54 +1,70 @@
+"""Class designed to run preparatory steps before conducting Genomic-Wide Association Studies (GWAS).
+
+This class handles the pruning of high linkage disequilibrium (LD) regions and performs Principal Component Analysis (PCA) on the pruned data.
+It uses PLINK software for the pruning and PCA operations, ensuring that the input data is in the correct format and that necessary files are present.
+It also manages the fetching of high LD regions if they are not provided, using the FetcherLDRegions class from the ideal_genom package.
+It is designed to be flexible with parameters such as missing rate, minor allele frequency, and number of principal components to compute.
+It also allows for memory and thread management during the execution of PLINK
+"""
 import os
 import psutil
 import logging
-from typing import Optional
 
 from ideal_genom.Helpers import shell_do
 from ideal_genom.get_references import FetcherLDRegions
 
 from pathlib import Path
+from typing import Optional
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 class Preparatory:
+    """A class for preprocessing genomic data in preparation for analysis.
+    
+    This class handles the preparatory steps needed for genomic data analysis,
+    including input validation, LD (Linkage Disequilibrium) pruning, and 
+    PCA (Principal Component Analysis) decomposition.
+    
+    Attributes
+    ----------
+    input_path : str or Path
+        Path to the directory containing input PLINK files (.bed, .bim, .fam)
+    input_name : str
+        Base name of the input PLINK files (without extension)
+    output_path : str or Path
+        Path to the directory where output files will be saved
+    output_name : str
+        Base name for the output files
+    high_ld_file : str or Path
+        Path to the high LD regions file. If not found, will be fetched automatically
+    build : str, default='38'
+        Genome build version, either '38' or '37'
 
-    def __init__(self, input_path: str | Path, input_name: str, output_path: str | Path, output_name: str, high_ld_file: str | Path, built: str = '38') -> None:
-        
-        """
-        Initialize the preparatory class for genomic data processing.
-        
-        This class handles the initialization and validation of paths and files needed for genomic data preprocessing.
-        It checks for the existence of required PLINK files and sets up the directory structure for output results.
-        
-        Parameters
-        ----------
-        input_path (str | Path): 
-            Directory path containing input PLINK files
-        input_name (str): 
-            Base name of input PLINK files (without extension)
-        output_path (str | Path): 
-            Directory path for output files
-        output_name (str): 
-            Base name for output files (without extension)
-        high_ld_file (str | Path): 
-            Path to the high LD regions file
-        built (str, optional): 
-            Genome build version. Must be either '38' or '37'. Defaults to '38'
-        
-        Raises
-        ------
-        ValueError: If input_path, output_path, input_name, or output_name are not set, or if built is not '38' or '37'
-        TypeError: If input_path, output_path are not str or Path objects, if input_name, output_name are not str objects, or if built is not a str object
-        FileNotFoundError: If input_path or output_path don't exist, or if required PLINK files (.bed, .bim, .fam) are not found
-        
-        Note:
-        -----
-        If high_ld_file is not found, it will be automatically fetched from the package using the FetcherLDRegions class.
-        """
+    Raises
+    ------
+    ValueError
+        If input_path or output_path is None, or if input_name or output_name is None
+    TypeError
+        If input_path or output_path is not of type str or Path, or if input_name or output_name is not of type str,
+        or if build is not of type str
+    FileNotFoundError
+        If the specified input_path or output_path does not exist, or if the required PLINK files (.bed, .bim, .fam) are not found,
+        or if the high LD file is not found and cannot be fetched.
+    
+    Notes
+    -----
+    This class uses PLINK software for genomic data processing operations.
+
+    Note
+    ----
+    The class assumes that PLINK is installed and available in the system PATH.
+    """
+
+    def __init__(self, input_path: str | Path, input_name: str, output_path: str | Path, output_name: str, high_ld_file: str | Path, build: str = '38') -> None:
         
         # check if paths are set
-        if input_path is None or output_path:
+        if input_path is None or output_path is None:
             raise ValueError("Values for input_path and output_path must be set upon initialization.")
         
         if not isinstance(input_path, (str, Path)) or not isinstance(output_path, (str, Path)):
@@ -69,9 +85,9 @@ class Preparatory:
         if not isinstance(input_name, str) or not isinstance(output_name, str):
             raise TypeError("input_name and output_name should be of type str.")
         
-        if not isinstance(built, str):
+        if not isinstance(build, str):
             raise TypeError("built should be of type str.")
-        if built not in ['38', '37']:
+        if build not in ['38', '37']:
             raise ValueError("built should be either '38' or '37'.")
         
         # check existence of PLINK files
@@ -85,7 +101,7 @@ class Preparatory:
             logger.info(f"High LD file not found at {high_ld_file}")
             logger.info('High LD file will be fetched from the package')
             
-            ld_fetcher = FetcherLDRegions(built=built)
+            ld_fetcher = FetcherLDRegions(built=build)
             ld_fetcher.get_ld_regions()
 
             if ld_fetcher.ld_regions is None:
@@ -98,7 +114,7 @@ class Preparatory:
         self.output_path = output_path
         self.input_name  = input_name
         self.output_name = output_name
-        self.built       = built
+        self.built       = build
         self.high_ld_file = high_ld_file
 
         # create results folder
