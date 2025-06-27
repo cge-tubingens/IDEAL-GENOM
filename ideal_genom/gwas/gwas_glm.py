@@ -1,3 +1,7 @@
+"""This module provides a class for performing Genome-Wide Association Studies (GWAS) using a fixed model approach with PLINK2. 
+
+It includes methods for association analysis, obtaining top hits, and annotating SNPs with gene information.
+"""
 import os
 
 import pandas as pd
@@ -9,22 +13,24 @@ from typing import Optional
 
 class GWASfixed:
 
-    def __init__(self, input_path: str, input_name: str, output_path: str, output_name: str, recompute: bool = True) -> None:
-        """
-        Initialize the GWAS fixed model analysis.
+    """Class for performing Genome-Wide Association Studies (GWAS) using a fixed model approach with PLINK2.
 
-        Parameters
+    This class provides methods to perform association analysis, obtain top hits, and annotate SNPs with gene information.
+
+        Attributes
         ----------
-        input_path (str): 
-            Path to the input directory containing PLINK files.
-        input_name (str): 
-            Base name of the input PLINK files (without extensions).
-        output_path (str): 
-            Path to the output directory where results will be saved.
-        output_name (str): 
+        input_path : str
+            Path to the input directory.
+        output_path : str 
+            Path to the output directory.
+        input_name : str 
+            Base name of the input PLINK files.
+        output_name : str 
             Base name for the output files.
-        recompute (bool): 
-            Flag indicating whether to recompute the analysis if results already exist. Default is True.
+        recompute : bool 
+            Flag indicating whether to recompute the analysis.
+        results_dir : str 
+            Directory where the results will be saved.
         
         Raises
         ------
@@ -36,22 +42,9 @@ class GWASfixed:
             If the required PLINK files (.bed, .bim, .fam) are not found in the input_path.
         TypeError: 
             If input_name or output_name are not strings, or if recompute is not a boolean.
-        
-        Attributes
-        ----------
-        input_path (str): 
-            Path to the input directory.
-        output_path (str): 
-            Path to the output directory.
-        input_name (str): 
-            Base name of the input PLINK files.
-        output_name (str): 
-            Base name for the output files.
-        recompute (bool): 
-            Flag indicating whether to recompute the analysis.
-        results_dir (str): 
-            Directory where the results will be saved.
         """
+
+    def __init__(self, input_path: str, input_name: str, output_path: str, output_name: str, recompute: bool = True) -> None:
     
         # check if paths are set
         if input_path is None or output_path is None:
@@ -95,34 +88,35 @@ class GWASfixed:
         pass
 
     def fixed_model_association_analysis(self, maf: float = 0.01, mind: float = 0.1, hwe: float = 5e-6, ci: float = 0.95) -> dict:
-        """
-        Perform fixed model association analysis using PLINK2.
+        """Perform fixed model association analysis using PLINK2.
         
-        This method performs a fixed model association analysis on genomic data using PLINK2. It checks the validity of the input parameters, ensures necessary files exist, and executes the PLINK2 command to perform the analysis.
+        This method performs a fixed model association analysis on genomic data using PLINK2. 
+        It checks the validity of the input parameters, ensures necessary files exist, 
+        and executes the PLINK2 command to perform the analysis.
 
         Parameters
         ----------
-        maf (float): 
+        maf : float
             Minor allele frequency threshold. Must be between 0 and 0.5.
-        mind (float): 
+        mind : float 
             Individual missingness threshold. Must be between 0 and 1.
-        hwe (float): 
+        hwe : float 
             Hardy-Weinberg equilibrium threshold. Must be between 0 and 1.
-        ci (float): 
+        ci : float 
             Confidence interval threshold. Must be between 0 and 1.
         
         Returns
         -------
-        dict: 
+        dict
             A dictionary containing the status of the process, the step name, and the output directory.
         
         Raises
         ------
-        TypeError: 
+        TypeError
             If any of the input parameters are not of type float.
-        ValueError: 
+        ValueError
             If any of the input parameters are out of their respective valid ranges.
-        FileNotFoundError: 
+        FileNotFoundError
             If the required PCA file is not found.
         """
 
@@ -202,24 +196,27 @@ class GWASfixed:
 
     def get_top_hits(self, maf: float = 0.01) -> dict:
         
-        """
-        Get the top hits from the GWAS results.
+        """Get the top hits from the GWAS results.
 
         Parameters
         ----------
-        maf (float): 
+        maf : float
             Minor allele frequency threshold. Must be a float between 0 and 0.5.
 
         Returns
         -------
-        dict: 
+        dict
             A dictionary containing the process status, step name, and output directory.
 
         Raises
         ------
-        TypeError: If maf is not of type float.
-        ValueError: If maf is not between 0 and 0.5.
+        TypeError
+            If maf is not of type float.
+        ValueError
+            If maf is not between 0 and 0.5.
 
+        Notes
+        -----
         The function performs the following steps:
             1. Validates the type and range of the maf parameter.
             2. Computes the number of threads to use based on the available CPU cores.
@@ -305,8 +302,8 @@ class GWASfixed:
         return out_dict
     
     def annotate_top_hits(self, gtf_path: Optional[str] = None, build: str = '38', anno_source: str = "ensembl") -> dict:
-        """
-        Annotate top SNP hits from COJO analysis with gene information.
+        """Annotate top SNP hits from COJO analysis with gene information.
+        
         This method reads the COJO joint analysis results, extracts the top SNPs, 
         and annotates them with gene information using the specified genome build 
         and annotation source. The annotated results are saved to a TSV file.
