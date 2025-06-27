@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ideal_genom.annotations &mdash; ideal-genom 0.1.0 documentation</title>
+  <title>Annotations Module &mdash; ideal-genom 0.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
@@ -20,7 +20,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="ideal_genom.api_client" href="api_client.html" />
-    <link rel="prev" title="Preparatory Module" href="preprocessing/preparatory.html" /> 
+    <link rel="prev" title="Zoom-Heatmap Plot Module" href="visualization/zoom_heatmap.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -48,7 +48,10 @@
 <li class="toctree-l1"><a class="reference internal" href="gwas/gwas_glmm.html">GWAS with Generalized Linear Mixed Models (GLMM)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="preprocessing/PostImputation.html">PostImputation Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="preprocessing/preparatory.html">Preparatory Module</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">ideal_genom.annotations</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="visualization/manhattan_type.html">Manhattan-type Plots Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualization/plots.html">Other Plots Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualization/zoom_heatmap.html">Zoom-Heatmap Plot Module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Annotations Module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#ideal_genom.annotations.annotate_snp"><code class="docutils literal notranslate"><span class="pre">annotate_snp()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#ideal_genom.annotations.annotate_variants"><code class="docutils literal notranslate"><span class="pre">annotate_variants()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#ideal_genom.annotations.annotate_with_ensembl"><code class="docutils literal notranslate"><span class="pre">annotate_with_ensembl()</span></code></a></li>
@@ -82,7 +85,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">ideal_genom.annotations</li>
+      <li class="breadcrumb-item active">Annotations Module</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/annotations.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -93,38 +96,42 @@
            <div itemprop="articleBody">
              
   <section id="module-ideal_genom.annotations">
-<span id="ideal-genom-annotations"></span><h1>ideal_genom.annotations<a class="headerlink" href="#module-ideal_genom.annotations" title="Link to this heading"></a></h1>
+<span id="annotations-module"></span><h1>Annotations Module<a class="headerlink" href="#module-ideal_genom.annotations" title="Link to this heading"></a></h1>
+<p>This module provides functions to annotate genomic variants with gene information and effects.</p>
+<p>Includes functions to:
+- Find the closest gene to a given SNP position.
+- Map chromosome numbers to identifiers.
+- Convert GTF files to a format containing all genes.
+- Annotate SNPs with gene names using Ensembl or RefSeq databases.
+- Prepare genome data from GTF files.
+- Annotate variants with their effects relying on Ensembl VEP.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="ideal_genom.annotations.annotate_snp">
 <span class="sig-prename descclassname"><span class="pre">ideal_genom.annotations.</span></span><span class="sig-name descname"><span class="pre">annotate_snp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">insumstats</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gtf_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chrom</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'CHR'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'POS'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">build</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'38'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'ensembl'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#ideal_genom.annotations.annotate_snp" title="Link to this definition"></a></dt>
-<dd><p>Annotate SNPs with nearest gene name(s) using either Ensembl or RefSeq databases.
-This function takes a DataFrame containing SNP data and annotates each variant
+<dd><p>Annotate SNPs with nearest gene name(s) using either Ensembl or RefSeq databases.</p>
+<p>This function takes a DataFrame containing SNP data and annotates each variant
 with information about the nearest gene(s) based on genomic coordinates.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>(</strong><strong>pd.DataFrame</strong><strong>)</strong> (<em>insumstats</em>)</p></li>
-<li><p><strong>(</strong><strong>str</strong><strong>)</strong> (<em>gtf_path</em>)</p></li>
-<li><p><strong>(</strong><strong>str</strong> (<em>source</em>)</p></li>
-<li><p><strong>optional</strong><strong>)</strong> (<em>Source for gene annotation. Must be either &quot;ensembl&quot;</em><em> or </em><em>&quot;refseq&quot;. Defaults to &quot;ensembl&quot;.</em>)</p></li>
-<li><p><strong>(</strong><strong>str</strong></p></li>
-<li><p><strong>optional</strong><strong>)</strong></p></li>
-<li><p><strong>(</strong><strong>str</strong></p></li>
-<li><p><strong>optional</strong><strong>)</strong></p></li>
-<li><p><strong>(</strong><strong>str</strong></p></li>
-<li><p><strong>optional</strong><strong>)</strong></p></li>
+<li><p><strong>insumstats</strong> (<em>pandas.DataFrame</em>) – DataFrame containing SNP data with chromosome and position information.</p></li>
+<li><p><strong>gtf_path</strong> (<em>str</em>) – Path to the GTF (Gene Transfer Format) file for gene annotations.</p></li>
+<li><p><strong>chrom</strong> (<em>str</em><em>, </em><em>optional</em>) – Column name in the DataFrame that contains chromosome information. Defaults to “CHR”.</p></li>
+<li><p><strong>pos</strong> (<em>str</em><em>, </em><em>optional</em>) – Column name in the DataFrame that contains position information. Defaults to “POS”.</p></li>
+<li><p><strong>build</strong> (<em>str</em><em>, </em><em>optional</em>) – Genome build version. Must be one of “19”, “37”, or “38”. Defaults to “38”.</p></li>
+<li><p><strong>source</strong> (<em>str</em><em>, </em><em>optional</em>) – Source for gene annotation. Must be either “ensembl” or “refseq”. Defaults to “ensembl”.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>pd.DataFrame</strong></p>
+<dd class="field-even"><p>A copy of the input DataFrame with additional gene annotation columns.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A copy of the input DataFrame with additional gene annotation columns.</p>
+<dd class="field-odd"><p>pandas.DataFrame</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>TypeError</strong> – If input is not a pandas DataFrame or if GTF path is not a string.:</p></li>
-<li><p><strong>ValueError</strong> – If required columns are missing in the input DataFrame or if build/source parameters are invalid.:</p></li>
+<li><p><strong>TypeError</strong> – If input is not a pandas DataFrame or if GTF path is not a string.</p></li>
+<li><p><strong>ValueError</strong> – If required columns are missing in the input DataFrame or if build/source parameters are invalid.</p></li>
 </ul>
 </dd>
 </dl>
@@ -139,8 +146,7 @@ with gene annotation information by finding the closest gene for each variant.</
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>output</strong> (<em>pd.DataFrame</em>) – DataFrame containing variant information to be annotated.</p></li>
-<li><p><strong>output</strong> – DataFrame containing variant information to be annotated.</p></li>
+<li><p><strong>output</strong> (<em>pandas.DataFrame</em>) – DataFrame containing variant information to be annotated.</p></li>
 <li><p><strong>data</strong> (<em>Genome</em>) – Genome object containing reference data for annotation.</p></li>
 <li><p><strong>chrom</strong> (<em>str</em>) – Column name in the output DataFrame that contains chromosome information.</p></li>
 <li><p><strong>pos</strong> (<em>str</em>) – Column name in the output DataFrame that contains position information.</p></li>
@@ -152,7 +158,7 @@ with gene annotation information by finding the closest gene for each variant.</
 <dd class="field-even"><p>DataFrame containing gene annotation information for each variant.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>pd.DataFrame</p>
+<dd class="field-odd"><p>pandas.DataFrame</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -163,14 +169,14 @@ and returns the results as a DataFrame with the same index as the input.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="ideal_genom.annotations.annotate_with_ensembl">
 <span class="sig-prename descclassname"><span class="pre">ideal_genom.annotations.</span></span><span class="sig-name descname"><span class="pre">annotate_with_ensembl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chrom</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">build</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gtf_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_gtf_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#ideal_genom.annotations.annotate_with_ensembl" title="Link to this definition"></a></dt>
-<dd><p>Annotate variants with gene information from Ensembl database.
-This function adds gene annotations to a DataFrame containing variant information
+<dd><p>Annotate variants with gene information from Ensembl database.</p>
+<p>This function adds gene annotations to a DataFrame containing variant information
 by looking up the genomic coordinates in Ensembl data. It adds ‘LOCATION’ and ‘GENE’
 columns to the input DataFrame.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>output</strong> (<em>pd.DataFrame</em>) – DataFrame containing variant information with chromosome and position columns.</p></li>
+<li><p><strong>output</strong> (<em>pandas.DataFrame</em>) – DataFrame containing variant information with chromosome and position columns.</p></li>
 <li><p><strong>chrom</strong> (<em>str</em>) – Name of the column in the DataFrame that contains chromosome information.</p></li>
 <li><p><strong>pos</strong> (<em>str</em>) – Name of the column in the DataFrame that contains position information.</p></li>
 <li><p><strong>build</strong> (<em>str</em>) – Genome build version to use. Must be one of ‘19’, ‘37’, or ‘38’.
@@ -186,7 +192,7 @@ If False, gtf_path is treated as a directory where the GTF file should be downlo
 gene annotations from Ensembl.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>pd.DataFrame</p>
+<dd class="field-odd"><p>pandas.DataFrame</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -203,30 +209,31 @@ and will download the appropriate annotation files if not already available.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="ideal_genom.annotations.annotate_with_refseq">
 <span class="sig-prename descclassname"><span class="pre">ideal_genom.annotations.</span></span><span class="sig-name descname"><span class="pre">annotate_with_refseq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chrom</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">build</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gtf_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_gtf_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#ideal_genom.annotations.annotate_with_refseq" title="Link to this definition"></a></dt>
-<dd><p>Annotate genomic variants with RefSeq gene information.
-This function adds gene and location annotations to genomic variants using NCBI RefSeq data.
+<dd><p>Annotate genomic variants with RefSeq gene information.</p>
+<p>This function adds gene and location annotations to genomic variants using NCBI RefSeq data.
 It processes the input DataFrame and adds two new columns: ‘LOCATION’ and ‘GENE’.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>(</strong><strong>pd.DataFrame</strong><strong>)</strong> (<em>output</em>)</p></li>
-<li><p><strong>(</strong><strong>str</strong><strong>)</strong> (<em>gtf_path</em>)</p></li>
-<li><p><strong>(</strong><strong>str</strong><strong>)</strong></p></li>
-<li><p><strong>(</strong><strong>str</strong><strong>)</strong></p></li>
-<li><p><strong>(</strong><strong>str</strong><strong>)</strong></p></li>
-<li><p><strong>(</strong><strong>bool</strong><strong>)</strong> (<em>is_gtf_path</em>) – If False, gtf_path is treated as a directory.</p></li>
+<li><p><strong>output</strong> (<em>pandas.DataFrame</em>) – DataFrame containing variant information to annotate.</p></li>
+<li><p><strong>chrom</strong> (<em>str</em>) – Column name in DataFrame that contains chromosome information.</p></li>
+<li><p><strong>pos</strong> (<em>str</em>) – Column name in DataFrame that contains position information.</p></li>
+<li><p><strong>build</strong> (<em>str</em>) – Genome build version. Must be one of ‘19’, ‘37’, or ‘38’.</p></li>
+<li><p><strong>gtf_path</strong> (<em>str</em>) – Path to the GTF file. If None, a default path will be used.</p></li>
+<li><p><strong>is_gtf_path</strong> (<em>bool</em>) – If True, gtf_path is treated as a direct file path.
+If False, gtf_path is treated as a directory.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>pd.DataFrame</strong></p>
+<dd class="field-even"><p>The input DataFrame with added ‘LOCATION’ and ‘GENE’ columns.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The input DataFrame with added ‘LOCATION’ and ‘GENE’ columns.</p>
+<dd class="field-odd"><p>pandas.DataFrame</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>TypeError</strong> – If output is not a pandas DataFrame or if gtf_path is provided but not a string.:</p></li>
-<li><p><strong>ValueError</strong> – If required columns are missing from output or if build is invalid.:</p></li>
+<li><p><strong>TypeError</strong> – If output is not a pandas DataFrame or if gtf_path is provided but not a string.</p></li>
+<li><p><strong>ValueError</strong> – If required columns are missing from output or if build is invalid.</p></li>
 </ul>
 </dd>
 </dl>
@@ -240,7 +247,7 @@ It processes the input DataFrame and adds two new columns: ‘LOCATION’ and �
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ideal_genom.annotations.get_chr_to_NC">
-<span class="sig-prename descclassname"><span class="pre">ideal_genom.annotations.</span></span><span class="sig-name descname"><span class="pre">get_chr_to_NC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">build</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inverse</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#ideal_genom.annotations.get_chr_to_NC" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">ideal_genom.annotations.</span></span><span class="sig-name descname"><span class="pre">get_chr_to_NC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">build</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'38'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inverse</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#ideal_genom.annotations.get_chr_to_NC" title="Link to this definition"></a></dt>
 <dd><p>Returns a dictionary mapping between chromosome names and NCBI NC identifiers.</p>
 <p>This function provides a mapping between chromosome names (like “1”, “X”, “MT”)
 and their corresponding NCBI RefSeq accession numbers (like “NC_000001.10”)
@@ -248,18 +255,24 @@ for different human genome builds.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>(</strong><strong>str</strong><strong>)</strong> (<em>build</em>) – Note that builds “19” and “37” return the same mapping.</p></li>
-<li><p><strong>(</strong><strong>bool</strong> (<em>inverse</em>) – identifiers are keys and chromosome names are values.
-Defaults to False.</p></li>
-<li><p><strong>optional</strong><strong>)</strong> (<em>If True</em><em>, </em><em>returns an inverted dictionary where NC</em>) – identifiers are keys and chromosome names are values.
-Defaults to False.</p></li>
+<li><p><strong>build</strong> (<em>str</em><em>, </em><em>optional</em>) – The genome build version. Accepted values are “19”, “37”, or “38”.
+Note that builds “19” and “37” return the same mapping.</p></li>
+<li><p><strong>inverse</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, returns an inverted dictionary where NC identifiers are keys
+and chromosome names are values. Defaults to False.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>dict</strong> – or NC identifiers to chromosome names (if inverse=True).</p>
+<dd class="field-even"><p>A dictionary mapping chromosome names to NC identifiers (if inverse=False)
+or NC identifiers to chromosome names (if inverse=True).</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A dictionary mapping chromosome names to NC identifiers (if inverse=False)</p>
+<dd class="field-odd"><p>dict</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – If <cite>build</cite> is not a string or <cite>inverse</cite> is not a boolean.</p></li>
+<li><p><strong>ValueError</strong> – If <cite>build</cite> is not one of “19”, “37”, or “38”.</p></li>
+</ul>
 </dd>
 </dl>
 <p class="rubric">References</p>
@@ -270,23 +283,20 @@ Defaults to False.</p></li>
 <dt class="sig sig-object py" id="ideal_genom.annotations.get_closest_gene">
 <span class="sig-prename descclassname"><span class="pre">ideal_genom.annotations.</span></span><span class="sig-name descname"><span class="pre">get_closest_gene</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Genome</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chrom</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'CHR'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'POS'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">20000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'ensembl'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">build</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'38'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#ideal_genom.annotations.get_closest_gene" title="Link to this definition"></a></dt>
 <dd><p>Find the closest gene to a given position in the genome.</p>
+<p>This function searches for the closest gene to a specified SNP position in the genome.
+It checks the position in the specified chromosome and returns the distance to the closest gene
+along with the gene name(s). If no gene is found within the specified distance, it returns “intergenic”.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> – SNP information.</p></li>
-<li><p><strong>(</strong><strong>pyensembl.Genome</strong><strong>)</strong> (<em>data</em>) – An instance of the Genome class containing gene annotations.</p></li>
-<li><p><strong>(</strong><strong>str</strong> (<em>build</em>) – The key in the dictionary <cite>x</cite> that corresponds to the chromosome. Default is “CHR”.</p></li>
-<li><p><strong>optional</strong><strong>)</strong> – The key in the dictionary <cite>x</cite> that corresponds to the chromosome. Default is “CHR”.</p></li>
-<li><p><strong>(</strong><strong>str</strong> – The key in the dictionary <cite>x</cite> that corresponds to the position. Default is “POS”.</p></li>
-<li><p><strong>optional</strong><strong>)</strong> – The key in the dictionary <cite>x</cite> that corresponds to the position. Default is “POS”.</p></li>
-<li><p><strong>(</strong><strong>int</strong> (<em>step</em>) – The maximum number of iterations to search for a gene. Default is 20000.</p></li>
-<li><p><strong>optional</strong><strong>)</strong> – The maximum number of iterations to search for a gene. Default is 20000.</p></li>
-<li><p><strong>(</strong><strong>int</strong> – The step size for each iteration when searching for a gene. Default is 50.</p></li>
-<li><p><strong>optional</strong><strong>)</strong> – The step size for each iteration when searching for a gene. Default is 50.</p></li>
-<li><p><strong>(</strong><strong>str</strong> – The source of the gene annotations, either “ensembl” or “refseq”. Default is “ensembl”.</p></li>
-<li><p><strong>optional</strong><strong>)</strong> – The source of the gene annotations, either “ensembl” or “refseq”. Default is “ensembl”.</p></li>
-<li><p><strong>(</strong><strong>str</strong> – The genome build version, used when source is “refseq”. Default is “38”.</p></li>
-<li><p><strong>optional</strong><strong>)</strong> – The genome build version, used when source is “refseq”. Default is “38”.</p></li>
+<li><p><strong>data</strong> (<em>pyensembl.Genome</em>) – An instance of the Genome class containing gene annotations.</p></li>
+<li><p><strong>chrom</strong> (<em>str</em><em>, </em><em>optional</em>) – The key in the dictionary <cite>x</cite> that corresponds to the chromosome. Default is “CHR”.</p></li>
+<li><p><strong>pos</strong> (<em>str</em><em>, </em><em>optional</em>) – The key in the dictionary <cite>x</cite> that corresponds to the position. Default is “POS”.</p></li>
+<li><p><strong>max_iter</strong> (<em>int</em><em>, </em><em>optional</em>) – The maximum number of iterations to search for a gene. Default is 20000.</p></li>
+<li><p><strong>step</strong> (<em>int</em><em>, </em><em>optional</em>) – The step size for each iteration when searching for a gene. Default is 50.</p></li>
+<li><p><strong>source</strong> (<em>str</em><em>, </em><em>optional</em>) – The source of the gene annotations, either “ensembl” or “refseq”. Default is “ensembl”.</p></li>
+<li><p><strong>build</strong> (<em>str</em><em>, </em><em>optional</em>) – The genome build version, used when source is “refseq”. Default is “38”.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -294,6 +304,12 @@ Defaults to False.</p></li>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>tuple</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – If <cite>data</cite> is not an instance of Genome, or if <cite>chrom</cite> or <cite>pos</cite> are not strings, or if <cite>max_iter</cite> or <cite>step</cite> are not integers.</p></li>
+<li><p><strong>ValueError</strong> – If <cite>source</cite> is not “ensembl” or “refseq”, or if <cite>build</cite> is not “37” or “38”.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -322,6 +338,9 @@ For sex and mitochondrial chromosomes, maps to prefix+X/Y/MT.</p>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dict</p>
 </dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>TypeError</strong> – If <cite>in_chr</cite> is not a boolean, <cite>xymt</cite> or <cite>xymt_num</cite> are not lists, or <cite>prefix</cite> is not a string.</p>
+</dd>
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_number_to_chr</span><span class="p">()</span>
@@ -337,30 +356,27 @@ For sex and mitochondrial chromosomes, maps to prefix+X/Y/MT.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="ideal_genom.annotations.gtf_to_all_genes">
 <span class="sig-prename descclassname"><span class="pre">ideal_genom.annotations.</span></span><span class="sig-name descname"><span class="pre">gtf_to_all_genes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gtfpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#ideal_genom.annotations.gtf_to_all_genes" title="Link to this definition"></a></dt>
-<dd><p>Extract all gene records from a GTF file and save them to a new file.
-This function reads a GTF file, extracts all gene records, and saves them to a new file
+<dd><p>Extract all gene records from a GTF file and save them to a new file.</p>
+<p>This function reads a GTF file, extracts all gene records, and saves them to a new file
 with the suffix ‘_all_genes.gtf.gz’. If the output file already exists, it will be returned
 without regenerating it.</p>
-<section id="parameter">
-<h2>Parameter<a class="headerlink" href="#parameter" title="Link to this heading"></a></h2>
-<blockquote>
-<div><p>gtfpath (str): Path to the input GTF file.</p>
-</div></blockquote>
 <dl class="field-list simple">
-<dt class="field-odd">returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>str</strong></p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>gtfpath</strong> (<em>str</em>) – Path to the input GTF file.</p>
 </dd>
-<dt class="field-even">rtype<span class="colon">:</span></dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Path to the output file containing all gene records.</p>
 </dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>TypeError</strong> – If <cite>gtfpath</cite> is not a string.</p>
+</dd>
 </dl>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
+<p class="rubric">Notes</p>
 <p>The function uses the <cite>read_gtf</cite> function for initial parsing and pandas for extraction.
-It logs information about the extraction process using the logger module.
 The function assumes the GTF file has a standard format with gene_id attributes.</p>
-</div>
-</section>
 </dd></dl>
 
 <dl class="py function">
@@ -381,7 +397,7 @@ corresponding database is indexed for efficient access.</p>
 <dd class="field-even"><p>A Genome object initialized with the provided reference and annotation</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Genome</p>
+<dd class="field-odd"><p>pyensemble.Genome</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -392,25 +408,25 @@ will create it by calling the index() method on the Genome object.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="ideal_genom.annotations.prepare_gtf_path">
 <span class="sig-prename descclassname"><span class="pre">ideal_genom.annotations.</span></span><span class="sig-name descname"><span class="pre">prepare_gtf_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gtf_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_gtf_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">build</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#ideal_genom.annotations.prepare_gtf_path" title="Link to this definition"></a></dt>
-<dd><p>Prepares the path to a GTF (Gene Transfer Format) file for annotation purposes.
-This function either uses a user-provided GTF file or downloads one from the
+<dd><p>Prepares the path to a GTF (Gene Transfer Format) file for annotation purposes.</p>
+<p>This function either uses a user-provided GTF file or downloads one from the
 specified source (Ensembl or RefSeq) for the given genome build (GRCh37 or GRCh38).
 If a download is required, it fetches the latest release, unzips it, and processes
 it to extract all genes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>(</strong><strong>str</strong><strong>)</strong> (<em>build</em>)</p></li>
-<li><p><strong>(</strong><strong>bool</strong><strong>)</strong> (<em>is_gtf_path</em>)</p></li>
-<li><p><strong>(</strong><strong>str</strong><strong>)</strong></p></li>
-<li><p><strong>(</strong><strong>str</strong><strong>)</strong></p></li>
+<li><p><strong>gtf_path</strong> (<em>str</em>) – Path to an existing GTF file, or None if one should be downloaded.</p></li>
+<li><p><strong>is_gtf_path</strong> (<em>bool</em>) – Flag indicating whether the provided gtf_path is valid.</p></li>
+<li><p><strong>source</strong> (<em>str</em>) – Source database for GTF file (‘ensembl’ or ‘refseq’).</p></li>
+<li><p><strong>build</strong> (<em>str</em>) – Genome build version (‘37’ or ‘38’).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>str</strong></p>
+<dd class="field-even"><p>Path to the prepared GTF file with all genes.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Path to the prepared GTF file with all genes.</p>
+<dd class="field-odd"><p>str</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -427,7 +443,7 @@ it to extract all genes.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="preprocessing/preparatory.html" class="btn btn-neutral float-left" title="Preparatory Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="visualization/zoom_heatmap.html" class="btn btn-neutral float-left" title="Zoom-Heatmap Plot Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="api_client.html" class="btn btn-neutral float-right" title="ideal_genom.api_client" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

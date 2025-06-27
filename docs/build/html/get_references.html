@@ -48,7 +48,10 @@
 <li class="toctree-l1"><a class="reference internal" href="gwas/gwas_glmm.html">GWAS with Generalized Linear Mixed Models (GLMM)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="preprocessing/PostImputation.html">PostImputation Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="preprocessing/preparatory.html">Preparatory Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="annotations.html">ideal_genom.annotations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualization/manhattan_type.html">Manhattan-type Plots Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualization/plots.html">Other Plots Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualization/zoom_heatmap.html">Zoom-Heatmap Plot Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="annotations.html">Annotations Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api_client.html">ideal_genom.api_client</a></li>
 <li class="toctree-l1"><a class="reference internal" href="get_examples.html">ideal_genom.get_examples</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">ideal_genom.get_references</a><ul>
@@ -59,6 +62,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#ideal_genom.get_references.AssemblyReferenceFetcher.reference_file"><code class="docutils literal notranslate"><span class="pre">AssemblyReferenceFetcher.reference_file</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#ideal_genom.get_references.AssemblyReferenceFetcher._download_file"><code class="docutils literal notranslate"><span class="pre">AssemblyReferenceFetcher._download_file()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#ideal_genom.get_references.AssemblyReferenceFetcher.download_reference_file"><code class="docutils literal notranslate"><span class="pre">AssemblyReferenceFetcher.download_reference_file()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#ideal_genom.get_references.AssemblyReferenceFetcher.get_destination_folder"><code class="docutils literal notranslate"><span class="pre">AssemblyReferenceFetcher.get_destination_folder()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#ideal_genom.get_references.AssemblyReferenceFetcher.get_reference_url"><code class="docutils literal notranslate"><span class="pre">AssemblyReferenceFetcher.get_reference_url()</span></code></a></li>
@@ -120,11 +124,12 @@
 <li class="toctree-l3"><a class="reference internal" href="#ideal_genom.get_references.ReferenceDataFetcher.unzip_latest"><code class="docutils literal notranslate"><span class="pre">ReferenceDataFetcher.unzip_latest()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#ideal_genom.get_references.ReferenceDataFetcher.get_all_genes"><code class="docutils literal notranslate"><span class="pre">ReferenceDataFetcher.get_all_genes()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#ideal_genom.get_references.ReferenceDataFetcher.__init__"><code class="docutils literal notranslate"><span class="pre">ReferenceDataFetcher.__init__()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id3"><code class="docutils literal notranslate"><span class="pre">ReferenceDataFetcher.download_latest()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id5"><code class="docutils literal notranslate"><span class="pre">ReferenceDataFetcher.get_all_genes()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id6"><code class="docutils literal notranslate"><span class="pre">ReferenceDataFetcher.get_destination_folder()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id7"><code class="docutils literal notranslate"><span class="pre">ReferenceDataFetcher.get_latest_release()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id8"><code class="docutils literal notranslate"><span class="pre">ReferenceDataFetcher.unzip_latest()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3"><code class="docutils literal notranslate"><span class="pre">ReferenceDataFetcher._download_file()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4"><code class="docutils literal notranslate"><span class="pre">ReferenceDataFetcher.download_latest()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id6"><code class="docutils literal notranslate"><span class="pre">ReferenceDataFetcher.get_all_genes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id7"><code class="docutils literal notranslate"><span class="pre">ReferenceDataFetcher.get_destination_folder()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id8"><code class="docutils literal notranslate"><span class="pre">ReferenceDataFetcher.get_latest_release()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id9"><code class="docutils literal notranslate"><span class="pre">ReferenceDataFetcher.unzip_latest()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -226,6 +231,12 @@ If None, files might be saved to a default location or handled differently.</p><
 </dl>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ideal_genom.get_references.AssemblyReferenceFetcher._download_file">
+<span class="sig-name descname"><span class="pre">_download_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#ideal_genom.get_references.AssemblyReferenceFetcher._download_file" title="Link to this definition"></a></dt>
+<dd><p>Download a file from the given URL and save it to <cite>file_path</cite>.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -831,10 +842,16 @@ from a specified source.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="id3">
-<span class="sig-name descname"><span class="pre">download_latest</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">_download_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
+<dd><p>Download a file from the given URL and save it to <cite>file_path</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id4">
+<span class="sig-name descname"><span class="pre">download_latest</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#id4" title="Link to this definition"></a></dt>
 <dd><p>Downloads the latest file from <cite>self.latest_url</cite> to <cite>self.destination_folder</cite>.</p>
-<section id="id4">
-<h2>Raises:<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<section id="id5">
+<h2>Raises:<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
 <blockquote>
 <div><p>AttributeError: If <cite>self.latest_url</cite> is not set.
 requests.exceptions.RequestException: If the HTTP request fails.</p>
@@ -843,8 +860,8 @@ requests.exceptions.RequestException: If the HTTP request fails.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id5">
-<span class="sig-name descname"><span class="pre">get_all_genes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#id5" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id6">
+<span class="sig-name descname"><span class="pre">get_all_genes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#id6" title="Link to this definition"></a></dt>
 <dd><p>Extract all genes from the GTF file and save them to a new compressed file.
 This method reads the GTF file specified in self.gtf_file, filters for gene features,
 and creates a new GTF file containing only the gene entries. If the output file
@@ -870,20 +887,20 @@ already exists, it will return the path without reprocessing.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id6">
-<span class="sig-name descname"><span class="pre">get_destination_folder</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Path</span></span></span><a class="headerlink" href="#id6" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id7">
+<span class="sig-name descname"><span class="pre">get_destination_folder</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Path</span></span></span><a class="headerlink" href="#id7" title="Link to this definition"></a></dt>
 <dd><p>Determine the destination folder for downloads.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id7">
-<span class="sig-name descname"><span class="pre">get_latest_release</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#id7" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id8">
+<span class="sig-name descname"><span class="pre">get_latest_release</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#id8" title="Link to this definition"></a></dt>
 <dd><p>Determine the specific URL for fetching data.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id8">
-<span class="sig-name descname"><span class="pre">unzip_latest</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#id8" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id9">
+<span class="sig-name descname"><span class="pre">unzip_latest</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#id9" title="Link to this definition"></a></dt>
 <dd><p>Unzips the latest downloaded file and stores it as a GTF file.</p>
 </dd></dl>
 

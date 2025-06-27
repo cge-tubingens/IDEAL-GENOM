@@ -1,5 +1,5 @@
-ideal_genom.annotations
-=======================
+Annotations Module
+==================
 
 .. automodule:: ideal_genom.annotations
    :members:

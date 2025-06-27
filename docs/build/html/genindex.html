@@ -48,7 +48,7 @@
 <li class="toctree-l1"><a class="reference internal" href="visualization/manhattan_type.html">Manhattan-type Plots Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="visualization/plots.html">Other Plots Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="visualization/zoom_heatmap.html">Zoom-Heatmap Plot Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="annotations.html">ideal_genom.annotations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="annotations.html">Annotations Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api_client.html">ideal_genom.api_client</a></li>
 <li class="toctree-l1"><a class="reference internal" href="get_examples.html">ideal_genom.get_examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="get_references.html">ideal_genom.get_references</a></li>
@@ -152,7 +152,23 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="get_references.html#ideal_genom.get_references.ReferenceDataFetcher._download_file">_download_file() (ideal_genom.get_references.ReferenceDataFetcher method)</a>
+      <li><a href="get_references.html#ideal_genom.get_references.AssemblyReferenceFetcher._download_file">_download_file() (ideal_genom.get_references.AssemblyReferenceFetcher method)</a>
+
+      <ul>
+        <li><a href="get_references.html#id3">(ideal_genom.get_references.ReferenceDataFetcher method)</a>, <a href="get_references.html#ideal_genom.get_references.ReferenceDataFetcher._download_file">[1]</a>
+</li>
+      </ul></li>
+      <li><a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.ParallelTaskRunner._file_collector">_file_collector() (ideal_genom.preprocessing.PostImputation.ParallelTaskRunner method)</a>
+</li>
+      <li><a href="api_client.html#ideal_genom.api_client.GeneEnsemblRestClient._rate_limit">_rate_limit() (ideal_genom.api_client.GeneEnsemblRestClient method)</a>
+
+      <ul>
+        <li><a href="api_client.html#ideal_genom.api_client.VEPEnsemblRestClient._rate_limit">(ideal_genom.api_client.VEPEnsemblRestClient method)</a>
+</li>
+      </ul></li>
+      <li><a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.ParallelTaskRunner._run_task">_run_task() (ideal_genom.preprocessing.PostImputation.ParallelTaskRunner method)</a>
+</li>
+      <li><a href="api_client.html#ideal_genom.api_client.VEPEnsemblRestClient._switch_server">_switch_server() (ideal_genom.api_client.VEPEnsemblRestClient method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -170,7 +186,7 @@
       </ul></li>
       <li><a href="annotations.html#ideal_genom.annotations.annotate_variants">annotate_variants() (in module ideal_genom.annotations)</a>
 </li>
-      <li><a href="preprocessing/PostImputation.html#id0">annotate_vcf() (ideal_genom.preprocessing.PostImputation.AnnotateVCF method)</a>, <a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.AnnotateVCF.annotate_vcf">[1]</a>
+      <li><a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.AnnotateVCF.annotate_vcf">annotate_vcf() (ideal_genom.preprocessing.PostImputation.AnnotateVCF method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -213,6 +229,8 @@
 </li>
         <li><a href="get_references.html#ideal_genom.get_references.RefSeqFetcher.build">(ideal_genom.get_references.RefSeqFetcher attribute)</a>
 </li>
+        <li><a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.ReferenceNormalizeVCF.build">(ideal_genom.preprocessing.PostImputation.ReferenceNormalizeVCF attribute)</a>
+</li>
       </ul></li>
       <li><a href="get_references.html#ideal_genom.get_references.FetcherLDRegions.built">built (ideal_genom.get_references.FetcherLDRegions attribute)</a>
 </li>
@@ -244,8 +262,6 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="Helpers.html#ideal_genom.Helpers.delete_temp_files">delete_temp_files() (in module ideal_genom.Helpers)</a>
 </li>
-      <li><a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.FilterVariants.Dependencies">Dependencies() (ideal_genom.preprocessing.PostImputation.FilterVariants method)</a>
-</li>
       <li><a href="get_references.html#ideal_genom.get_references.FetcherLDRegions.destination">destination (ideal_genom.get_references.FetcherLDRegions attribute)</a>
 </li>
       <li><a href="get_references.html#ideal_genom.get_references.ReferenceDataFetcher.destination_folder">destination_folder (ideal_genom.get_references.ReferenceDataFetcher attribute)</a>
@@ -254,7 +270,7 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="Helpers.html#ideal_genom.Helpers.download_file">download_file() (in module ideal_genom.Helpers)</a>
 </li>
-      <li><a href="get_references.html#id3">download_latest() (ideal_genom.get_references.ReferenceDataFetcher method)</a>, <a href="get_references.html#ideal_genom.get_references.ReferenceDataFetcher.download_latest">[1]</a>
+      <li><a href="get_references.html#id4">download_latest() (ideal_genom.get_references.ReferenceDataFetcher method)</a>, <a href="get_references.html#ideal_genom.get_references.ReferenceDataFetcher.download_latest">[1]</a>
 </li>
       <li><a href="get_references.html#ideal_genom.get_references.AssemblyReferenceFetcher.download_reference_file">download_reference_file() (ideal_genom.get_references.AssemblyReferenceFetcher method)</a>
 </li>
@@ -290,20 +306,20 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.ProcessVCF.execute_reference_normalize">execute_reference_normalize() (ideal_genom.preprocessing.PostImputation.ProcessVCF method)</a>
 </li>
-      <li><a href="preprocessing/PostImputation.html#id1">execute_task() (ideal_genom.preprocessing.PostImputation.AnnotateVCF method)</a>, <a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.AnnotateVCF.execute_task">[1]</a>
+      <li><a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.AnnotateVCF.execute_task">execute_task() (ideal_genom.preprocessing.PostImputation.AnnotateVCF method)</a>
 
       <ul>
-        <li><a href="preprocessing/PostImputation.html#id2">(ideal_genom.preprocessing.PostImputation.FilterVariants method)</a>, <a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.FilterVariants.execute_task">[1]</a>
+        <li><a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.FilterVariants.execute_task">(ideal_genom.preprocessing.PostImputation.FilterVariants method)</a>
 </li>
-        <li><a href="preprocessing/PostImputation.html#id4">(ideal_genom.preprocessing.PostImputation.IndexVCF method)</a>, <a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.IndexVCF.execute_task">[1]</a>
+        <li><a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.IndexVCF.execute_task">(ideal_genom.preprocessing.PostImputation.IndexVCF method)</a>
 </li>
-        <li><a href="preprocessing/PostImputation.html#id6">(ideal_genom.preprocessing.PostImputation.NormalizeVCF method)</a>, <a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.NormalizeVCF.execute_task">[1]</a>
+        <li><a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.NormalizeVCF.execute_task">(ideal_genom.preprocessing.PostImputation.NormalizeVCF method)</a>
 </li>
         <li><a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.ParallelTaskRunner.execute_task">(ideal_genom.preprocessing.PostImputation.ParallelTaskRunner method)</a>
 </li>
         <li><a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.ReferenceNormalizeVCF.execute_task">(ideal_genom.preprocessing.PostImputation.ReferenceNormalizeVCF method)</a>
 </li>
-        <li><a href="preprocessing/PostImputation.html#id20">(ideal_genom.preprocessing.PostImputation.UnzipVCF method)</a>, <a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.UnzipVCF.execute_task">[1]</a>
+        <li><a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.UnzipVCF.execute_task">(ideal_genom.preprocessing.PostImputation.UnzipVCF method)</a>
 </li>
       </ul></li>
       <li><a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.ProcessVCF.execute_unzip">execute_unzip() (ideal_genom.preprocessing.PostImputation.ProcessVCF method)</a>
@@ -326,7 +342,7 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="preprocessing/PostImputation.html#id3">filter_variants() (ideal_genom.preprocessing.PostImputation.FilterVariants method)</a>, <a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.FilterVariants.filter_variants">[1]</a>
+      <li><a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.FilterVariants.filter_variants">filter_variants() (ideal_genom.preprocessing.PostImputation.FilterVariants method)</a>
 </li>
       <li><a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.FilterVariants">FilterVariants (class in ideal_genom.preprocessing.PostImputation)</a>
 </li>
@@ -342,7 +358,7 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_client.html#ideal_genom.api_client.GeneEnsemblRestClient">GeneEnsemblRestClient (class in ideal_genom.api_client)</a>
 </li>
-      <li><a href="get_references.html#id5">get_all_genes() (ideal_genom.get_references.ReferenceDataFetcher method)</a>, <a href="get_references.html#ideal_genom.get_references.ReferenceDataFetcher.get_all_genes">[1]</a>
+      <li><a href="get_references.html#id6">get_all_genes() (ideal_genom.get_references.ReferenceDataFetcher method)</a>, <a href="get_references.html#ideal_genom.get_references.ReferenceDataFetcher.get_all_genes">[1]</a>
 </li>
       <li><a href="power_comp.html#ideal_genom.power_comp.get_beta_binary">get_beta_binary() (in module ideal_genom.power_comp)</a>
 </li>
@@ -357,7 +373,7 @@
       <li><a href="get_references.html#ideal_genom.get_references.AssemblyReferenceFetcher.get_destination_folder">get_destination_folder() (ideal_genom.get_references.AssemblyReferenceFetcher method)</a>
 
       <ul>
-        <li><a href="get_references.html#id6">(ideal_genom.get_references.ReferenceDataFetcher method)</a>, <a href="get_references.html#ideal_genom.get_references.ReferenceDataFetcher.get_destination_folder">[1]</a>
+        <li><a href="get_references.html#id7">(ideal_genom.get_references.ReferenceDataFetcher method)</a>, <a href="get_references.html#ideal_genom.get_references.ReferenceDataFetcher.get_destination_folder">[1]</a>
 </li>
       </ul></li>
       <li><a href="visualization/zoom_heatmap.html#ideal_genom.visualization.zoom_heatmap.get_gene_information">get_gene_information() (in module ideal_genom.visualization.zoom_heatmap)</a>
@@ -371,7 +387,7 @@
       <ul>
         <li><a href="get_references.html#id1">(ideal_genom.get_references.Ensembl38Fetcher method)</a>, <a href="get_references.html#ideal_genom.get_references.Ensembl38Fetcher.get_latest_release">[1]</a>
 </li>
-        <li><a href="get_references.html#id7">(ideal_genom.get_references.ReferenceDataFetcher method)</a>, <a href="get_references.html#ideal_genom.get_references.ReferenceDataFetcher.get_latest_release">[1]</a>
+        <li><a href="get_references.html#id8">(ideal_genom.get_references.ReferenceDataFetcher method)</a>, <a href="get_references.html#ideal_genom.get_references.ReferenceDataFetcher.get_latest_release">[1]</a>
 </li>
         <li><a href="get_references.html#id2">(ideal_genom.get_references.RefSeqFetcher method)</a>, <a href="get_references.html#ideal_genom.get_references.RefSeqFetcher.get_latest_release">[1]</a>
 </li>
@@ -476,8 +492,6 @@
         <li><a href="power_comp.html#module-ideal_genom.power_comp">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     ideal_genom.preprocessing.PostImputation
 
@@ -485,6 +499,8 @@
         <li><a href="preprocessing/PostImputation.html#module-ideal_genom.preprocessing.PostImputation">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     ideal_genom.preprocessing.preparatory
 
@@ -513,16 +529,24 @@
         <li><a href="visualization/zoom_heatmap.html#module-ideal_genom.visualization.zoom_heatmap">module</a>
 </li>
       </ul></li>
-      <li><a href="preprocessing/PostImputation.html#id5">index_vcf() (ideal_genom.preprocessing.PostImputation.IndexVCF method)</a>, <a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.IndexVCF.index_vcf">[1]</a>
+      <li><a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.IndexVCF.index_vcf">index_vcf() (ideal_genom.preprocessing.PostImputation.IndexVCF method)</a>
 </li>
       <li><a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.IndexVCF">IndexVCF (class in ideal_genom.preprocessing.PostImputation)</a>
 </li>
       <li><a href="gwas/gwas_glm.html#ideal_genom.gwas.gwas_glm.GWASfixed.input_name">input_name (ideal_genom.gwas.gwas_glm.GWASfixed attribute)</a>
+
+      <ul>
+        <li><a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.GetPLINK.input_name">(ideal_genom.preprocessing.PostImputation.GetPLINK attribute)</a>
 </li>
+      </ul></li>
       <li><a href="gwas/gwas_glm.html#ideal_genom.gwas.gwas_glm.GWASfixed.input_path">input_path (ideal_genom.gwas.gwas_glm.GWASfixed attribute)</a>
 
       <ul>
+        <li><a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.GetPLINK.input_path">(ideal_genom.preprocessing.PostImputation.GetPLINK attribute)</a>
+</li>
         <li><a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.ParallelTaskRunner.input_path">(ideal_genom.preprocessing.PostImputation.ParallelTaskRunner attribute)</a>
+</li>
+        <li><a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.ProcessVCF.input_path">(ideal_genom.preprocessing.PostImputation.ProcessVCF attribute)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -602,7 +626,7 @@
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="preprocessing/PostImputation.html#id7">normalize_vcf() (ideal_genom.preprocessing.PostImputation.NormalizeVCF method)</a>, <a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.NormalizeVCF.normalize_vcf">[1]</a>
+      <li><a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.NormalizeVCF.normalize_vcf">normalize_vcf() (ideal_genom.preprocessing.PostImputation.NormalizeVCF method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -617,13 +641,29 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="gwas/gwas_glm.html#ideal_genom.gwas.gwas_glm.GWASfixed.output_name">output_name (ideal_genom.gwas.gwas_glm.GWASfixed attribute)</a>
+
+      <ul>
+        <li><a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.GetPLINK.output_name">(ideal_genom.preprocessing.PostImputation.GetPLINK attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
+      </ul></li>
       <li><a href="gwas/gwas_glm.html#ideal_genom.gwas.gwas_glm.GWASfixed.output_path">output_path (ideal_genom.gwas.gwas_glm.GWASfixed attribute)</a>
 
       <ul>
+        <li><a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.GetPLINK.output_path">(ideal_genom.preprocessing.PostImputation.GetPLINK attribute)</a>
+</li>
         <li><a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.ParallelTaskRunner.output_path">(ideal_genom.preprocessing.PostImputation.ParallelTaskRunner attribute)</a>
+</li>
+        <li><a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.ProcessVCF.output_path">(ideal_genom.preprocessing.PostImputation.ProcessVCF attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.AnnotateVCF.output_prefix">output_prefix (ideal_genom.preprocessing.PostImputation.AnnotateVCF attribute)</a>
+
+      <ul>
+        <li><a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.FilterVariants.output_prefix">(ideal_genom.preprocessing.PostImputation.FilterVariants attribute)</a>
+</li>
+        <li><a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.ReferenceNormalizeVCF.output_prefix">(ideal_genom.preprocessing.PostImputation.ReferenceNormalizeVCF attribute)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -633,6 +673,8 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.ParallelTaskRunner">ParallelTaskRunner (class in ideal_genom.preprocessing.PostImputation)</a>
+</li>
+      <li><a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.IndexVCF.pattern">pattern (ideal_genom.preprocessing.PostImputation.IndexVCF attribute)</a>
 </li>
       <li><a href="api_client.html#ideal_genom.api_client.GeneEnsemblRestClient.perform_rest_action">perform_rest_action() (ideal_genom.api_client.GeneEnsemblRestClient method)</a>
 
@@ -668,16 +710,24 @@
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.FilterVariants.r2_threshold">r2_threshold (ideal_genom.preprocessing.PostImputation.FilterVariants attribute)</a>
+</li>
       <li><a href="gwas/gwas_glm.html#ideal_genom.gwas.gwas_glm.GWASfixed.recompute">recompute (ideal_genom.gwas.gwas_glm.GWASfixed attribute)</a>
 </li>
-      <li><a href="get_references.html#ideal_genom.get_references.AssemblyReferenceFetcher.reference_file">reference_file (ideal_genom.get_references.AssemblyReferenceFetcher attribute)</a>
+      <li><a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.AnnotateVCF.ref_annotation">ref_annotation (ideal_genom.preprocessing.PostImputation.AnnotateVCF attribute)</a>
 </li>
+      <li><a href="get_references.html#ideal_genom.get_references.AssemblyReferenceFetcher.reference_file">reference_file (ideal_genom.get_references.AssemblyReferenceFetcher attribute)</a>
+
+      <ul>
+        <li><a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.ReferenceNormalizeVCF.reference_file">(ideal_genom.preprocessing.PostImputation.ReferenceNormalizeVCF attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="get_references.html#ideal_genom.get_references.AssemblyReferenceFetcher.reference_url">reference_url (ideal_genom.get_references.AssemblyReferenceFetcher attribute)</a>
 </li>
       <li><a href="get_references.html#ideal_genom.get_references.ReferenceDataFetcher">ReferenceDataFetcher (class in ideal_genom.get_references)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.ReferenceNormalizeVCF">ReferenceNormalizeVCF (class in ideal_genom.preprocessing.PostImputation)</a>
 </li>
       <li><a href="get_references.html#ideal_genom.get_references.RefSeqFetcher">RefSeqFetcher (class in ideal_genom.get_references)</a>
@@ -722,9 +772,9 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="Helpers.html#ideal_genom.Helpers.unzip_file_flat">unzip_file_flat() (in module ideal_genom.Helpers)</a>
 </li>
-      <li><a href="preprocessing/PostImputation.html#id21">unzip_files() (ideal_genom.preprocessing.PostImputation.UnzipVCF method)</a>, <a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.UnzipVCF.unzip_files">[1]</a>
+      <li><a href="preprocessing/PostImputation.html#ideal_genom.preprocessing.PostImputation.UnzipVCF.unzip_files">unzip_files() (ideal_genom.preprocessing.PostImputation.UnzipVCF method)</a>
 </li>
-      <li><a href="get_references.html#id8">unzip_latest() (ideal_genom.get_references.ReferenceDataFetcher method)</a>, <a href="get_references.html#ideal_genom.get_references.ReferenceDataFetcher.unzip_latest">[1]</a>
+      <li><a href="get_references.html#id9">unzip_latest() (ideal_genom.get_references.ReferenceDataFetcher method)</a>, <a href="get_references.html#ideal_genom.get_references.ReferenceDataFetcher.unzip_latest">[1]</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>

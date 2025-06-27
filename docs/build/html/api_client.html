@@ -20,7 +20,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="ideal_genom.get_examples" href="get_examples.html" />
-    <link rel="prev" title="ideal_genom.annotations" href="annotations.html" /> 
+    <link rel="prev" title="Annotations Module" href="annotations.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -48,10 +48,14 @@
 <li class="toctree-l1"><a class="reference internal" href="gwas/gwas_glmm.html">GWAS with Generalized Linear Mixed Models (GLMM)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="preprocessing/PostImputation.html">PostImputation Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="preprocessing/preparatory.html">Preparatory Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="annotations.html">ideal_genom.annotations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualization/manhattan_type.html">Manhattan-type Plots Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualization/plots.html">Other Plots Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualization/zoom_heatmap.html">Zoom-Heatmap Plot Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="annotations.html">Annotations Module</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">ideal_genom.api_client</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#ideal_genom.api_client.GeneEnsemblRestClient"><code class="docutils literal notranslate"><span class="pre">GeneEnsemblRestClient</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#ideal_genom.api_client.GeneEnsemblRestClient.__init__"><code class="docutils literal notranslate"><span class="pre">GeneEnsemblRestClient.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ideal_genom.api_client.GeneEnsemblRestClient._rate_limit"><code class="docutils literal notranslate"><span class="pre">GeneEnsemblRestClient._rate_limit()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#ideal_genom.api_client.GeneEnsemblRestClient.get_gene_location"><code class="docutils literal notranslate"><span class="pre">GeneEnsemblRestClient.get_gene_location()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#ideal_genom.api_client.GeneEnsemblRestClient.perform_rest_action"><code class="docutils literal notranslate"><span class="pre">GeneEnsemblRestClient.perform_rest_action()</span></code></a></li>
 </ul>
@@ -59,6 +63,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#ideal_genom.api_client.VEPEnsemblRestClient"><code class="docutils literal notranslate"><span class="pre">VEPEnsemblRestClient</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#ideal_genom.api_client.VEPEnsemblRestClient.ENSEMBL_API_URLS"><code class="docutils literal notranslate"><span class="pre">VEPEnsemblRestClient.ENSEMBL_API_URLS</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#ideal_genom.api_client.VEPEnsemblRestClient.__init__"><code class="docutils literal notranslate"><span class="pre">VEPEnsemblRestClient.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ideal_genom.api_client.VEPEnsemblRestClient._rate_limit"><code class="docutils literal notranslate"><span class="pre">VEPEnsemblRestClient._rate_limit()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ideal_genom.api_client.VEPEnsemblRestClient._switch_server"><code class="docutils literal notranslate"><span class="pre">VEPEnsemblRestClient._switch_server()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#ideal_genom.api_client.VEPEnsemblRestClient.perform_rest_action"><code class="docutils literal notranslate"><span class="pre">VEPEnsemblRestClient.perform_rest_action()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#ideal_genom.api_client.VEPEnsemblRestClient.post_vep_request"><code class="docutils literal notranslate"><span class="pre">VEPEnsemblRestClient.post_vep_request()</span></code></a></li>
 </ul>
@@ -107,6 +113,12 @@
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="ideal_genom.api_client.GeneEnsemblRestClient._rate_limit">
+<span class="sig-name descname"><span class="pre">_rate_limit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#ideal_genom.api_client.GeneEnsemblRestClient._rate_limit" title="Link to this definition"></a></dt>
+<dd><p>Rate-limiting to respect requests per second</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="ideal_genom.api_client.GeneEnsemblRestClient.get_gene_location">
 <span class="sig-name descname"><span class="pre">get_gene_location</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gene_symbol</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ideal_genom.api_client.GeneEnsemblRestClient.get_gene_location" title="Link to this definition"></a></dt>
 <dd><p>Fetch the start, end, strand, and chromosome for a given gene symbol using the Ensembl REST API.</p>
@@ -141,6 +153,18 @@
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="ideal_genom.api_client.VEPEnsemblRestClient._rate_limit">
+<span class="sig-name descname"><span class="pre">_rate_limit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#ideal_genom.api_client.VEPEnsemblRestClient._rate_limit" title="Link to this definition"></a></dt>
+<dd><p>Rate-limiting to respect requests per second</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ideal_genom.api_client.VEPEnsemblRestClient._switch_server">
+<span class="sig-name descname"><span class="pre">_switch_server</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#ideal_genom.api_client.VEPEnsemblRestClient._switch_server" title="Link to this definition"></a></dt>
+<dd><p>Switch to the next available Ensembl mirror if the current one fails.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="ideal_genom.api_client.VEPEnsemblRestClient.perform_rest_action">
 <span class="sig-name descname"><span class="pre">perform_rest_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endpoint</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retry_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ideal_genom.api_client.VEPEnsemblRestClient.perform_rest_action" title="Link to this definition"></a></dt>
 <dd><p>General method to perform REST actions with GET or POST</p>
@@ -160,7 +184,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="annotations.html" class="btn btn-neutral float-left" title="ideal_genom.annotations" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="annotations.html" class="btn btn-neutral float-left" title="Annotations Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="get_examples.html" class="btn btn-neutral float-right" title="ideal_genom.get_examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
