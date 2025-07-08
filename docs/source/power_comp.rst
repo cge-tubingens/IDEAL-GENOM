@@ -1,5 +1,5 @@
-ideal_genom.power_comp
-======================
+Statistical Power Computation
+=============================
 
 .. automodule:: ideal_genom.power_comp
    :members:

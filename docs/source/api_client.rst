@@ -1,5 +1,5 @@
-ideal_genom.api_client
-======================
+API Clients
+===========
 
 .. automodule:: ideal_genom.api_client
    :members:

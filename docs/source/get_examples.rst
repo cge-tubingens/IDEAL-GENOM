@@ -1,5 +1,5 @@
-ideal_genom.get_examples
-========================
+Examples Module
+===============
 
 .. automodule:: ideal_genom.get_examples
    :members:
