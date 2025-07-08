@@ -595,7 +595,7 @@ def manhattan_type_annotate(axes: Axes, data: pd.DataFrame, variants_toanno: pd.
             x_scatter=data['rel_pos'].to_numpy(), # all scatter points x-coordinates
             y_scatter=data['log10p'].to_numpy(),  # all scatter points y-coordinates
             linecolor='black',                      # color of the line connecting the text to the data point
-            textsize =8,                            # size of the text (Default to Nature standard)
+            textsize =10,                            # size of the text (Default to Nature standard)
             bbox     =dict(boxstyle='round,pad=0.3', edgecolor='black', facecolor='#f0f0f0', alpha=0.5),
             x_lines  = [x_lines_coor, x_lines_coor],
             y_lines  = [[-np.log10(suggestive_line)]*len(x_lines_coor), [-np.log10(genome_line)]*len(x_lines_coor)],
