@@ -1,4 +1,4 @@
-"""This module provides a class for performing Genome-Wide Association Studies (GWAS) using a fixed model approach with PLINK2. 
+"""This module provides a class for performing Genome-Wide Association Studies (GWAS) using a Generalized Linear Model (GLM) with PLINK2. 
 
 It includes methods for association analysis, obtaining top hits, and annotating SNPs with gene information.
 """
@@ -13,7 +13,7 @@ from typing import Optional
 
 class GWASfixed:
 
-    """Class for performing Genome-Wide Association Studies (GWAS) using a fixed model approach with PLINK2.
+    """Class for performing Genome-Wide Association Studies (GWAS) using a Generalized Linear Model (GLM) with PLINK2.
 
     This class provides methods to perform association analysis, obtain top hits, and annotate SNPs with gene information.
 
@@ -34,13 +34,13 @@ class GWASfixed:
         
     Raises
     ------
-    ValueError: 
+    ValueError
         If input_path, output_path, input_name, or output_name are not provided.
-    FileNotFoundError: 
+    FileNotFoundError
         If the specified input_path or output_path does not exist.
-    FileNotFoundError: 
+    FileNotFoundError
         If the required PLINK files (.bed, .bim, .fam) are not found in the input_path.
-    TypeError: 
+    TypeError
         If input_name or output_name are not strings, or if recompute is not a boolean.
     """
 

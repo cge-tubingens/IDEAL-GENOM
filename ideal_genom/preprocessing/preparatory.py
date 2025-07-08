@@ -123,8 +123,7 @@ class Preparatory:
 
         pass
     def execute_ld_prunning(self, mind: float = 0.2, maf: float = 0.01, geno: float = 0.1, hwe: float = 5e-6, ind_pair: list = [50, 5, 0.2], memory: Optional[int] = None, threads: Optional[int] = None) -> None:
-        """
-        Execute LD (Linkage Disequilibrium) pruning on genetic data using PLINK.
+        """Execute LD (Linkage Disequilibrium) pruning on genetic data using PLINK.
 
         This method performs LD pruning in two steps:
         1. Excludes high LD regions and identifies independent SNPs
@@ -229,8 +228,7 @@ class Preparatory:
         return
     
     def execute_pc_decomposition(self, pca: int = 10, threads: Optional[int] = None) -> None:
-        """
-        Execute PCA decomposition on pruned PLINK binary files.
+        """Execute PCA decomposition on pruned PLINK binary files.
 
         This method performs Principal Component Analysis (PCA) on the pruned genotype data
         using PLINK software. It requires the existence of pruned binary PLINK files

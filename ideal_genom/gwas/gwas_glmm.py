@@ -1,3 +1,7 @@
+"""This module provides a class for performing Genome-Wide Association Studies (GWAS) using a Generalized Linear Mixed Model (GLMM) with PLINK2. 
+
+It includes methods for association analysis, obtaining top hits, and annotating SNPs with gene information.
+"""
 import os
 import pandas as pd
 
@@ -9,33 +13,37 @@ from typing import Optional
 
 class GWASrandom:
 
-    def __init__(self, input_path:str, input_name:str, output_path:str, output_name:str, recompute:bool = True) -> None:
-        
-        """
-        Initializes the GWAS analysis with a Generalized Linear Mixed Model.
-        
-        Parameters:
-        -----------
-        input_path (str): 
-            Path to the input directory containing PLINK files.
-        input_name (str): 
-            Base name of the input PLINK files (without extensions).
-        output_path (str): 
-            Path to the output directory where results will be saved.
-        output_name (str): 
-            Base name for the output files.
-        recompute (bool): 
-            Flag indicating whether to recompute the analysis if results already exist. Default is True.
-        
-        Raises:
-        -------
-        ValueError: If input_path, output_path, input_name, or output_name are not provided.
-        FileNotFoundError: If the specified input_path or output_path does not exist.
-        FileNotFoundError: If the required PLINK files (.bed, .bim, .fam) are not found in the input_path.
-        TypeError: If input_name or output_name are not strings, or if recompute is not a boolean.
-        """
+    """Class for performing Genome-Wide Association Studies (GWAS) using a Generalized Linear Mixed Model (GLM) with PLINK2.
 
+    This class provides methods to perform association analysis, obtain top hits, and annotate SNPs with gene information.
         
+    Parameters
+    ----------
+    input_path : str 
+        Path to the input directory containing PLINK files.
+    input_name : str 
+        Base name of the input PLINK files (without extensions).
+    output_path : str 
+        Path to the output directory where results will be saved.
+    output_name : str 
+        Base name for the output files.
+    recompute : bool 
+        Flag indicating whether to recompute the analysis if results already exist. Default is True.
+    
+    Raises
+    ------
+    ValueError 
+        If input_path, output_path, input_name, or output_name are not provided.
+    FileNotFoundError 
+        If the specified input_path or output_path does not exist.
+    FileNotFoundError 
+        If the required PLINK files (.bed, .bim, .fam) are not found in the input_path.
+    TypeError 
+        If input_name or output_name are not strings, or if recompute is not a boolean.
+    """
+
+    def __init__(self, input_path:str, input_name:str, output_path:str, output_name:str, recompute:bool = True) -> None:
+
        # check if paths are set
         if input_path is None or output_path is None:
             raise ValueError("Values for input_path, output_path and dependables_path must be set upon initialization.")
@@ -79,14 +87,14 @@ class GWASrandom:
 
     def prepare_aux_files(self) -> dict:
         
-        """
-        Prepares auxiliary files for GWAS analysis by processing phenotype and sex data.
+        """Prepares auxiliary files for GWAS analysis by processing phenotype and sex data.
         
-        This function reads a .fam file, extracts and recodes phenotype and sex information, and writes the processed data to new files in the specified results directory.
+        This function reads a .fam file, extracts and recodes phenotype and sex information, 
+        and writes the processed data to new files in the specified results directory.
 
-        Returns:
-        --------
-        dict: 
+        Returns
+        -------
+        dict
             A dictionary containing the status of the process, the step name, and the output directory.
         """
 
@@ -142,22 +150,25 @@ class GWASrandom:
     
     def compute_grm(self, max_threads: Optional[int] = None) -> dict:
         
-        """
-        Compute the Genetic Relationship Matrix (GRM) using GCTA software.
+        """Compute the Genetic Relationship Matrix (GRM) using GCTA software.
 
-        This method computes the GRM for the given input data using the GCTA software. It allows for multi-threaded execution and can optionally recompute the GRM if specified.
+        This method computes the GRM for the given input data using the GCTA software. 
+        It allows for multi-threaded execution and can optionally recompute the GRM if specified.
 
-        Parameters:
-        -----------
-        max_threads (int, optional): 
-            The maximum number of threads to use for computation. If not specified, it defaults to the number of available CPU cores minus two. If the number of CPU cores cannot be determined, it defaults to 10.
+        Parameters
+        ----------
+        max_threads : int, optional
+            The maximum number of threads to use for computation. If not specified, 
+            it defaults to the number of available CPU cores minus two. 
+            If the number of CPU cores cannot be determined, it defaults to 10.
 
-        Returns:
-        --------
-            dict: A dictionary containing the following keys:
-            - 'pass' (bool): Indicates whether the process completed successfully.
-            - 'step' (str): The name of the step performed ('compute_grm').
-            - 'output' (dict): A dictionary containing the output file paths with the key 'gcta_out'.
+        Returns
+        -------
+        dict 
+            A dictionary containing the following keys:
+                - 'pass' (bool): Indicates whether the process completed successfully.
+                - 'step' (str): The name of the step performed ('compute_grm').
+                - 'output' (dict): A dictionary containing the output file paths with the key 'gcta_out'.
         """
 
         results_dir= self.results_dir
@@ -203,24 +214,26 @@ class GWASrandom:
     
     def run_gwas_glmm(self, maf: float = 0.01) -> dict:
         
-        """
-        Runs a Genome-Wide Association Study (GWAS) using a generalized linear mixed model (GLMMM).
+        """Runs a Genome-Wide Association Study (GWAS) using a generalized linear mixed model (GLMMM).
 
-        Parameters:
-        -----------
-        maf (float): 
+        Parameters
+        ----------
+        maf : float 
             Minor allele frequency threshold for filtering SNPs. Default is 0.01.
 
-        Returns:
-        --------
-        dict: 
+        Returns
+        -------
+        dict
             A dictionary containing the status of the process, the step name, and the output directory.
 
-        Raises:
-        -------
-            TypeError: If `maf` is not of type float.
-            ValueError: If `maf` is not between 0 and 1.
-            FileExistsError: If required input files are not found in the results directory.
+        Raises
+        ------
+        TypeError 
+            If `maf` is not of type float.
+        ValueError 
+            If `maf` is not between 0 and 1.
+        FileExistsError 
+            If required input files are not found in the results directory.
         """
 
         results_dir = self.results_dir
@@ -274,25 +287,28 @@ class GWASrandom:
     
     def get_top_hits(self, maf: float = 0.01) -> dict:
         
-        """
-        Get the top hits from the GWAS results.
+        """Get the top hits from the GWAS results.
 
-        This function processes the results of a genome-wide association study (GWAS) to identify the top hits based. It prepares the necessary files and optionally recomputes the results using GCTA.
+        This function processes the results of a genome-wide association study (GWAS) 
+        to identify the top hits based. It prepares the necessary files and 
+        optionally recomputes the results using GCTA.
 
-        Parameters:
-        -----------
-        maf (float, optional): 
+        Parameters
+        ----------
+        maf : float, optional 
             Minor allele frequency threshold. Default is 0.01. Must be between 0 and 1.
 
-        Returns:
-        --------
-        dict: 
+        Returns
+        -------
+        dict
             A dictionary containing the status of the process, the step name, and the output directory.
 
-        Raises:
-        -------
-            TypeError: If `maf` is not of type float.
-            ValueError: If `maf` is not between 0 and 1.
+        Raises
+        ------
+        TypeError 
+            If `maf` is not of type float.
+        ValueError 
+            If `maf` is not between 0 and 0.5.
         """
 
         results_dir = self.results_dir
@@ -303,7 +319,7 @@ class GWASrandom:
 
         if not isinstance(maf, float):
             raise TypeError("maf should be of type float.")
-        if maf < 0 or maf > 1:
+        if maf < 0 or maf > 0.5:
             raise ValueError("maf should be between 0 and 1.")
 
         step = "get_top_hits"
@@ -365,9 +381,37 @@ class GWASrandom:
         return out_dict
 
     def annotate_top_hits(self, gtf_path: Optional[str] = None, build: str = '38', anno_source: str = 'ensembl') -> dict:
-
-        """
-        Annotate the top hits from the association analysis.
+        """Annotate top genetic hits from GWAS analysis with gene information.
+        
+        This method loads top hits from COJO analysis results, annotates them with gene information
+        using the specified genome build and annotation source, and saves the annotated results 
+        to a TSV file.
+        
+        Parameters
+        ----------
+        gtf_path : Optional[str], default=None
+            Path to a GTF file for custom annotation. If None, will use built-in annotation resources.
+        build : str, default='38'
+            Genome build version to use for annotation (e.g., '38', '37').
+        anno_source : str, default='ensembl'
+            Source of the annotation data (e.g., 'ensembl').
+        
+        Returns
+        -------
+        dict
+            A dictionary containing:
+            - 'pass': bool - Whether the process completed successfully
+            - 'step': str - The name of the processing step
+            - 'output': dict - Dictionary of output file paths
+        
+        Raises
+        ------
+        FileExistsError
+            If the COJO file is not found in the results directory.
+        
+        Notes
+        -----
+        The annotated results are saved to 'top_hits_annotated.tsv' in the results directory.
         """
 
         results_dir = self.results_dir

@@ -17,8 +17,8 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
         
 class ReferenceDataFetcher:
-    """
-    A class for fetching, downloading, and processing reference genome data.
+    """A class for fetching, downloading, and processing reference genome data.
+    
     This class provides a framework for retrieving genomic reference data from various
     sources. It handles downloading compressed files, unzipping them, and extracting
     gene information from GTF files.
@@ -40,21 +40,6 @@ class ReferenceDataFetcher:
     gtf_file : Optional[str]
         Path to the uncompressed GTF file.
 
-    Methods
-    -------
-    get_latest_release() -> None
-        Determine the specific URL for fetching data. Must be implemented by subclasses.
-    download_latest() -> str
-        Downloads the latest file and returns the file path.
-    get_destination_folder() -> Path
-        Determines and creates the destination folder for downloads.
-    _download_file(url: str, file_path: Path) -> None
-        Downloads a file from the given URL and saves it to file_path.
-    unzip_latest() -> str
-        Unzips the latest downloaded file and returns the path to the unzipped file.
-    get_all_genes() -> str
-        Processes the GTF file to extract all genes and saves them to a new file.
-        Returns the path to the new file.
 
     Notes
     -----
@@ -63,26 +48,6 @@ class ReferenceDataFetcher:
     """
 
     def __init__(self, base_url: str, build: str, source: str, destination_folder: Optional[str] = None) -> None:
-        """
-        Initialize a reference genome retrieval object.
-
-        This constructor sets up the necessary parameters for downloading reference genome files
-        from a specified source.
-
-        Parameters
-        ----------
-        base_url (str): 
-            The base URL where reference genome files are hosted.
-        build (str): 
-            The genome build/version (e.g., 'GRCh38', 'hg19').
-        source (str): 
-            The source of the genome data (e.g., 'ensembl', 'refseq').
-        destination_folder (Optional[str], optional): 
-            Directory where downloaded files will be saved. If None, files may be saved to a default location. Defaults to None.
-
-        Returns:
-            None
-        """
 
         self.build = build
         self.source = source
@@ -100,13 +65,14 @@ class ReferenceDataFetcher:
         raise NotImplementedError("Subclasses must implement this method.")
 
     def download_latest(self) -> str:
-        """
-        Downloads the latest file from `self.latest_url` to `self.destination_folder`.
+        """Downloads the latest file from `self.latest_url` to `self.destination_folder`.
 
-        Raises:
-        -------
-            AttributeError: If `self.latest_url` is not set.
-            requests.exceptions.RequestException: If the HTTP request fails.
+        Raises
+        ------
+        AttributeError 
+            If `self.latest_url` is not set.
+        requests.exceptions.RequestException 
+            If the HTTP request fails.
         """
 
         if not self.latest_url:
@@ -189,8 +155,8 @@ class ReferenceDataFetcher:
         return str(gtf_file)
     
     def get_all_genes(self) -> str:
-        """
-        Extract all genes from the GTF file and save them to a new compressed file.
+        """Extract all genes from the GTF file and save them to a new compressed file.
+        
         This method reads the GTF file specified in self.gtf_file, filters for gene features,
         and creates a new GTF file containing only the gene entries. If the output file 
         already exists, it will return the path without reprocessing.
@@ -202,8 +168,10 @@ class ReferenceDataFetcher:
         
         Raises
         ------
-            FileNotFoundError: If the reference GTF file (self.gtf_file) is not found
-            TypeError: If read_gtf does not return a pandas DataFrame
+        FileNotFoundError 
+            If the reference GTF file (self.gtf_file) is not found
+        TypeError 
+            If read_gtf does not return a pandas DataFrame
         
         Note
         ----
@@ -252,48 +220,35 @@ class ReferenceDataFetcher:
         return all_genes_path
     
 class Ensembl38Fetcher(ReferenceDataFetcher):
-    """
-    A fetcher class for downloading human genome reference data from Ensembl, specifically for GRCh38 (build 38).
-    This class provides functionality to download and access the latest GTF (Gene Transfer Format) 
-    annotation files for the human genome from the Ensembl FTP server. It automatically
-    determines the most recent release available and handles the download process.
+    """A class for fetching human genome reference data from Ensembl based on GRCh38 build.
+    
+    This class extends ReferenceDataFetcher to specifically handle Ensembl's human
+    genome data with build 38. It provides functionality to find and retrieve the
+    latest GTF file from Ensembl's FTP server.
     
     Attributes
     ----------
     base_url : str
-        The base URL for Ensembl's FTP server where human GTF files are stored
+        Base URL for Ensembl FTP server where GTF files are stored
     build : str
-        The genome build identifier (38 for GRCh38)
+        Genome build version ('38')
     source : str
-        The data source identifier ('ensembl')
+        Data source ('ensembl')
+    destination_folder : str 
+        Local folder to store downloaded files
     latest_url : str
-        URL to the latest GTF file, populated after calling get_latest_release()
+        URL of the latest GTF file after calling get_latest_release()
     
-    Methods
-    -------
-    get_latest_release()
-        Identifies and sets the URL for the latest available GTF file
+    Raises
+    ------
+    Exception
+        If the Ensembl FTP server cannot be accessed
+    FileNotFoundError
+        If no matching GTF file is found
     """
 
+
     def __init__(self, destination_folder = None):
-        """
-        Initialize the Ensembl human genome reference downloader.
-        This class downloads human genome reference data from the Ensembl FTP server,
-        specifically for homo sapiens (human) GTF files from the current release.
-        
-        Parameters
-        ----------
-        destination_folder : str, optional
-            Directory where the downloaded files will be saved. If None, a default
-            location will be used (typically determined by the parent class).
-        
-        Notes
-        -----
-        This downloader is configured to use:
-        - GRCh38 (build 38) human genome assembly
-        - Ensembl as the data source
-        - The current GTF release from Ensembl
-        """
         
         super().__init__(
             base_url = "https://ftp.ensembl.org/pub/current_gtf/homo_sapiens/",
@@ -303,18 +258,22 @@ class Ensembl38Fetcher(ReferenceDataFetcher):
         )
 
     def get_latest_release(self) -> None:
-        """
-        Fetches the latest GTF file dynamically from the specified base URL.
-
-        This method sends a GET request to the base URL, parses the HTML response to find the latest GTF file link, and sets the `latest_url` attribute to the full URL of the latest GTF file.
+        """Retrieves the URL of the latest GTF file for human genome (GRCh38) from the base URL.
         
-        Raises
-        ------
-        FileNotFoundError: If no GTF file is found in the HTML response.
+        This method scrapes the base URL to find the most recent Homo_sapiens GRCh38 GTF file
+        available for download. Upon finding the file, it constructs the complete URL and
+        stores it in the instance variable `latest_url`.
         
         Returns
         -------
-        None
+            None
+
+        Raises
+        ------
+        Exception
+            If the base URL cannot be accessed (non-200 response)
+        FileNotFoundError
+            If no GTF file matching the criteria is found
         """
 
         # Get the latest file dynamically
@@ -344,8 +303,8 @@ class Ensembl38Fetcher(ReferenceDataFetcher):
         pass
 
 class Ensembl37Fetcher(ReferenceDataFetcher):
-    """
-    A class for fetching reference genome data from Ensembl's GRCh37 (hg19) repository.
+    """A class for fetching reference genome data from Ensembl's GRCh37 (hg19) repository.
+    
     This class specializes the ReferenceDataFetcher to work specifically with 
     Ensembl's GRCh37 human genome build. It provides functionality to automatically
     detect and download the latest available GTF file for Homo sapiens from the
@@ -363,11 +322,6 @@ class Ensembl37Fetcher(ReferenceDataFetcher):
         The data source identifier ('ensembl')
     latest_url : str
         The complete URL to the latest GTF file, populated after calling get_latest_release()
-
-    Methods
-    -------
-    get_latest_release()
-        Identifies and sets the URL for the latest available GTF file
     """
 
     def __init__(self, destination_folder = None):
@@ -391,8 +345,8 @@ class Ensembl37Fetcher(ReferenceDataFetcher):
         )
 
     def get_latest_release(self) -> None:
-        """
-        Fetches the URL of the latest GTF file for Homo sapiens GRCh37 from Ensembl.
+        """Fetches the URL of the latest GTF file for Homo sapiens GRCh37 from Ensembl.
+        
         This method:
         1. Connects to the base URL and identifies all available release folders
         2. Determines the latest release by finding the highest release number
@@ -402,10 +356,14 @@ class Ensembl37Fetcher(ReferenceDataFetcher):
         
         Raises
         ------
-        Exception: If the base URL cannot be accessed
-        Exception: If no release folders are found
-        Exception: If the latest release folder cannot be accessed
-        FileNotFoundError: If the GTF file is not found in the latest release
+        Exception
+            If the base URL cannot be accessed
+        Exception
+            If no release folders are found
+        Exception
+            If the latest release folder cannot be accessed
+        FileNotFoundError
+            If the GTF file is not found in the latest release
         
         Returns
         -------
@@ -464,8 +422,8 @@ class Ensembl37Fetcher(ReferenceDataFetcher):
         pass
 
 class RefSeqFetcher(ReferenceDataFetcher):
-    """
-    A class for fetching and downloading reference genome data from NCBI's RefSeq repository.
+    """A class for fetching and downloading reference genome data from NCBI's RefSeq repository.
+    
     This class extends ReferenceDataFetcher to specifically handle downloading human
     genome reference files from the RefSeq database. It supports different genome 
     builds (e.g., 'GRCh37', 'GRCh38') and automatically identifies the latest version
@@ -484,24 +442,9 @@ class RefSeqFetcher(ReferenceDataFetcher):
         The source of the reference data (set to 'refseq').
     latest_url : str
         URL to the latest GTF file, set after calling get_latest_release().
-
-    Methods
-    -------
-    get_latest_release()
-        Identifies and sets the URL for the latest available GTF file
     """
 
     def __init__(self, build: str, destination_folder: Optional[str] = None):
-        """
-        Initialize a RefSeq genome reference downloader.
-
-        Parameters
-        ----------
-            build (str): The genome build/assembly version to download (e.g., 'GRCh38').
-            destination_folder (Optional[str], optional): Directory path where the downloaded
-                reference files will be stored. If None, files will be stored in the default
-                location. Defaults to None.
-        """
 
         super().__init__(
             base_url = "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/vertebrate_mammalian/Homo_sapiens/all_assembly_versions/", 
@@ -511,14 +454,16 @@ class RefSeqFetcher(ReferenceDataFetcher):
         )
 
     def get_latest_release(self) -> None:
-        """
-        Fetches the latest GTF file dynamically from the specified base URL.
+        """Fetches the latest GTF file dynamically from the specified base URL.
 
-        This method sends a GET request to the base URL, parses the HTML response to find the latest GTF file link, and sets the `latest_url` attribute to the full URL of the latest GTF file.
+        This method sends a GET request to the base URL, parses the HTML response 
+        to find the latest GTF file link, and sets the `latest_url` attribute 
+        to the full URL of the latest GTF file.
         
         Raises
         ------
-        FileNotFoundError: If no GTF file is found in the HTML response.
+        FileNotFoundError
+            If no GTF file is found in the HTML response.
         
         Returns
         -------
@@ -588,49 +533,49 @@ class RefSeqFetcher(ReferenceDataFetcher):
         return
 
 class AssemblyReferenceFetcher():
-    """
-    AssemblyReferenceFetcher is responsible for retrieving genomic reference files.
-    This class provides functionality to locate, download, and process reference genome
-    assemblies from web servers. It handles URL construction, web scraping to find
-    appropriate files, downloading, and decompressing reference files.
+    """A class for fetching and preparing genomic reference files from online repositories.
     
-    Key Features
-    ------------
-    - Web scraping to identify correct reference files based on build version
-    - Automatic download of reference genome files
-    - Decompression of gzipped reference files
-    - Management of file paths and destination directories
+    This class handles the process of:
+    1. Finding the appropriate reference file URL based on build parameters
+    2. Downloading the reference file 
+    3. Unzipping compressed reference files if necessary
+    
+    Parameters
+    ----------
+    base_url : str
+        The base URL where reference files are hosted
+    build : str
+        The genome build identifier (e.g., 'GRCh38', 'hg19')
+    extension : str
+        File extension to look for (e.g., '.gtf.gz', '.fa.gz')
+    destination_folder : Optional[str], default=None
+        Path where files should be downloaded. If None, uses project_root/data/assembly_references
+    avoid_substring : str, default='extra'
+        Substring to avoid when selecting reference files
+    
+    Attributes
+    ----------
+    reference_url : str or None
+        URL of the identified reference file
+    reference_file : str or None
+        Filename of the identified reference file
+    file_path : Path or None
+        Local path to the downloaded reference file
+    
+    Raises
+    ------
+    Exception
+        If the base URL cannot be accessed
+    FileNotFoundError
+        If no matching reference file is found
+    AttributeError
+        If methods are called out of sequence
+    ValueError
+        If required attributes are None when needed
     """
 
+
     def __init__(self, base_url: str, build: str, extension: str, destination_folder: Optional[str] = None, avoid_substring: str = 'extra') -> None:
-        """
-        Initialize a reference retriever.
-        This method sets up the configuration for retrieving reference files from a 
-        specified URL, typically for genomic data based on a particular build.
-        
-        Parameters
-        ----------
-        base_url : str
-            The base URL from which to retrieve reference files.
-        build : str
-            The genome build identifier (e.g., 'hg38', 'GRCh37').
-        extension : str
-            The file extension of the reference files to retrieve.
-        destination_folder : Optional[str], default=None
-            The folder where retrieved reference files will be saved.
-            If None, files might be saved to a default location or handled differently.
-        avoid_substring : str, default='extra'
-            A substring to avoid when processing reference files.
-        
-        Attributes
-        ----------
-        file_path : str or None
-            Path to the downloaded reference file, initialized as None.
-        reference_url : str or None
-            Complete URL to the reference file, initialized as None.
-        reference_file : str or None
-            Name or identifier of the reference file, initialized as None.
-        """
 
         self.base_url = base_url
         self.build = build
@@ -645,21 +590,33 @@ class AssemblyReferenceFetcher():
         pass
 
     def get_reference_url(self) -> str:
-        """
-        Retrieves the URL for the reference file from the base URL.
-        This method scrapes the base URL to find a link to the appropriate reference file.
-        It looks for links that contain the build version, have the correct file extension,
-        and do not contain the specified substring to avoid.
-
+        """Retrieves the URL for the reference file from the base URL.
+        
+        This method performs an HTTP GET request to the base URL, parses the HTML content,
+        and searches for links matching specific criteria:
+        - Contains the build version string
+        - Ends with the specified extension
+        - Does not contain the specified substring to avoid
+        The first matching link is considered the reference file.
+        
         Returns
         -------
-        str: The complete URL to the reference file.
+            str: The complete URL to the reference file
         
         Raises
         ------
-        Exception: If the base URL cannot be accessed.
-        FileNotFoundError: If no suitable reference file is found.
+        Exception
+            If the base URL cannot be accessed
+        FileNotFoundError
+            If no matching reference file is found
+        
+        Notes
+        -----
+            - Sets self.reference_file to the name of the found file
+            - Sets self.reference_url to the complete URL
+            - Logs information about the found file and URL
         """
+
 
         response = requests.get(self.base_url)
 
@@ -688,13 +645,27 @@ class AssemblyReferenceFetcher():
         return str(reference_url)
 
     def download_reference_file(self) -> str:
-        """
-        Downloads the reference assembly sequence file from base_url to `self.destination_folder`.
-
-        Raises:
+        """Downloads a reference file from the specified URL to the destination folder.
+        
+        This method checks if the reference file already exists locally before downloading.
+        It will also check for a version of the file with a '.fa' extension.
+        
+        Raises
+        ------
+        AttributeError
+            If `self.reference_url` or `self.reference_file` are not set.
+        ValueError
+            If `self.reference_url` or `self.reference_file` are None.
+        
+        Returns
         -------
-        - AttributeError: If `self.latest_url` is not set.
-        - requests.exceptions.RequestException: If the HTTP request fails.
+        str 
+            The path to the downloaded or existing reference file.
+
+        Note
+        ----
+            - The `reference_url` and `reference_file` attributes must be set
+            by calling `get_reference_url` first.
         """
 
         if not getattr(self, 'reference_url', None):
@@ -730,31 +701,24 @@ class AssemblyReferenceFetcher():
         return str(file_path)
     
     def unzip_reference_file(self) -> str:
-        """
-        Unzips the reference genome file if it's compressed.
-        This method extracts the content of a gzipped reference genome file
-        and saves it as a FASTA file. After successful extraction, the original
-        compressed file is deleted.
-
-        Prerequisites
-        -------------
-        - self.reference_file must be set (via get_reference_url)
-        - self.file_path must be set (via download_reference_file)
-
+        """Unzips a reference genome file (typically .fa.gz to .fa) and returns the path to the unzipped file.
+        
+        This method checks if the file is already unzipped, and if not, unzips it using gzip.
+        After successful unzipping, the original compressed file is deleted.
+        
         Returns
         -------
-        str: Path to the unzipped FASTA file
+        str
+            Path to the unzipped reference file (.fa)
         
         Raises
         ------
-        AttributeError: If self.reference_file or self.file_path are not set
-        OSError: If an error occurs during the unzipping process
-        
-        Notes
-        -----
-        - If the file is already unzipped (has .fa extension), returns its path
-        - If the unzipped file already exists, returns its path without re-extracting
-        - The original compressed file is deleted after successful extraction
+        AttributeError
+            If self.reference_file is not set (get_reference_url should be called first)
+        AttributeError
+            If self.file_path is not set or None (download_reference_file should be called first)
+        OSError
+            If an error occurs during the unzipping process
         """
 
         if not getattr(self, 'reference_file', None):
@@ -787,8 +751,16 @@ class AssemblyReferenceFetcher():
         return str(fa_file)
     
     def get_destination_folder(self) -> Path:
+        """Determines and creates (if necessary) the destination folder for reference files.
 
-        """Determine the destination folder for downloads."""
+        If a destination folder was provided during initialization, it uses that path.
+        Otherwise, it defaults to a 'data/assembly_references' directory in the project root.
+
+        Returns
+        -------
+        Path 
+            The path to the destination folder where reference files will be stored.
+        """
 
         if self.destination_folder:
             destination = Path(self.destination_folder)
@@ -802,8 +774,24 @@ class AssemblyReferenceFetcher():
         return destination
     
     def _download_file(self, url: str, file_path: Path) -> None:
-
-        """Download a file from the given URL and save it to `file_path`."""
+        """Download a file from a given URL and save it to the specified path.
+        
+        Parameters
+        ----------
+        url : str
+            The URL to download the file from.
+        file_path : Path
+            The path where the downloaded file will be saved.
+            
+        Returns
+        -------
+        None
+            
+        Raises
+        ------
+        HTTPError
+            If the HTTP request returns an unsuccessful status code.
+        """
 
         with requests.get(url, stream=True) as response:
             response.raise_for_status()
@@ -815,30 +803,31 @@ class AssemblyReferenceFetcher():
         logger.info(f"Downloaded file to: {file_path}")
 
 class FetcherLDRegions:
+    """A class for fetching high Linkage Disequilibrium (LD) regions files.
+    
+    This class handles downloading or creating files containing genomic regions
+    with high LD for different genome builds (37 or 38). These regions are often
+    excluded in GWAS analyses to avoid confounding effects.
+    
+    Parameters
+    ----------
+    destination : Path, optional
+        Directory path where the LD regions files will be stored.
+        Default is "../data/ld_regions_files" relative to the module location.
+    built : str, default '38'
+        Genome build version. Must be either '37' or '38'.
+    
+    Attributes
+    ----------
+    destination : Path
+        Directory where LD regions files are stored.
+    built : str
+        Genome build version being used.
+    ld_regions : Path or None
+        Path to the LD regions file once retrieved, None otherwise.
+    """
 
     def __init__(self, destination: Optional[Path] = None, built: str = '38'):
-        """
-        Initialize LDRegions object.
-        This initializer sets up the destination path for LD regions files and the genome build version.
-        If no destination is provided, it defaults to a 'data/ld_regions_files' directory relative to
-        the parent directory of the current file.
-        
-        Parameters
-        ----------
-        destination : Path, optional
-            Path where LD region files will be stored. If None, uses default path.
-        built : str, optional
-            Genome build version, defaults to '38'.
-        
-        Attributes
-        ----------
-        destination : Path
-            Directory path where LD region files are stored
-        built : str
-            Genome build version being used
-        ld_regions : None
-            Placeholder for LD regions data, initially set to None
-        """
 
         if not destination:
             destination = Path(__file__).resolve().parent.parent / "data" / "ld_regions_files"
@@ -851,19 +840,16 @@ class FetcherLDRegions:
         pass
 
     def get_ld_regions(self)-> Path:
-        """
-        Downloads or creates high LD regions file based on genome build version.
+        """Downloads or creates high LD regions file based on genome build version.
+        
         This method handles the retrieval of high Linkage Disequilibrium (LD) regions for
         different genome builds (37 or 38). For build 37, it downloads the regions from a
         GitHub repository. For build 38, it creates the file from predefined coordinates.
         
         Returns
         -------
-        Path: Path to the created/downloaded LD regions file. Returns empty Path if download fails for build 37.
-        
-        Raises
-        ------
-            None explicitly, but may raise standard I/O related exceptions.
+        Path
+            Path to the created/downloaded LD regions file. Returns empty Path if download fails for build 37.
         
         Notes
         -----
