@@ -645,27 +645,28 @@ class AssemblyReferenceFetcher():
         return str(reference_url)
 
     def download_reference_file(self) -> str:
-        """Downloads a reference file from the specified URL to the destination folder.
+        """
+        Downloads a reference file from the specified URL to the destination folder.
         
-        This method checks if the reference file already exists locally before downloading.
-        It will also check for a version of the file with a '.fa' extension.
+        This method first checks whether the reference file already exists locally.
+        If not found, it also looks for an alternative version with a '.fa' extension.
+        If neither is present, it downloads the file from the given URL.
         
         Raises
         ------
         AttributeError
             If `self.reference_url` or `self.reference_file` are not set.
         ValueError
-            If `self.reference_url` or `self.reference_file` are None.
+            If `self.reference_url` or `self.reference_file` are set to None.
         
         Returns
         -------
-        str 
+        str
             The path to the downloaded or existing reference file.
-
+        
         Note
         ----
-            - The `reference_url` and `reference_file` attributes must be set
-            by calling `get_reference_url` first.
+        `self.reference_url` and `self.reference_file` must be set by calling `get_reference_url()` before using this method.
         """
 
         if not getattr(self, 'reference_url', None):
