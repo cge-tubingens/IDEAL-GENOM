@@ -478,8 +478,8 @@ def beta_beta_draw(gwas_1: pd.DataFrame, gwas_2: pd.DataFrame, p_col: str, beta_
     ax.set_xlim(x_lim)
     ax.set_ylim(y_lim)
     
-    ax.set_xlabel(f'Per Allele Effect Size {label_1} GWAS', fontsize=7)
-    ax.set_ylabel(f'Per Allele Effect Size {label_2} GWAS', fontsize=7)
+    ax.set_xlabel(f'Per Allele Effect Size {label_1}', fontsize=7)
+    ax.set_ylabel(f'Per Allele Effect Size {label_2}', fontsize=7)
     
     ax.tick_params(axis='both', which='major', labelsize=7)
     
