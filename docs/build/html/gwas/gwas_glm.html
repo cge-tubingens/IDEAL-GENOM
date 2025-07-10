@@ -67,11 +67,11 @@
 <li class="toctree-l1"><a class="reference internal" href="../visualization/plots.html">Other Plots Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../visualization/zoom_heatmap.html">Zoom-Heatmap Plot Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../annotations.html">Annotations Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../api_client.html">ideal_genom.api_client</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../get_examples.html">ideal_genom.get_examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../get_references.html">ideal_genom.get_references</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_client.html">API Clients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_examples.html">Examples Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_references.html">References Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../Helpers.html">ideal_genom.Helpers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../power_comp.html">ideal_genom.power_comp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../power_comp.html">Statistical Power Computation</a></li>
 </ul>
 
         </div>
@@ -100,13 +100,13 @@
              
   <section id="module-ideal_genom.gwas.gwas_glm">
 <span id="gwas-with-generalized-linear-models-glm"></span><h1>GWAS with Generalized Linear Models (GLM)<a class="headerlink" href="#module-ideal_genom.gwas.gwas_glm" title="Link to this heading"></a></h1>
-<p>This module provides a class for performing Genome-Wide Association Studies (GWAS) using a fixed model approach with PLINK2.</p>
+<p>This module provides a class for performing Genome-Wide Association Studies (GWAS) using a Generalized Linear Model (GLM) with PLINK2.</p>
 <p>It includes methods for association analysis, obtaining top hits, and annotating SNPs with gene information.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="ideal_genom.gwas.gwas_glm.GWASfixed">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ideal_genom.gwas.gwas_glm.</span></span><span class="sig-name descname"><span class="pre">GWASfixed</span></span><a class="headerlink" href="#ideal_genom.gwas.gwas_glm.GWASfixed" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Class for performing Genome-Wide Association Studies (GWAS) using a fixed model approach with PLINK2.</p>
+<p>Class for performing Genome-Wide Association Studies (GWAS) using a Generalized Linear Model (GLM) with PLINK2.</p>
 <p>This class provides methods to perform association analysis, obtain top hits, and annotate SNPs with gene information.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="ideal_genom.gwas.gwas_glm.GWASfixed.input_path">
@@ -177,10 +177,10 @@
 <dl class="field-list simple">
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ValueError:</strong> – If input_path, output_path, input_name, or output_name are not provided.</p></li>
-<li><p><strong>FileNotFoundError:</strong> – If the specified input_path or output_path does not exist.</p></li>
-<li><p><strong>FileNotFoundError:</strong> – If the required PLINK files (.bed, .bim, .fam) are not found in the input_path.</p></li>
-<li><p><strong>TypeError:</strong> – If input_name or output_name are not strings, or if recompute is not a boolean.</p></li>
+<li><p><strong>ValueError</strong> – If input_path, output_path, input_name, or output_name are not provided.</p></li>
+<li><p><strong>FileNotFoundError</strong> – If the specified input_path or output_path does not exist.</p></li>
+<li><p><strong>FileNotFoundError</strong> – If the required PLINK files (.bed, .bim, .fam) are not found in the input_path.</p></li>
+<li><p><strong>TypeError</strong> – If input_name or output_name are not strings, or if recompute is not a boolean.</p></li>
 </ul>
 </dd>
 </dl>

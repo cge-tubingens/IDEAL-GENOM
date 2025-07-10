@@ -63,11 +63,11 @@
 <li class="toctree-l1"><a class="reference internal" href="../visualization/plots.html">Other Plots Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../visualization/zoom_heatmap.html">Zoom-Heatmap Plot Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../annotations.html">Annotations Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../api_client.html">ideal_genom.api_client</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../get_examples.html">ideal_genom.get_examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../get_references.html">ideal_genom.get_references</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_client.html">API Clients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_examples.html">Examples Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_references.html">References Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../Helpers.html">ideal_genom.Helpers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../power_comp.html">ideal_genom.power_comp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../power_comp.html">Statistical Power Computation</a></li>
 </ul>
 
         </div>
@@ -96,135 +96,163 @@
              
   <section id="module-ideal_genom.gwas.gwas_glmm">
 <span id="gwas-with-generalized-linear-mixed-models-glmm"></span><h1>GWAS with Generalized Linear Mixed Models (GLMM)<a class="headerlink" href="#module-ideal_genom.gwas.gwas_glmm" title="Link to this heading"></a></h1>
+<p>This module provides a class for performing Genome-Wide Association Studies (GWAS) using a Generalized Linear Mixed Model (GLMM) with PLINK2.</p>
+<p>It includes methods for association analysis, obtaining top hits, and annotating SNPs with gene information.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="ideal_genom.gwas.gwas_glmm.GWASrandom">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ideal_genom.gwas.gwas_glmm.</span></span><span class="sig-name descname"><span class="pre">GWASrandom</span></span><a class="headerlink" href="#ideal_genom.gwas.gwas_glmm.GWASrandom" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class for performing Genome-Wide Association Studies (GWAS) using a Generalized Linear Mixed Model (GLM) with PLINK2.</p>
+<p>This class provides methods to perform association analysis, obtain top hits, and annotate SNPs with gene information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_path</strong> (<em>str</em>) – Path to the input directory containing PLINK files.</p></li>
+<li><p><strong>input_name</strong> (<em>str</em>) – Base name of the input PLINK files (without extensions).</p></li>
+<li><p><strong>output_path</strong> (<em>str</em>) – Path to the output directory where results will be saved.</p></li>
+<li><p><strong>output_name</strong> (<em>str</em>) – Base name for the output files.</p></li>
+<li><p><strong>recompute</strong> (<em>bool</em>) – Flag indicating whether to recompute the analysis if results already exist. Default is True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – If input_path, output_path, input_name, or output_name are not provided.</p></li>
+<li><p><strong>FileNotFoundError</strong> – If the specified input_path or output_path does not exist.</p></li>
+<li><p><strong>FileNotFoundError</strong> – If the required PLINK files (.bed, .bim, .fam) are not found in the input_path.</p></li>
+<li><p><strong>TypeError</strong> – If input_name or output_name are not strings, or if recompute is not a boolean.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="ideal_genom.gwas.gwas_glmm.GWASrandom.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recompute</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#ideal_genom.gwas.gwas_glmm.GWASrandom.__init__" title="Link to this definition"></a></dt>
-<dd><p>Initializes the GWAS analysis with a Generalized Linear Mixed Model.</p>
-<section id="parameters">
-<h2>Parameters:<a class="headerlink" href="#parameters" title="Link to this heading"></a></h2>
-<dl class="simple">
-<dt>input_path (str):</dt><dd><p>Path to the input directory containing PLINK files.</p>
-</dd>
-<dt>input_name (str):</dt><dd><p>Base name of the input PLINK files (without extensions).</p>
-</dd>
-<dt>output_path (str):</dt><dd><p>Path to the output directory where results will be saved.</p>
-</dd>
-<dt>output_name (str):</dt><dd><p>Base name for the output files.</p>
-</dd>
-<dt>recompute (bool):</dt><dd><p>Flag indicating whether to recompute the analysis if results already exist. Default is True.</p>
-</dd>
-</dl>
-</section>
-<section id="raises">
-<h2>Raises:<a class="headerlink" href="#raises" title="Link to this heading"></a></h2>
-<p>ValueError: If input_path, output_path, input_name, or output_name are not provided.
-FileNotFoundError: If the specified input_path or output_path does not exist.
-FileNotFoundError: If the required PLINK files (.bed, .bim, .fam) are not found in the input_path.
-TypeError: If input_name or output_name are not strings, or if recompute is not a boolean.</p>
-</section>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ideal_genom.gwas.gwas_glmm.GWASrandom.annotate_top_hits">
 <span class="sig-name descname"><span class="pre">annotate_top_hits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gtf_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">build</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'38'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anno_source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'ensembl'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#ideal_genom.gwas.gwas_glmm.GWASrandom.annotate_top_hits" title="Link to this definition"></a></dt>
-<dd><p>Annotate the top hits from the association analysis.</p>
+<dd><p>Annotate top genetic hits from GWAS analysis with gene information.</p>
+<p>This method loads top hits from COJO analysis results, annotates them with gene information
+using the specified genome build and annotation source, and saves the annotated results
+to a TSV file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gtf_path</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em><em>, </em><em>default=None</em>) – Path to a GTF file for custom annotation. If None, will use built-in annotation resources.</p></li>
+<li><p><strong>build</strong> (<em>str</em><em>, </em><em>default='38'</em>) – Genome build version to use for annotation (e.g., ‘38’, ‘37’).</p></li>
+<li><p><strong>anno_source</strong> (<em>str</em><em>, </em><em>default='ensembl'</em>) – Source of the annotation data (e.g., ‘ensembl’).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary containing:
+- ‘pass’: bool - Whether the process completed successfully
+- ‘step’: str - The name of the processing step
+- ‘output’: dict - Dictionary of output file paths</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>FileExistsError</strong> – If the COJO file is not found in the results directory.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The annotated results are saved to ‘top_hits_annotated.tsv’ in the results directory.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ideal_genom.gwas.gwas_glmm.GWASrandom.compute_grm">
 <span class="sig-name descname"><span class="pre">compute_grm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_threads</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#ideal_genom.gwas.gwas_glmm.GWASrandom.compute_grm" title="Link to this definition"></a></dt>
 <dd><p>Compute the Genetic Relationship Matrix (GRM) using GCTA software.</p>
-<p>This method computes the GRM for the given input data using the GCTA software. It allows for multi-threaded execution and can optionally recompute the GRM if specified.</p>
-<section id="id1">
-<h2>Parameters:<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
-<dl class="simple">
-<dt>max_threads (int, optional):</dt><dd><p>The maximum number of threads to use for computation. If not specified, it defaults to the number of available CPU cores minus two. If the number of CPU cores cannot be determined, it defaults to 10.</p>
+<p>This method computes the GRM for the given input data using the GCTA software.
+It allows for multi-threaded execution and can optionally recompute the GRM if specified.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>max_threads</strong> (<em>int</em><em>, </em><em>optional</em>) – The maximum number of threads to use for computation. If not specified,
+it defaults to the number of available CPU cores minus two.
+If the number of CPU cores cannot be determined, it defaults to 10.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>A dictionary containing the following keys:</dt><dd><ul class="simple">
+<li><p>’pass’ (bool): Indicates whether the process completed successfully.</p></li>
+<li><p>’step’ (str): The name of the step performed (‘compute_grm’).</p></li>
+<li><p>’output’ (dict): A dictionary containing the output file paths with the key ‘gcta_out’.</p></li>
+</ul>
 </dd>
 </dl>
-</section>
-<section id="returns">
-<h2>Returns:<a class="headerlink" href="#returns" title="Link to this heading"></a></h2>
-<blockquote>
-<div><p>dict: A dictionary containing the following keys:
-- ‘pass’ (bool): Indicates whether the process completed successfully.
-- ‘step’ (str): The name of the step performed (‘compute_grm’).
-- ‘output’ (dict): A dictionary containing the output file paths with the key ‘gcta_out’.</p>
-</div></blockquote>
-</section>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ideal_genom.gwas.gwas_glmm.GWASrandom.get_top_hits">
 <span class="sig-name descname"><span class="pre">get_top_hits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">maf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.01</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#ideal_genom.gwas.gwas_glmm.GWASrandom.get_top_hits" title="Link to this definition"></a></dt>
 <dd><p>Get the top hits from the GWAS results.</p>
-<p>This function processes the results of a genome-wide association study (GWAS) to identify the top hits based. It prepares the necessary files and optionally recomputes the results using GCTA.</p>
-<section id="id2">
-<h2>Parameters:<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
-<dl class="simple">
-<dt>maf (float, optional):</dt><dd><p>Minor allele frequency threshold. Default is 0.01. Must be between 0 and 1.</p>
+<p>This function processes the results of a genome-wide association study (GWAS)
+to identify the top hits based. It prepares the necessary files and
+optionally recomputes the results using GCTA.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>maf</strong> (<em>float</em><em>, </em><em>optional</em>) – Minor allele frequency threshold. Default is 0.01. Must be between 0 and 1.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary containing the status of the process, the step name, and the output directory.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – If <cite>maf</cite> is not of type float.</p></li>
+<li><p><strong>ValueError</strong> – If <cite>maf</cite> is not between 0 and 0.5.</p></li>
+</ul>
 </dd>
 </dl>
-</section>
-<section id="id3">
-<h2>Returns:<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
-<dl class="simple">
-<dt>dict:</dt><dd><p>A dictionary containing the status of the process, the step name, and the output directory.</p>
-</dd>
-</dl>
-</section>
-<section id="id4">
-<h2>Raises:<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
-<blockquote>
-<div><p>TypeError: If <cite>maf</cite> is not of type float.
-ValueError: If <cite>maf</cite> is not between 0 and 1.</p>
-</div></blockquote>
-</section>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ideal_genom.gwas.gwas_glmm.GWASrandom.prepare_aux_files">
 <span class="sig-name descname"><span class="pre">prepare_aux_files</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#ideal_genom.gwas.gwas_glmm.GWASrandom.prepare_aux_files" title="Link to this definition"></a></dt>
 <dd><p>Prepares auxiliary files for GWAS analysis by processing phenotype and sex data.</p>
-<p>This function reads a .fam file, extracts and recodes phenotype and sex information, and writes the processed data to new files in the specified results directory.</p>
-<section id="id5">
-<h2>Returns:<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
-<dl class="simple">
-<dt>dict:</dt><dd><p>A dictionary containing the status of the process, the step name, and the output directory.</p>
+<p>This function reads a .fam file, extracts and recodes phenotype and sex information,
+and writes the processed data to new files in the specified results directory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A dictionary containing the status of the process, the step name, and the output directory.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
 </dd>
 </dl>
-</section>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ideal_genom.gwas.gwas_glmm.GWASrandom.run_gwas_glmm">
 <span class="sig-name descname"><span class="pre">run_gwas_glmm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">maf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.01</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#ideal_genom.gwas.gwas_glmm.GWASrandom.run_gwas_glmm" title="Link to this definition"></a></dt>
 <dd><p>Runs a Genome-Wide Association Study (GWAS) using a generalized linear mixed model (GLMMM).</p>
-<section id="id6">
-<h2>Parameters:<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
-<dl class="simple">
-<dt>maf (float):</dt><dd><p>Minor allele frequency threshold for filtering SNPs. Default is 0.01.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>maf</strong> (<em>float</em>) – Minor allele frequency threshold for filtering SNPs. Default is 0.01.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary containing the status of the process, the step name, and the output directory.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – If <cite>maf</cite> is not of type float.</p></li>
+<li><p><strong>ValueError</strong> – If <cite>maf</cite> is not between 0 and 1.</p></li>
+<li><p><strong>FileExistsError</strong> – If required input files are not found in the results directory.</p></li>
+</ul>
 </dd>
 </dl>
-</section>
-<section id="id7">
-<h2>Returns:<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
-<dl class="simple">
-<dt>dict:</dt><dd><p>A dictionary containing the status of the process, the step name, and the output directory.</p>
-</dd>
-</dl>
-</section>
-<section id="id8">
-<h2>Raises:<a class="headerlink" href="#id8" title="Link to this heading"></a></h2>
-<blockquote>
-<div><p>TypeError: If <cite>maf</cite> is not of type float.
-ValueError: If <cite>maf</cite> is not between 0 and 1.
-FileExistsError: If required input files are not found in the results directory.</p>
-</div></blockquote>
-</section>
 </dd></dl>
 
 </dd></dl>

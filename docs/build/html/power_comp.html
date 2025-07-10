@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ideal_genom.power_comp &mdash; ideal-genom 0.1.0 documentation</title>
+  <title>Statistical Power Computation &mdash; ideal-genom 0.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
@@ -51,11 +51,11 @@
 <li class="toctree-l1"><a class="reference internal" href="visualization/plots.html">Other Plots Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="visualization/zoom_heatmap.html">Zoom-Heatmap Plot Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="annotations.html">Annotations Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api_client.html">ideal_genom.api_client</a></li>
-<li class="toctree-l1"><a class="reference internal" href="get_examples.html">ideal_genom.get_examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="get_references.html">ideal_genom.get_references</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_client.html">API Clients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="get_examples.html">Examples Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="get_references.html">References Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Helpers.html">ideal_genom.Helpers</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">ideal_genom.power_comp</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Statistical Power Computation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#ideal_genom.power_comp.calculate_power_binary"><code class="docutils literal notranslate"><span class="pre">calculate_power_binary()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#ideal_genom.power_comp.calculate_power_quantitative"><code class="docutils literal notranslate"><span class="pre">calculate_power_quantitative()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#ideal_genom.power_comp.get_beta_binary"><code class="docutils literal notranslate"><span class="pre">get_beta_binary()</span></code></a></li>
@@ -78,7 +78,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">ideal_genom.power_comp</li>
+      <li class="breadcrumb-item active">Statistical Power Computation</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/power_comp.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -89,7 +89,7 @@
            <div itemprop="articleBody">
              
   <section id="module-ideal_genom.power_comp">
-<span id="ideal-genom-power-comp"></span><h1>ideal_genom.power_comp<a class="headerlink" href="#module-ideal_genom.power_comp" title="Link to this heading"></a></h1>
+<span id="statistical-power-computation"></span><h1>Statistical Power Computation<a class="headerlink" href="#module-ideal_genom.power_comp" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="ideal_genom.power_comp.calculate_power_binary">
 <span class="sig-prename descclassname"><span class="pre">ideal_genom.power_comp.</span></span><span class="sig-name descname"><span class="pre">calculate_power_binary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">daf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prevalence</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncase</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncontrol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sig_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5e-08</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">or_to_rr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#ideal_genom.power_comp.calculate_power_binary" title="Link to this definition"></a></dt>
