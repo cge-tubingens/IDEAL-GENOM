@@ -362,8 +362,8 @@ def beta_beta_draw(gwas_1: pd.DataFrame, gwas_2: pd.DataFrame, p_col: str, beta_
     df[f'P-val<{significance}']= None
 
     df.loc[df[snp_col].isin(on_both), f'P-val<{significance}']  = 'Both'
-    df.loc[df[snp_col].isin(on_first), f'P-val<{significance}'] = f'{label_1} GWAS'
-    df.loc[df[snp_col].isin(on_second), f'P-val<{significance}']= f'{label_2} GWAS'
+    df.loc[df[snp_col].isin(on_first), f'P-val<{significance}'] = f'{label_1}'
+    df.loc[df[snp_col].isin(on_second), f'P-val<{significance}']= f'{label_2}'
 
     df = df.dropna(subset=[f'P-val<{significance}']).reset_index(drop=True)
 
@@ -388,14 +388,14 @@ def beta_beta_draw(gwas_1: pd.DataFrame, gwas_2: pd.DataFrame, p_col: str, beta_
 
     # determine colors and markers for the plot
     colors = {
-        f'{label_1} GWAS': "#1f77b4", 
+        f'{label_1}': "#1f77b4", 
         'Both'           : "#ff7f0e",
-        f'{label_2} GWAS': "#2ca02c"
+        f'{label_2}': "#2ca02c"
     }
     markers= {
-        f'{label_1} GWAS': 'o', 
+        f'{label_1}': 'o', 
         'Both'           : 's',
-        f'{label_2} GWAS': '^'
+        f'{label_2}': '^'
     }
 
     fig= plt.figure(figsize=(10, 10))
